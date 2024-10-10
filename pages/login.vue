@@ -17,8 +17,8 @@ definePageMeta({
 })
 
 const form = ref({
-  email: '',
-  password: '',
+  email: 'haier@admin.com',
+  password: 'haier@123',
   remember: false,
 })
 
@@ -34,10 +34,16 @@ const authThemeImg = useGenerateImageVariant(
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
 const apiRequestObj = useApi()
-const submitForm  = () => {
-  apiRequestObj.post('login/private',form.value);
-}
 
+const submitForm = async () => {
+  try {
+    const response = await apiRequestObj.post('login/private', form.value)
+    console.log('response', response)
+  }
+  catch (error) {
+    console.error('Error during form submission:', error)
+  }
+}
 </script>
 
 <template>

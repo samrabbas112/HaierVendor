@@ -1,21 +1,7 @@
-// Importing Firebase modules
 import { initializeApp } from 'firebase/app'
-import type { Messaging } from 'firebase/messaging'
 import { getMessaging, getToken, onMessage } from 'firebase/messaging'
 
-// Define Firebase configuration interface
-interface FirebaseConfig {
-  apiKey: string
-  authDomain?: string
-  projectId?: string
-  storageBucket?: string
-  messagingSenderId?: string
-  appId?: string
-  measurementId?: string
-}
-
-// Firebase configuration
-const firebaseConfig: FirebaseConfig = {
+const firebaseConfig = {
   apiKey: 'AIzaSyC7o-syUZtxtG2bXC_TQgCR3ONtUDl4Ubk',
   authDomain: 'haier-mall.firebaseapp.com',
   projectId: 'haier-mall',
@@ -25,26 +11,22 @@ const firebaseConfig: FirebaseConfig = {
   measurementId: 'G-EKBSHX9S5Y',
 }
 
-// VAPID key for notifications
-const vapidKey: string = 'BLsZZXVCKKMPSkrHVr2UUWRE8ioL9H2exfrSVHMKXvWqtLYaC4C8Le9V33hhKieu1DBjBBEZVEZ9gGYO6yK9WVs'
-
-// Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig)
+const messaging = getMessaging(firebaseApp)
 
-// Initialize Firebase Cloud Messaging
-const messaging: Messaging = getMessaging(firebaseApp)
+interface NotificationMessage {
+  title: string
+  body: string
+}
 
-// Function to display notifications
-function displayNotification(message: NotificationOptions & { title: string }) {
+function displayNotification(message: NotificationMessage) {
   if (!('Notification' in window)) {
-    console.log('This browser does not support notifications.')
-
+    console.log('this browser does not support notification.')
     return
   }
 
   if (!('serviceWorker' in navigator)) {
-    console.log('This browser does not support service workers.')
-
+    console.log('This browser does not support notification.')
     return
   }
 
@@ -60,93 +42,69 @@ function displayNotification(message: NotificationOptions & { title: string }) {
 
         reg.showNotification(message.title, options)
         localStorage.setItem('newNotify', 'true')
-        console.log('Front end message receive storage value:', localStorage.getItem('newNotify'))
+        console.log('Frontend message received storage value: ', localStorage.getItem('newNotify'))
 
         setTimeout(() => {
-          if (window.location.href.includes('/orders'))
+          if (window.location.href.includes('/orders')) {
             window.location.reload()
+          }
         }, 2000)
-      }
-      else {
-        console.log('Service worker registration failed')
+      } else {
+        console.log('Service Worker Registration Failed.')
       }
     }).catch(err => {
       console.log('Service worker registration failed: ', err)
     })
-  }
-  else {
-    console.log('Notification permission status: ', Notification.permission)
+  } else {
+    console.log('Notification Permission status: ', Notification.permission)
   }
 }
 
-// Function to create and retrieve Firebase token
 async function createGetToken(): Promise<void> {
-  console.log('I am calling Create TOKEN for KEY', vapidKey)
-
+  const vapidKey = 'BLsZZXVCKKMPSkrHVr2UUWRE8ioL9H2exfrSVHMKXvWqtLYaC4C8Le9V33hhKieu1DBjBBEZVEZ9gGYO6yK9WVs' // Ensure your VAPID key is defined properly
   try {
-    const currentToken = await getToken(messaging, { vapidKey })
-
-    if (currentToken)
-      localStorage.setItem('firebaseToken', currentToken)
-    else
+    const token = await getToken(messaging, { vapidKey })
+    console.log('==============token===================', token)
+    if (token) {
+      localStorage.setItem('firebaseToken', token)
+    } else {
       console.log('No registration token available. Request permission to generate one.')
-  }
-  catch (err) {
-    console.error('An error occurred while retrieving token:', err)
-
-    // Optionally, you can re-call createGetToken() in case of failure
+    }
+  } catch (err) {
+    console.log('An error occurred while retrieving token: ', err)
   }
 }
 
-// Listen for messages from Firebase Cloud Messaging
 onMessage(messaging, payload => {
-  displayNotification(payload.notification as NotificationOptions & { title: string })
+  displayNotification(payload.notification as NotificationMessage)
 })
 
-// Retrieve Firebase token from localStorage or request one
-const currentToken: string | null = localStorage.getItem('firebaseToken')
-
-console.log('currentToken', currentToken)
+const currentToken = localStorage.getItem('firebaseToken')
 
 if (!currentToken) {
   Notification.requestPermission().then(permission => {
     if (permission === 'granted') {
-      console.log('Permission check granted')
-      createGetToken()
+      createGetToken().then(() => console.log('Token generated successfully'))
     }
   }).catch(error => {
     alert('Please enable notifications from the browser')
-    console.error('Error requesting notification permission:', error)
+    console.log('Error requesting notification permissions: ', error)
   })
 }
-
-export { currentToken }
-
-// Check for Notification support and register the service worker
-if (!('Notification' in window))
-  console.log('This browser does not support notifications.')
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    .then(() => {
-      const channel = new BroadcastChannel('fcmNotificationChannel')
-
-      channel.addEventListener('message', (event: MessageEvent) => {
-        console.log('event.data.type:', event.data.type)
-
-        if (event.data.type === 'notification') {
-          const notificationData = event.data.data
-
-          console.log('Notification received in the main page from SW:', notificationData)
-          localStorage.setItem('newNotify', 'true')
-        }
-      })
-
-      console.log('Service Worker started in browser.')
-    }).catch(error => {
-    console.error('Service worker registration failed:', error)
+  navigator.serviceWorker.register('/firebase-messaging-sw.js').then(() => {
+    const channel = new BroadcastChannel('fcmNotificationChannel')
+    channel.addEventListener('message', event => {
+      if (event.data.type === 'notification') {
+        localStorage.setItem('newNotify', 'true')
+      }
+    })
+    console.log('Service Worker registered')
+  }).catch(err => {
+    console.log('Service Worker registration failed: ', err)
   })
 }
-else {
-  console.log('Service workers aren\'t supported in this browser.')
-}
+
+// Named export to be used in other files
+export { createGetToken, currentToken }

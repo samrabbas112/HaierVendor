@@ -26,7 +26,6 @@ const errToShow = computed(() => {
       description: 'We couldn\'t find the page you are looking for.',
     }
   }
-
   else if (isDev) {
     return {
       title: props.error?.statusMessage,

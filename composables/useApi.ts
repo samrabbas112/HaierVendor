@@ -2,7 +2,7 @@ const aes = new Aes()
 
 export const useApi = () => {
   const get = async (url: string, params?: any) => {
-    log('->',{method:'get',url,params})
+    log('->', { method: 'get', url, params })
     try {
       return await $api(url, { params })
     }
@@ -24,11 +24,12 @@ export const useApi = () => {
   }
 
   const post = async (url: string, data: any) => {
-    log('->',{method:'get',url,data})
+    log('->', { method: 'post', url, data })
     try {
       const encryptedData = typeof data === 'string' ? aes.doEncrypt(data) : aes.doEncrypt(JSON.stringify(data))
+      console.log(encryptedData)
       return await $api(url, {
-        method: 'POST',
+        method: 'post',
         body: encryptedData,
       })
     }
@@ -110,11 +111,10 @@ export const useApi = () => {
     }
   }
 
-
   const handleError = (error: any) => {
     console.log('============Catch Block=============')
     if (error?.data) {
-      const errorResponse = JSON.parse(aes.doDecrypt(error.data))
+      const errorResponse = aes.doDecrypt(error.data)
 
       console.log(errorResponse.message)
     }
