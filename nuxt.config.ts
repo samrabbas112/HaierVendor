@@ -23,6 +23,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
       FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
       FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
       FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
