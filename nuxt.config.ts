@@ -24,12 +24,18 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
-      FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
-      FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
-      FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
-      FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
-      FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
-      FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
+      fcm: {
+        vapidKey: 'BLsZZXVCKKMPSkrHVr2UUWRE8ioL9H2exfrSVHMKXvWqtLYaC4C8Le9V33hhKieu1DBjBBEZVEZ9gGYO6yK9WVs',
+        firebaseConfig: {
+          apiKey: 'AIzaSyC7o-syUZtxtG2bXC_TQgCR3ONtUDl4Ubk',
+          authDomain: 'haier-mall.firebaseapp.com',
+          projectId: 'haier-mall',
+          storageBucket: 'haier-mall.appspot.com',
+          messagingSenderId: '870746406313',
+          appId: '1:870746406313:web:fbeec57b0054007de998b8',
+          measurementId: 'G-EKBSHX9S5Y',
+        },
+      },
     },
   },
 
@@ -138,5 +144,18 @@ export default defineNuxtConfig({
     transpile: ['vuetify'],
   },
 
-  modules: ['@vueuse/nuxt', '@nuxtjs/i18n', '@nuxtjs/device', '@pinia/nuxt'],
+  modules: ['@vueuse/nuxt', '@nuxtjs/i18n', '@nuxtjs/device', '@pinia/nuxt',"@bg-dev/nuxt-fcm"],
+  fcm: {
+    vapidKey: 'BLsZZXVCKKMPSkrHVr2UUWRE8ioL9H2exfrSVHMKXvWqtLYaC4C8Le9V33hhKieu1DBjBBEZVEZ9gGYO6yK9WVs',
+    firebaseConfig: {
+      apiKey: 'AIzaSyC7o-syUZtxtG2bXC_TQgCR3ONtUDl4Ubk',
+      authDomain: 'haier-mall.firebaseapp.com',
+      projectId: 'haier-mall',
+      storageBucket: 'haier-mall.appspot.com',
+      messagingSenderId: '870746406313',
+      appId: '1:870746406313:web:fbeec57b0054007de998b8',
+      measurementId: 'G-EKBSHX9S5Y',
+    },
+    serviceWorkerScript: "firebase-messaging-sw.js",
+  },
 })

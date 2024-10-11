@@ -15,6 +15,9 @@ const configStore = useConfigStore()
 const { isMobile } = useDevice()
 if (isMobile)
   configStore.appContentLayoutNav = 'vertical'
+
+const { onMessage } = useFcm();
+onMessage(console.log);
 </script>
 
 <template>
