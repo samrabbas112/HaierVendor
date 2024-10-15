@@ -1,23 +1,23 @@
 <script lang="ts" setup>
-import type { GridColumn } from '@core/types'
+import type { GridColumn } from "@core/types";
 
 interface Props {
-  selectedCheckbox: string[]
-  checkboxContent: { bgImage: string; value: string; label?: string }[]
-  gridColumn?: GridColumn
+  selectedCheckbox: string[];
+  checkboxContent: { bgImage: string; value: string; label?: string }[];
+  gridColumn?: GridColumn;
 }
 
 interface Emit {
-  (e: 'update:selectedCheckbox', value: string[]): void
+  (e: "update:selectedCheckbox", value: string[]): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emit>();
 
 const updateSelectedOption = (value: string[] | null) => {
-  if (typeof value !== 'boolean' && value !== null)
-    emit('update:selectedCheckbox', value)
-}
+  if (typeof value !== "boolean" && value !== null)
+    emit("update:selectedCheckbox", value);
+};
 </script>
 
 <template>
@@ -42,11 +42,7 @@ const updateSelectedOption = (value: string[] | null) => {
             @update:model-value="updateSelectedOption"
           />
         </div>
-        <img
-          :src="item.bgImage"
-          alt="bg-img"
-          class="custom-checkbox-image"
-        >
+        <img :src="item.bgImage" alt="bg-img" class="custom-checkbox-image" />
       </VLabel>
 
       <VLabel
@@ -54,10 +50,7 @@ const updateSelectedOption = (value: string[] | null) => {
         :for="`custom-checkbox-with-img-${item.value}`"
         class="cursor-pointer"
       >
-        <slot
-          name="label"
-          :label="item.label"
-        >
+        <slot name="label" :label="item.label">
           {{ item.label }}
         </slot>
       </VLabel>

@@ -1,17 +1,17 @@
 <script setup lang="ts">
 interface Props {
-  title: string
-  color?: string
-  icon: string
-  stats: string
-  height: number
-  series: unknown[]
-  chartOptions: unknown
+  title: string;
+  color?: string;
+  icon: string;
+  stats: string;
+  height: number;
+  series: unknown[];
+  chartOptions: unknown;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  color: 'primary',
-})
+  color: "primary",
+});
 </script>
 
 <template>
@@ -25,10 +25,7 @@ const props = withDefaults(defineProps<Props>(), {
         rounded
         class="mb-2"
       >
-        <VIcon
-          :icon="props.icon"
-          size="26"
-        />
+        <VIcon :icon="props.icon" size="26" />
       </VAvatar>
 
       <h5 class="text-h5">

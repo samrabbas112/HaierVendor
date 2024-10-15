@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-const { injectSkinClasses } = useSkins()
+const { injectSkinClasses } = useSkins();
 
-injectSkinClasses()
+injectSkinClasses();
 const { $firebaseMessaging } = useNuxtApp();
 const requestPermission = () => {
   $firebaseMessaging.requestNotificationPermission();
 };
-
 
 onMounted(() => {
   requestPermission();

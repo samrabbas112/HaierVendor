@@ -1,12 +1,14 @@
 <script lang="ts" setup>
-const vm = getCurrentInstance()
+const vm = getCurrentInstance();
 
-const buyNowUrl = ref(vm?.appContext.config.globalProperties.buyNowUrl || 'https://1.envato.market/vuexy_admin')
+const buyNowUrl = ref(
+  vm?.appContext.config.globalProperties.buyNowUrl ||
+    "https://1.envato.market/vuexy_admin",
+);
 
-watch(buyNowUrl, val => {
-  if (vm)
-    vm.appContext.config.globalProperties.buyNowUrl = val
-})
+watch(buyNowUrl, (val) => {
+  if (vm) vm.appContext.config.globalProperties.buyNowUrl = val;
+});
 </script>
 
 <template>

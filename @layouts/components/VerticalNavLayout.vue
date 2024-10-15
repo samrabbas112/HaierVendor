@@ -1,30 +1,30 @@
 <script lang="ts" setup>
-import { VerticalNav } from '@layouts/components'
-import { useLayoutConfigStore } from '@layouts/stores/config'
-import type { VerticalNavItems } from '@layouts/types'
+import { VerticalNav } from "@layouts/components";
+import { useLayoutConfigStore } from "@layouts/stores/config";
+import type { VerticalNavItems } from "@layouts/types";
 
 interface Props {
-  navItems: VerticalNavItems
+  navItems: VerticalNavItems;
   verticalNavAttrs?: {
-    wrapper?: string
-    wrapperProps?: Record<string, unknown>
-  }
+    wrapper?: string;
+    wrapperProps?: Record<string, unknown>;
+  };
 }
 
 const props = withDefaults(defineProps<Props>(), {
   verticalNavAttrs: () => ({}),
-})
+});
 
-const { width: windowWidth } = useWindowSize()
-const configStore = useLayoutConfigStore()
+const { width: windowWidth } = useWindowSize();
+const configStore = useLayoutConfigStore();
 
-const isOverlayNavActive = ref(false)
-const isLayoutOverlayVisible = ref(false)
-const toggleIsOverlayNavActive = useToggle(isOverlayNavActive)
+const isOverlayNavActive = ref(false);
+const isLayoutOverlayVisible = ref(false);
+const toggleIsOverlayNavActive = useToggle(isOverlayNavActive);
 
 // ℹ️ This is alternative to below two commented watcher
 // We want to show overlay if overlay nav is visible and want to hide overlay if overlay is hidden and vice versa.
-syncRef(isOverlayNavActive, isLayoutOverlayVisible)
+syncRef(isOverlayNavActive, isLayoutOverlayVisible);
 
 // watch(isOverlayNavActive, value => {
 //   // Sync layout overlay with overlay nav
@@ -38,30 +38,38 @@ syncRef(isOverlayNavActive, isLayoutOverlayVisible)
 
 // ℹ️ Hide overlay if user open overlay nav in <md and increase the window width without closing overlay nav
 watch(windowWidth, () => {
-  if (!configStore.isLessThanOverlayNavBreakpoint && isLayoutOverlayVisible.value)
-    isLayoutOverlayVisible.value = false
-})
+  if (
+    !configStore.isLessThanOverlayNavBreakpoint &&
+    isLayoutOverlayVisible.value
+  )
+    isLayoutOverlayVisible.value = false;
+});
 
 const verticalNavAttrs = computed(() => {
-  const vNavAttrs = toRef(props, 'verticalNavAttrs')
+  const vNavAttrs = toRef(props, "verticalNavAttrs");
 
-  const { wrapper: verticalNavWrapper, wrapperProps: verticalNavWrapperProps, ...additionalVerticalNavAttrs } = vNavAttrs.value
+  const {
+    wrapper: verticalNavWrapper,
+    wrapperProps: verticalNavWrapperProps,
+    ...additionalVerticalNavAttrs
+  } = vNavAttrs.value;
 
   return {
     verticalNavWrapper,
     verticalNavWrapperProps,
     additionalVerticalNavAttrs,
-  }
-})
+  };
+});
 </script>
 
 <template>
-  <div
-    class="layout-wrapper"
-    :class="configStore._layoutClasses"
-  >
+  <div class="layout-wrapper" :class="configStore._layoutClasses">
     <component
-      :is="verticalNavAttrs.verticalNavWrapper ? verticalNavAttrs.verticalNavWrapper : 'div'"
+      :is="
+        verticalNavAttrs.verticalNavWrapper
+          ? verticalNavAttrs.verticalNavWrapper
+          : 'div'
+      "
       v-bind="verticalNavAttrs.verticalNavWrapperProps"
       class="vertical-nav-wrapper"
     >
@@ -105,7 +113,11 @@ const verticalNavAttrs = computed(() => {
     <div
       class="layout-overlay"
       :class="[{ visible: isLayoutOverlayVisible }]"
-      @click="() => { isLayoutOverlayVisible = !isLayoutOverlayVisible }"
+      @click="
+        () => {
+          isLayoutOverlayVisible = !isLayoutOverlayVisible;
+        }
+      "
     />
   </div>
 </template>

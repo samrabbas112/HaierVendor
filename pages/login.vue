@@ -1,60 +1,58 @@
 <script setup lang="ts">
-import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
-import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
-import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
-import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustration-light.png'
-import authV2MaskDark from '@images/pages/misc-mask-dark.png'
-import authV2MaskLight from '@images/pages/misc-mask-light.png'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
+import AuthProvider from "@/views/pages/authentication/AuthProvider.vue";
+import { useGenerateImageVariant } from "@core/composable/useGenerateImageVariant";
+import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
+import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
+import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
+import authV2LoginIllustrationLight from "@images/pages/auth-v2-login-illustration-light.png";
+import authV2MaskDark from "@images/pages/misc-mask-dark.png";
+import authV2MaskLight from "@images/pages/misc-mask-light.png";
+import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
+import { themeConfig } from "@themeConfig";
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
   public: true,
-
-})
+});
 
 const form = ref({
-  email: 'haier@admin.com',
-  password: 'haier@123',
+  email: "haier@admin.com",
+  password: "haier@123",
   remember: false,
-})
+});
 
-const isPasswordVisible = ref(false)
+const isPasswordVisible = ref(false);
 const authStore = useAuthStore();
-const router = useRouter()
-const apiRequestObj = useApi()
+const router = useRouter();
+const apiRequestObj = useApi();
 
 const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationLight,
   authV2LoginIllustrationDark,
   authV2LoginIllustrationBorderedLight,
   authV2LoginIllustrationBorderedDark,
-  true)
+  true,
+);
 
-const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
-
-
+const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark);
 
 const submitForm = async () => {
-    const payload = {
-      email: form.value.email,
-      password: form.value.password,
-      firebase_token: localStorage.getItem('firebaseToken') ?? ''
-    }
-    const response = await apiRequestObj.makeRequest('login','post',payload);
+  const payload = {
+    email: form.value.email,
+    password: form.value.password,
+    firebase_token: localStorage.getItem("firebaseToken") ?? "",
+  };
+  const response = await apiRequestObj.makeRequest("login", "post", payload);
   if (response && response.success) {
     // Call the login action from the store
-    authStore.login({ user: response.data, token: response.data.authToken })
+    authStore.login({ user: response.data, token: response.data.authToken });
     // Redirect user after login
-    await router.push('/dashboard')
+    await router.push("/dashboard");
   } else {
-    console.error('Login failed')
+    console.error("Login failed");
   }
-    console.log('response', response);
-}
+  console.log("response", response);
+};
 </script>
 
 <template>
@@ -67,18 +65,12 @@ const submitForm = async () => {
     </div>
   </a>
 
-  <VRow
-    no-gutters
-    class="auth-wrapper bg-surface"
-  >
-    <VCol
-      md="8"
-      class="d-none d-md-flex"
-    >
+  <VRow no-gutters class="auth-wrapper bg-surface">
+    <VCol md="8" class="d-none d-md-flex">
       <div class="position-relative bg-background w-100 me-0">
         <div
           class="d-flex align-center justify-center w-100 h-100"
-          style="padding-inline: 6.25rem;"
+          style="padding-inline: 6.25rem"
         >
           <VImg
             max-width="613"
@@ -93,7 +85,7 @@ const submitForm = async () => {
           alt="auth-footer-mask"
           height="280"
           width="100"
-        >
+        />
       </div>
     </VCol>
 
@@ -102,14 +94,12 @@ const submitForm = async () => {
       md="4"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VCard
-        flat
-        :max-width="500"
-        class="mt-12 mt-sm-0 pa-6"
-      >
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-6">
         <VCardText>
           <h4 class="text-h4 mb-1">
-            Welcome to <span class="text-capitalize">{{ themeConfig.app.title }}</span>! 👋🏻
+            Welcome to
+            <span class="text-capitalize">{{ themeConfig.app.title }}</span
+            >! 👋🏻
           </h4>
           <p class="mb-0">
             Please sign-in to your account and start the adventure
@@ -136,39 +126,27 @@ const submitForm = async () => {
                   label="Password"
                   placeholder="············"
                   :type="isPasswordVisible ? 'text' : 'password'"
-                  :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  :append-inner-icon="
+                    isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
+                  "
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
-                <div class="d-flex align-center flex-wrap justify-space-between my-6">
-                  <VCheckbox
-                    v-model="form.remember"
-                    label="Remember me"
-                  />
-                  <a
-                    class="text-primary"
-                    href="javascript:void(0)"
-                  >
+                <div
+                  class="d-flex align-center flex-wrap justify-space-between my-6"
+                >
+                  <VCheckbox v-model="form.remember" label="Remember me" />
+                  <a class="text-primary" href="javascript:void(0)">
                     Forgot Password?
                   </a>
                 </div>
 
-                <VBtn
-                  block
-                  @click="submitForm"
-                >
-                  Login
-                </VBtn>
+                <VBtn block @click="submitForm"> Login </VBtn>
               </VCol>
 
               <!-- create account -->
-              <VCol
-                cols="12"
-                class="text-body-1 text-center"
-              >
-                <span class="d-inline-block">
-                  New on our platform?
-                </span>
+              <VCol cols="12" class="text-body-1 text-center">
+                <span class="d-inline-block"> New on our platform? </span>
                 <a
                   class="text-primary ms-1 d-inline-block text-body-1"
                   href="javascript:void(0)"
@@ -177,20 +155,14 @@ const submitForm = async () => {
                 </a>
               </VCol>
 
-              <VCol
-                cols="12"
-                class="d-flex align-center"
-              >
+              <VCol cols="12" class="d-flex align-center">
                 <VDivider />
                 <span class="mx-4">or</span>
                 <VDivider />
               </VCol>
 
               <!-- auth providers -->
-              <VCol
-                cols="12"
-                class="text-center"
-              >
+              <VCol cols="12" class="text-center">
                 <AuthProvider />
               </VCol>
             </VRow>

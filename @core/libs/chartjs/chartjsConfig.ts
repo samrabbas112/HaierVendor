@@ -1,20 +1,28 @@
-import type { ThemeInstance } from 'vuetify'
-import { hexToRgb } from '@core/utils/colorConverter'
+import type { ThemeInstance } from "vuetify";
+import { hexToRgb } from "@core/utils/colorConverter";
 
 // 👉 Colors variables
-const colorVariables = (themeColors: ThemeInstance['themes']['value']['colors']) => {
-  const themeSecondaryTextColor = `rgba(${hexToRgb(themeColors.colors['on-surface'])},${themeColors.variables['medium-emphasis-opacity']})`
-  const themeDisabledTextColor = `rgba(${hexToRgb(themeColors.colors['on-surface'])},${themeColors.variables['disabled-opacity']})`
-  const themeBorderColor = `rgba(${hexToRgb(String(themeColors.variables['border-color']))},${themeColors.variables['border-opacity']})`
+const colorVariables = (
+  themeColors: ThemeInstance["themes"]["value"]["colors"],
+) => {
+  const themeSecondaryTextColor = `rgba(${hexToRgb(themeColors.colors["on-surface"])},${themeColors.variables["medium-emphasis-opacity"]})`;
+  const themeDisabledTextColor = `rgba(${hexToRgb(themeColors.colors["on-surface"])},${themeColors.variables["disabled-opacity"]})`;
+  const themeBorderColor = `rgba(${hexToRgb(String(themeColors.variables["border-color"]))},${themeColors.variables["border-opacity"]})`;
 
-  return { labelColor: themeDisabledTextColor, borderColor: themeBorderColor, legendColor: themeSecondaryTextColor }
-}
+  return {
+    labelColor: themeDisabledTextColor,
+    borderColor: themeBorderColor,
+    legendColor: themeSecondaryTextColor,
+  };
+};
 
 // SECTION config
 
 // 👉 Latest Bar Chart Config
-export const getLatestBarChartConfig = (themeColors: ThemeInstance['themes']['value']['colors']) => {
-  const { borderColor, labelColor } = colorVariables(themeColors)
+export const getLatestBarChartConfig = (
+  themeColors: ThemeInstance["themes"]["value"]["colors"],
+) => {
+  const { borderColor, labelColor } = colorVariables(themeColors);
 
   return {
     responsive: true,
@@ -46,15 +54,17 @@ export const getLatestBarChartConfig = (themeColors: ThemeInstance['themes']['va
     plugins: {
       legend: { display: false },
     },
-  }
-}
+  };
+};
 
 // 👉 Horizontal Bar Chart Config
-export const getHorizontalBarChartConfig = (themeColors: ThemeInstance['themes']['value']['colors']) => {
-  const { borderColor, labelColor, legendColor } = colorVariables(themeColors)
+export const getHorizontalBarChartConfig = (
+  themeColors: ThemeInstance["themes"]["value"]["colors"],
+) => {
+  const { borderColor, labelColor, legendColor } = colorVariables(themeColors);
 
   return {
-    indexAxis: 'y',
+    indexAxis: "y",
     responsive: true,
     maintainAspectRatio: false,
     animation: { duration: 500 },
@@ -90,17 +100,19 @@ export const getHorizontalBarChartConfig = (themeColors: ThemeInstance['themes']
     },
     plugins: {
       legend: {
-        align: 'end',
-        position: 'top',
+        align: "end",
+        position: "top",
         labels: { color: legendColor },
       },
     },
-  }
-}
+  };
+};
 
 // 👉 Line Chart Config
-export const getLineChartConfig = (themeColors: ThemeInstance['themes']['value']['colors']) => {
-  const { borderColor, labelColor, legendColor } = colorVariables(themeColors)
+export const getLineChartConfig = (
+  themeColors: ThemeInstance["themes"]["value"]["colors"],
+) => {
+  const { borderColor, labelColor, legendColor } = colorVariables(themeColors);
 
   return {
     responsive: true,
@@ -130,8 +142,8 @@ export const getLineChartConfig = (themeColors: ThemeInstance['themes']['value']
     },
     plugins: {
       legend: {
-        align: 'end',
-        position: 'top',
+        align: "end",
+        position: "top",
         labels: {
           padding: 25,
           boxWidth: 10,
@@ -140,12 +152,14 @@ export const getLineChartConfig = (themeColors: ThemeInstance['themes']['value']
         },
       },
     },
-  }
-}
+  };
+};
 
 // 👉 Radar Chart Config
-export const getRadarChartConfig = (themeColors: ThemeInstance['themes']['value']['colors']) => {
-  const { borderColor, labelColor, legendColor } = colorVariables(themeColors)
+export const getRadarChartConfig = (
+  themeColors: ThemeInstance["themes"]["value"]["colors"],
+) => {
+  const { borderColor, labelColor, legendColor } = colorVariables(themeColors);
 
   return {
     responsive: true,
@@ -168,19 +182,21 @@ export const getRadarChartConfig = (themeColors: ThemeInstance['themes']['value'
     },
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
         labels: {
           padding: 25,
           color: legendColor,
         },
       },
     },
-  }
-}
+  };
+};
 
 // 👉 Polar Chart Config
-export const getPolarChartConfig = (themeColors: ThemeInstance['themes']['value']['colors']) => {
-  const { legendColor } = colorVariables(themeColors)
+export const getPolarChartConfig = (
+  themeColors: ThemeInstance["themes"]["value"]["colors"],
+) => {
+  const { legendColor } = colorVariables(themeColors);
 
   return {
     responsive: true,
@@ -200,7 +216,7 @@ export const getPolarChartConfig = (themeColors: ThemeInstance['themes']['value'
     },
     plugins: {
       legend: {
-        position: 'right',
+        position: "right",
         labels: {
           padding: 25,
           boxWidth: 9,
@@ -209,12 +225,14 @@ export const getPolarChartConfig = (themeColors: ThemeInstance['themes']['value'
         },
       },
     },
-  }
-}
+  };
+};
 
 // 👉 Bubble Chart Config
-export const getBubbleChartConfig = (themeColors: ThemeInstance['themes']['value']['colors']) => {
-  const { borderColor, labelColor } = colorVariables(themeColors)
+export const getBubbleChartConfig = (
+  themeColors: ThemeInstance["themes"]["value"]["colors"],
+) => {
+  const { borderColor, labelColor } = colorVariables(themeColors);
 
   return {
     responsive: true,
@@ -250,8 +268,8 @@ export const getBubbleChartConfig = (themeColors: ThemeInstance['themes']['value
     plugins: {
       legend: { display: false },
     },
-  }
-}
+  };
+};
 
 // 👉 Doughnut Chart Config
 export const getDoughnutChartConfig = () => {
@@ -265,12 +283,14 @@ export const getDoughnutChartConfig = () => {
         display: false,
       },
     },
-  }
-}
+  };
+};
 
 // 👉 Scatter Chart Config
-export const getScatterChartConfig = (themeColors: ThemeInstance['themes']['value']['colors']) => {
-  const { borderColor, labelColor, legendColor } = colorVariables(themeColors)
+export const getScatterChartConfig = (
+  themeColors: ThemeInstance["themes"]["value"]["colors"],
+) => {
+  const { borderColor, labelColor, legendColor } = colorVariables(themeColors);
 
   return {
     responsive: true,
@@ -311,8 +331,8 @@ export const getScatterChartConfig = (themeColors: ThemeInstance['themes']['valu
     },
     plugins: {
       legend: {
-        align: 'start',
-        position: 'top',
+        align: "start",
+        position: "top",
         labels: {
           padding: 25,
           boxWidth: 9,
@@ -321,12 +341,14 @@ export const getScatterChartConfig = (themeColors: ThemeInstance['themes']['valu
         },
       },
     },
-  }
-}
+  };
+};
 
 // 👉 Line Area Chart Config
-export const getLineAreaChartConfig = (themeColors: ThemeInstance['themes']['value']['colors']) => {
-  const { borderColor, labelColor, legendColor } = colorVariables(themeColors)
+export const getLineAreaChartConfig = (
+  themeColors: ThemeInstance["themes"]["value"]["colors"],
+) => {
+  const { borderColor, labelColor, legendColor } = colorVariables(themeColors);
 
   return {
     responsive: true,
@@ -338,7 +360,7 @@ export const getLineAreaChartConfig = (themeColors: ThemeInstance['themes']['val
       x: {
         grid: {
           borderColor,
-          color: 'transparent',
+          color: "transparent",
         },
         ticks: { color: labelColor },
       },
@@ -347,7 +369,7 @@ export const getLineAreaChartConfig = (themeColors: ThemeInstance['themes']['val
         max: 400,
         grid: {
           borderColor,
-          color: 'transparent',
+          color: "transparent",
         },
         ticks: {
           stepSize: 100,
@@ -357,8 +379,8 @@ export const getLineAreaChartConfig = (themeColors: ThemeInstance['themes']['val
     },
     plugins: {
       legend: {
-        align: 'start',
-        position: 'top',
+        align: "start",
+        position: "top",
         labels: {
           padding: 25,
           boxWidth: 9,
@@ -367,6 +389,6 @@ export const getLineAreaChartConfig = (themeColors: ThemeInstance['themes']['val
         },
       },
     },
-  }
-}
+  };
+};
 // !SECTION

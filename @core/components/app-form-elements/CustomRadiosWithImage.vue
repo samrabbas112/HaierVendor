@@ -1,23 +1,26 @@
 <script lang="ts" setup>
-import type { GridColumn } from '@core/types'
+import type { GridColumn } from "@core/types";
 
 interface Props {
-  selectedRadio: string
-  radioContent: { bgImage: string | undefined; value: string; label?: string }[]
-  gridColumn?: GridColumn
+  selectedRadio: string;
+  radioContent: {
+    bgImage: string | undefined;
+    value: string;
+    label?: string;
+  }[];
+  gridColumn?: GridColumn;
 }
 
 interface Emit {
-  (e: 'update:selectedRadio', value: string): void
+  (e: "update:selectedRadio", value: string): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emit>();
 
 const updateSelectedOption = (value: string | null) => {
-  if (value !== null)
-    emit('update:selectedRadio', value)
-}
+  if (value !== null) emit("update:selectedRadio", value);
+};
 </script>
 
 <template>
@@ -37,22 +40,16 @@ const updateSelectedOption = (value: string | null) => {
           class="custom-input custom-radio rounded cursor-pointer w-100"
           :class="props.selectedRadio === item.value ? 'active' : ''"
         >
-          <slot
-            name="content"
-            :item="item"
-          >
+          <slot name="content" :item="item">
             <template v-if="typeof item.bgImage === 'object'">
-              <Component
-                :is="item.bgImage"
-                class="custom-radio-image"
-              />
+              <Component :is="item.bgImage" class="custom-radio-image" />
             </template>
             <img
               v-else
               :src="item.bgImage"
               alt="bg-img"
               class="custom-radio-image"
-            >
+            />
           </slot>
 
           <VRadio
@@ -66,10 +63,7 @@ const updateSelectedOption = (value: string | null) => {
           :for="`custom-radio-with-img-${item.value}`"
           class="cursor-pointer"
         >
-          <slot
-            name="label"
-            :label="item.label"
-          >
+          <slot name="label" :label="item.label">
             {{ item.label }}
           </slot>
         </VLabel>

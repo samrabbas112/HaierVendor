@@ -1,14 +1,14 @@
 <script setup lang="ts">
 interface Props {
-  title: string
-  color?: string
-  icon: string
-  stats: string
+  title: string;
+  color?: string;
+  icon: string;
+  stats: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  color: 'primary',
-})
+  color: "primary",
+});
 </script>
 
 <template>

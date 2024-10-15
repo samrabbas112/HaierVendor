@@ -1,23 +1,23 @@
 <script lang="ts" setup>
-import type { CustomInputContent, GridColumn } from '@core/types'
+import type { CustomInputContent, GridColumn } from "@core/types";
 
 interface Props {
-  selectedCheckbox: string[]
-  checkboxContent: CustomInputContent[]
-  gridColumn?: GridColumn
+  selectedCheckbox: string[];
+  checkboxContent: CustomInputContent[];
+  gridColumn?: GridColumn;
 }
 
 interface Emit {
-  (e: 'update:selectedCheckbox', value: string[]): void
+  (e: "update:selectedCheckbox", value: string[]): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emit>();
 
 const updateSelectedOption = (value: string[] | null) => {
-  if (typeof value !== 'boolean' && value !== null)
-    emit('update:selectedCheckbox', value)
-}
+  if (typeof value !== "boolean" && value !== null)
+    emit("update:selectedCheckbox", value);
+};
 </script>
 
 <template>
@@ -36,10 +36,7 @@ const updateSelectedOption = (value: string[] | null) => {
       >
         <slot :item="item">
           <div class="d-flex flex-column align-center text-center gap-2">
-            <VIcon
-              v-bind="item.icon"
-              class="text-high-emphasis"
-            />
+            <VIcon v-bind="item.icon" class="text-high-emphasis" />
 
             <h6 class="cr-title text-base">
               {{ item.title }}

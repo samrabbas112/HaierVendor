@@ -1,11 +1,11 @@
 <script setup lang="ts">
 const props = defineProps<{
-  title: string
-}>()
+  title: string;
+}>();
 
 defineEmits<{
-  (e: 'cancel', el: MouseEvent): void
-}>()
+  (e: "cancel", el: MouseEvent): void;
+}>();
 </script>
 
 <template>
@@ -17,14 +17,8 @@ defineEmits<{
 
     <slot name="beforeClose" />
 
-    <IconBtn
-      size="small"
-      @click="$emit('cancel', $event)"
-    >
-      <VIcon
-        size="24"
-        icon="tabler-x"
-      />
+    <IconBtn size="small" @click="$emit('cancel', $event)">
+      <VIcon size="24" icon="tabler-x" />
     </IconBtn>
   </div>
 </template>

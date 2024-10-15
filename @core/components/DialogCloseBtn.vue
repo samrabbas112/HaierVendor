@@ -1,13 +1,13 @@
 <script setup lang="ts">
 interface Props {
-  icon?: string
-  iconSize?: string
+  icon?: string;
+  iconSize?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  icon: 'tabler-x',
-  iconSize: '20',
-})
+  icon: "tabler-x",
+  iconSize: "20",
+});
 </script>
 
 <template>
@@ -17,9 +17,6 @@ const props = withDefaults(defineProps<Props>(), {
     :ripple="false"
     class="v-dialog-close-btn"
   >
-    <VIcon
-      :icon="props.icon"
-      :size="props.iconSize"
-    />
+    <VIcon :icon="props.icon" :size="props.iconSize" />
   </IconBtn>
 </template>

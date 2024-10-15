@@ -1,49 +1,50 @@
 <script setup lang="ts">
-import { Placeholder } from '@tiptap/extension-placeholder'
-import { TextAlign } from '@tiptap/extension-text-align'
-import { Underline } from '@tiptap/extension-underline'
-import { StarterKit } from '@tiptap/starter-kit'
-import { EditorContent, useEditor } from '@tiptap/vue-3'
+import { Placeholder } from "@tiptap/extension-placeholder";
+import { TextAlign } from "@tiptap/extension-text-align";
+import { Underline } from "@tiptap/extension-underline";
+import { StarterKit } from "@tiptap/starter-kit";
+import { EditorContent, useEditor } from "@tiptap/vue-3";
 
 const props = defineProps<{
-  modelValue: string
-  placeholder?: string
-}>()
+  modelValue: string;
+  placeholder?: string;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void
-}>()
+  (e: "update:modelValue", value: string): void;
+}>();
 
-const editorRef = ref()
+const editorRef = ref();
 
 const editor = useEditor({
   content: props.modelValue,
   extensions: [
     StarterKit,
     TextAlign.configure({
-      types: ['heading', 'paragraph'],
+      types: ["heading", "paragraph"],
     }),
     Placeholder.configure({
-      placeholder: props.placeholder ?? 'Write something here...',
+      placeholder: props.placeholder ?? "Write something here...",
     }),
     Underline,
   ],
   onUpdate() {
-    if (!editor.value)
-      return
+    if (!editor.value) return;
 
-    emit('update:modelValue', editor.value.getHTML())
+    emit("update:modelValue", editor.value.getHTML());
   },
-})
+});
 
-watch(() => props.modelValue, () => {
-  const isSame = editor.value?.getHTML() === props.modelValue
+watch(
+  () => props.modelValue,
+  () => {
+    const isSame = editor.value?.getHTML() === props.modelValue;
 
-  if (isSame)
-    return
+    if (isSame) return;
 
-  editor.value?.commands.setContent(props.modelValue)
-})
+    editor.value?.commands.setContent(props.modelValue);
+  },
+);
 </script>
 
 <template>
@@ -79,10 +80,7 @@ watch(() => props.modelValue, () => {
         :color="editor.isActive('italic') ? 'primary' : 'default'"
         @click="editor.chain().focus().toggleItalic().run()"
       >
-        <VIcon
-          icon="tabler-italic"
-          class="font-weight-medium"
-        />
+        <VIcon icon="tabler-italic" class="font-weight-medium" />
       </IconBtn>
 
       <IconBtn
@@ -108,7 +106,9 @@ watch(() => props.modelValue, () => {
       <IconBtn
         size="small"
         rounded
-        :color="editor.isActive({ textAlign: 'center' }) ? 'primary' : 'default'"
+        :color="
+          editor.isActive({ textAlign: 'center' }) ? 'primary' : 'default'
+        "
         :variant="editor.isActive({ textAlign: 'center' }) ? 'tonal' : 'text'"
         @click="editor.chain().focus().setTextAlign('center').run()"
       >
@@ -129,7 +129,9 @@ watch(() => props.modelValue, () => {
         size="small"
         rounded
         :variant="editor.isActive({ textAlign: 'justify' }) ? 'tonal' : 'text'"
-        :color="editor.isActive({ textAlign: 'justify' }) ? 'primary' : 'default'"
+        :color="
+          editor.isActive({ textAlign: 'justify' }) ? 'primary' : 'default'
+        "
         @click="editor.chain().focus().setTextAlign('justify').run()"
       >
         <VIcon icon="tabler-align-justified" />
@@ -138,10 +140,7 @@ watch(() => props.modelValue, () => {
 
     <VDivider />
 
-    <EditorContent
-      ref="editorRef"
-      :editor="editor"
-    />
+    <EditorContent ref="editorRef" :editor="editor" />
   </div>
 </template>
 

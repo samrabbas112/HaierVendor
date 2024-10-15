@@ -1,12 +1,12 @@
 <script setup lang="ts">
 interface Props {
-  title: string
-  divider?: boolean
+  title: string;
+  divider?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   divider: true,
-})
+});
 </script>
 
 <template>
@@ -14,10 +14,7 @@ const props = withDefaults(defineProps<Props>(), {
 
   <div class="customizer-section">
     <div>
-      <VChip
-        size="small"
-        color="primary"
-      >
+      <VChip size="small" color="primary">
         <span class="font-weight-medium">{{ props.title }}</span>
       </VChip>
     </div>
