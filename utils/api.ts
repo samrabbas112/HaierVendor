@@ -61,7 +61,7 @@ const encryptBody = (body:any) => {
   if(body){
     const encryptedBody =  typeof body === 'string' ? aes.doEncrypt(body ) : aes.doEncrypt(JSON.stringify(body ))
     log('->', { method: 'encrypt body' , path:'', data: JSON.stringify(encryptedBody) })
-    return encryptedBody;
+    return JSON.stringify(encryptedBody);
   }
-  return body
+  return JSON.stringify(body)
 }
