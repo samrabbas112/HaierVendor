@@ -36,18 +36,13 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 const apiRequestObj = useApi()
 
 const submitForm = async () => {
-  try {
     const payload = {
       email: form.value.email,
       password: form.value.password,
       firebase_token: localStorage.getItem('firebaseToken') ?? ''
     }
-    const response = await apiRequestObj.post('login',payload)
-    console.log('response', response)
-  }
-  catch (error) {
-    console.error('Error during form submission:', error)
-  }
+    const response = await apiRequestObj.makeRequest('login','get',payload);
+    console.log('response', response);
 }
 </script>
 

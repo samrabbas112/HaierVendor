@@ -1,15 +1,20 @@
 const aes = new Aes()
 
 export const useApi = () => {
-  const get = async (url: string, params?: any) => {
-    log('->', { method: 'get', url, params })
+  const makeRequest = async (url: string, method: string, body: any = null, params: any = null) => {
     try {
-      return await $api(url, { params })
+      const options: any = { method };
+      if (method === 'get' && params) {
+        options.params = params;
+      } else if (['post', 'put', 'patch'].includes(method) && body) {
+        options.body = body;
+      }
+      return await $api(url, options);
+    } catch (error) {
+      return handleError(error);
     }
-    catch (error) {
-      handleError(error)
-    }
-  }
+  };
+
 
   const getFile = async (url: string, data?: any) => {
     try {
@@ -19,39 +24,10 @@ export const useApi = () => {
       })
     }
     catch (error) {
-      handleError(error)
+      return  handleError(error)
     }
   }
 
-  const post = async (url: string, data: any) => {
-    log('->', { method: 'post', url, data })
-    try {
-      const encryptedData = typeof data === 'string' ? aes.doEncrypt(data) : aes.doEncrypt(JSON.stringify(data))
-      return await $api(url, {
-        method: 'post',
-        body: JSON.stringify(encryptedData),
-      })
-    }
-    catch (error) {
-      handleError(error)
-    }
-  }
-
-  const put = async (url: string, data: any) => {
-    log('->', { method: 'put', url, data })
-
-    try {
-      const encryptedData = typeof data === 'string' ? aes.doEncrypt(data) : aes.doEncrypt(JSON.stringify(data))
-
-      return await $api(url, {
-        method: 'PUT',
-        body: encryptedData,
-      })
-    }
-    catch (error) {
-      handleError(error)
-    }
-  }
 
   const del = async (url: string, config?: any) => {
     log('->', { method: 'delete', url })
@@ -69,27 +45,10 @@ export const useApi = () => {
       })
     }
     catch (error) {
-      handleError(error)
+      return handleError(error)
     }
   }
 
-  const patch = async (url: string, data: any) => {
-    console.log(data)
-
-    try {
-      const encryptedData = aes.doEncrypt(JSON.stringify(data))
-
-      console.log({ encryptedData })
-
-      return await $api(url, {
-        method: 'PATCH',
-        body: encryptedData,
-      })
-    }
-    catch (error) {
-      handleError(error)
-    }
-  }
 
   const upload = async (url: string, formData: FormData, config: any = {}) => {
     log('->', { method: 'upload', url, data: formData })
@@ -113,23 +72,16 @@ export const useApi = () => {
   const handleError = (error: any) => {
     console.log('============Catch Block=============')
     if (error?.data) {
-      const errorResponse = aes.doDecrypt(error.data)
-
-      console.log(errorResponse.message)
-    }
-    else {
-      console.error(error)
+      log('<-', { method: 'error', path: '', data: error.data });
+      return error.data;
     }
     console.log('=============End Block============')
   }
 
   return {
-    get,
+    makeRequest,
     getFile,
-    post,
-    put,
     del,
-    patch,
     upload,
   }
 }
