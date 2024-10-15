@@ -16,8 +16,8 @@ definePageMeta({
 });
 
 const form = ref({
-  email: "haier@admin.com",
-  password: "haier@123",
+  email: "lahore@haier.com",
+  password: "Haier@123",
   remember: false,
 });
 
