@@ -1,8 +1,8 @@
 import md5 from 'md5';
 export const $api = $fetch.create({
   async onRequest({ options }) {
-    options.baseURL = useRuntimeConfig().public.apiBaseUrl || localStorage.baseUrl || '/api'
-
+    options.baseURL = useRuntimeConfig().public.apiBaseUrl
+    console.log(options.baseURL,'baseUrl');
     const token = useCookie('authToken').value
     const nonce = setNonce(32)
     const timestamp = new Date().getTime()

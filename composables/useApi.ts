@@ -27,10 +27,9 @@ export const useApi = () => {
     log('->', { method: 'post', url, data })
     try {
       const encryptedData = typeof data === 'string' ? aes.doEncrypt(data) : aes.doEncrypt(JSON.stringify(data))
-      console.log(encryptedData)
       return await $api(url, {
         method: 'post',
-        body: encryptedData,
+        body: JSON.stringify(encryptedData),
       })
     }
     catch (error) {

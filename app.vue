@@ -16,8 +16,17 @@ const { isMobile } = useDevice()
 if (isMobile)
   configStore.appContentLayoutNav = 'vertical'
 
-const { onMessage } = useFcm();
-onMessage(console.log);
+
+const { $firebaseMessaging } = useNuxtApp();
+
+const requestPermission = () => {
+  $firebaseMessaging.requestNotificationPermission();
+};
+
+onMounted(() => {
+  console.log('function called');
+  requestPermission();
+});
 </script>
 
 <template>

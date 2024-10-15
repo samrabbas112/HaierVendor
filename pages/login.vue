@@ -37,7 +37,12 @@ const apiRequestObj = useApi()
 
 const submitForm = async () => {
   try {
-    const response = await apiRequestObj.post('login/private', form.value)
+    const payload = {
+      email: form.value.email,
+      password: form.value.password,
+      firebase_token: localStorage.getItem('firebaseToken') ?? ''
+    }
+    const response = await apiRequestObj.post('login',payload)
     console.log('response', response)
   }
   catch (error) {

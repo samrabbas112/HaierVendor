@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       titleTemplate: '%s - NuxtJS Admin Template',
-      title: 'Vuexy',
+      title: 'Haier Vendor Portal',
 
       link: [{
         rel: 'icon',
@@ -24,21 +24,17 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || '/api',
-      fcm: {
-        vapidKey: 'BLsZZXVCKKMPSkrHVr2UUWRE8ioL9H2exfrSVHMKXvWqtLYaC4C8Le9V33hhKieu1DBjBBEZVEZ9gGYO6yK9WVs',
-        firebaseConfig: {
-          apiKey: 'AIzaSyC7o-syUZtxtG2bXC_TQgCR3ONtUDl4Ubk',
-          authDomain: 'haier-mall.firebaseapp.com',
-          projectId: 'haier-mall',
-          storageBucket: 'haier-mall.appspot.com',
-          messagingSenderId: '870746406313',
-          appId: '1:870746406313:web:fbeec57b0054007de998b8',
-          measurementId: 'G-EKBSHX9S5Y',
-        },
+      firebaseConfig: {
+        apiKey: process.env.FIREBASE_API_KEY,
+        authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.FIREBASE_APP_ID,
       },
+      vapidKey:process.env.FIREBASE_VAPID_KEY,
     },
   },
-
   css: [
     '@core/scss/template/index.scss',
     '@styles/styles.scss',
@@ -58,7 +54,7 @@ export default defineNuxtConfig({
     }],
   },
 
-  plugins: ['@/plugins/vuetify/index.ts', '@/plugins/iconify/index.ts'],
+  plugins: ['@/plugins/vuetify/index.ts', '@/plugins/iconify/index.ts', '@/plugins/firebase.client.ts'],
 
   imports: {
     dirs: ['./@core/utils', './@core/composable/', './plugins/*/composables/*'],
@@ -144,18 +140,5 @@ export default defineNuxtConfig({
     transpile: ['vuetify'],
   },
 
-  modules: ['@vueuse/nuxt', '@nuxtjs/i18n', '@nuxtjs/device', '@pinia/nuxt',"@bg-dev/nuxt-fcm"],
-  fcm: {
-    vapidKey: 'BLsZZXVCKKMPSkrHVr2UUWRE8ioL9H2exfrSVHMKXvWqtLYaC4C8Le9V33hhKieu1DBjBBEZVEZ9gGYO6yK9WVs',
-    firebaseConfig: {
-      apiKey: 'AIzaSyC7o-syUZtxtG2bXC_TQgCR3ONtUDl4Ubk',
-      authDomain: 'haier-mall.firebaseapp.com',
-      projectId: 'haier-mall',
-      storageBucket: 'haier-mall.appspot.com',
-      messagingSenderId: '870746406313',
-      appId: '1:870746406313:web:fbeec57b0054007de998b8',
-      measurementId: 'G-EKBSHX9S5Y',
-    },
-    serviceWorkerScript: "firebase-messaging-sw.js",
-  },
+  modules: ['@vueuse/nuxt', '@nuxtjs/i18n', '@nuxtjs/device', '@pinia/nuxt',],
 })

@@ -1,8 +1,16 @@
 <script lang="ts" setup>
 const { injectSkinClasses } = useSkins()
 
-// ℹ️ This will inject classes in body tag for accurate styling
 injectSkinClasses()
+const { $firebaseMessaging } = useNuxtApp();
+const requestPermission = () => {
+  $firebaseMessaging.requestNotificationPermission();
+};
+
+
+onMounted(() => {
+  requestPermission();
+});
 </script>
 
 <template>

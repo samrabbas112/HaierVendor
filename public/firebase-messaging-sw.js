@@ -1,8 +1,10 @@
 // Import the Firebase app and messaging scripts
 // eslint-disable-next-line no-undef
-importScripts('https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js')
-// eslint-disable-next-line no-undef
-importScripts('https://www.gstatic.com/firebasejs/9.1.3/firebase-messaging.js')
+importScripts('https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.21.0/firebase-messaging-compat.js');
+
+console.log('firebase-messaging-sw.js loaded')
+
 
 // Initialize the Firebase app in the service worker using your app's Firebase configuration
 // You can use a reduced configuration here, only including the fields you need
