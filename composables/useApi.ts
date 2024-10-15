@@ -11,7 +11,7 @@ export const useApi = () => {
       }
       return await $api(url, options);
     } catch (error) {
-      return handleError(error);
+       return handleError(error);
     }
   };
 
@@ -71,11 +71,9 @@ export const useApi = () => {
 
   const handleError = (error: any) => {
     console.log('============Catch Block=============')
-    if (error?.data) {
-      log('<-', { method: 'error', path: '', data: error.data });
-      return error.data;
-    }
+    log('<-', { method: 'error', path: '', data: error.data ,color: '#ff6633' });
     console.log('=============End Block============')
+    return error.data ?? error;
   }
 
   return {

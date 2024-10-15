@@ -22,7 +22,7 @@ export const $api = $fetch.create({
   },
 })
 
-// Function to generate nonce
+
 const setNonce = (len = 32) =>  {
   const $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'
   const maxPos = $chars.length
@@ -57,10 +57,10 @@ const signTheHeaders = (headers) => {
 }
 
 const encryptBody = (body:any) => {
-  log('-> before encryption', { method: options.method , path:options.baseURL, data: body })
+  log('-> before encryption', { method: 'body' , path:'', data: body })
   if(body){
     const encryptedBody =  typeof body === 'string' ? aes.doEncrypt(body ) : aes.doEncrypt(JSON.stringify(body ))
-    log('->', { method: options.method , path:options.baseURL, data: JSON.stringify(encryptedBody) })
+    log('->', { method: 'encrypt body' , path:'', data: JSON.stringify(encryptedBody) })
     return encryptedBody;
   }
   return body

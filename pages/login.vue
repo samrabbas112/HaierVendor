@@ -41,7 +41,7 @@ const submitForm = async () => {
       password: form.value.password,
       firebase_token: localStorage.getItem('firebaseToken') ?? ''
     }
-    const response = await apiRequestObj.makeRequest('login','get',payload);
+    const response = await apiRequestObj.makeRequest('login','post',payload);
     console.log('response', response);
 }
 </script>

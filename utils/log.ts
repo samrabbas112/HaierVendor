@@ -7,11 +7,13 @@ const log = (type, config) => {
   const url = new URL(`https://${config.url}`)
   const query = queryString.parse(url.search)
 
+
   const args = [
     `%c ${config.method.toUpperCase()} ${type} %c ${url.pathname}`,
-    `color: ${type === '->' ? '#fadfa3' : '#0dbc79'}; background: #333; padding:5px;`,
-    `background: ${type === '->' ? '#fadfa3' : '#0dbc79'}; color: #333; padding:5px;`,
-  ]
+    `color: ${config.color ? config.color : type === '->' ? '#fadfa3' : '#0dbc79'}; background: #333; padding:5px;`,
+    `background: ${config.color ? config.color : (type === '->' ? '#fadfa3' : '#0dbc79')}; color: #333; padding:5px;`,
+  ];
+
 
   if (type === '->' && (config.params || query)) {
     args.push({
