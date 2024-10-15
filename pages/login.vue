@@ -23,6 +23,9 @@ const form = ref({
 })
 
 const isPasswordVisible = ref(false)
+const authStore = useAuthStore();
+const router = useRouter()
+const apiRequestObj = useApi()
 
 const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationLight,
@@ -33,7 +36,7 @@ const authThemeImg = useGenerateImageVariant(
 
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
-const apiRequestObj = useApi()
+
 
 const submitForm = async () => {
     const payload = {
@@ -42,6 +45,14 @@ const submitForm = async () => {
       firebase_token: localStorage.getItem('firebaseToken') ?? ''
     }
     const response = await apiRequestObj.makeRequest('login','post',payload);
+  if (response && response.success) {
+    // Call the login action from the store
+    authStore.login({ user: response.data, token: response.data.authToken })
+    // Redirect user after login
+    await router.push('/dashboard')
+  } else {
+    console.error('Login failed')
+  }
     console.log('response', response);
 }
 </script>
