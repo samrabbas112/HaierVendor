@@ -45,9 +45,7 @@ const submitForm = async () => {
   };
   const response = await apiRequestObj.makeRequest("login", "post", payload);
   if (response && response.success) {
-    // Call the login action from the store
     authStore.login({ user: response.data, token: response.data.authToken });
-    // Redirect user after login
     await router.push("/dashboard");
   } else {
     console.error("Login failed");
