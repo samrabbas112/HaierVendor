@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import avatar1 from "@images/avatars/avatar-1.png";
+const authStore = useAuthStore();
+const router = useRouter();
+
+const logOut = () => {
+  authStore.logout();
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -83,7 +90,7 @@ import avatar1 from "@images/avatars/avatar-1.png";
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem to="/login">
+          <VListItem @click="logOut">
             <template #prepend>
               <VIcon class="me-2" icon="tabler-logout" size="22" />
             </template>
