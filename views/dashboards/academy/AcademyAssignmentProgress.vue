@@ -1,10 +1,20 @@
 <script setup lang="ts">
 const assignmentData = [
-  { title: 'User Experience Design', tasks: 120, progress: 72, color: 'primary' },
-  { title: 'Basic fundamentals', tasks: 32, progress: 48, color: 'success' },
-  { title: 'React Native components', tasks: 182, progress: 15, color: 'error' },
-  { title: 'Basic of music theory', tasks: 56, progress: 24, color: 'info' },
-]
+  {
+    title: "User Experience Design",
+    tasks: 120,
+    progress: 72,
+    color: "primary",
+  },
+  { title: "Basic fundamentals", tasks: 32, progress: 48, color: "success" },
+  {
+    title: "React Native components",
+    tasks: 182,
+    progress: 15,
+    color: "error",
+  },
+  { title: "Basic of music theory", tasks: 56, progress: 24, color: "info" },
+];
 </script>
 
 <template>
@@ -16,10 +26,7 @@ const assignmentData = [
     </VCardItem>
     <VCardText>
       <VList class="card-list">
-        <VListItem
-          v-for="assignment in assignmentData"
-          :key="assignment.title"
-        >
+        <VListItem v-for="assignment in assignmentData" :key="assignment.title">
           <template #prepend>
             <VProgressCircular
               v-model="assignment.progress"
@@ -40,13 +47,7 @@ const assignmentData = [
             {{ assignment.tasks }} Tasks
           </VListItemSubtitle>
           <template #append>
-            <VBtn
-              icon
-              variant="tonal"
-              color="secondary"
-              rounded
-              size="30"
-            >
+            <VBtn icon variant="tonal" color="secondary" rounded size="30">
               <VIcon
                 icon="tabler-chevron-right"
                 size="20"

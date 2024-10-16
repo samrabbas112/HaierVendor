@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
-import { hexToRgb } from '@layouts/utils'
+import { useTheme } from "vuetify";
+import { hexToRgb } from "@layouts/utils";
 
-const vuetifyTheme = useTheme()
+const vuetifyTheme = useTheme();
 
-const series = [78]
+const series = [78];
 
 const chartOptions = computed(() => {
-  const currentTheme = vuetifyTheme.current.value.colors
-  const variableTheme = vuetifyTheme.current.value.variables
+  const currentTheme = vuetifyTheme.current.value.colors;
+  const variableTheme = vuetifyTheme.current.value.variables;
 
   return {
     chart: {
@@ -16,28 +16,28 @@ const chartOptions = computed(() => {
         enabled: true,
       },
       parentHeightOffset: 0,
-      type: 'radialBar',
+      type: "radialBar",
     },
-    colors: ['rgba(var(--v-theme-warning), 1)'],
+    colors: ["rgba(var(--v-theme-warning), 1)"],
     plotOptions: {
       radialBar: {
         offsetY: 0,
         startAngle: -90,
         endAngle: 90,
         hollow: {
-          size: '65%',
+          size: "65%",
         },
         track: {
-          strokeWidth: '45%',
-          background: 'rgba(var(--v-track-bg))',
+          strokeWidth: "45%",
+          background: "rgba(var(--v-track-bg))",
         },
         dataLabels: {
           name: {
             show: false,
           },
           value: {
-            fontSize: '24px',
-            color: `rgba(${hexToRgb(currentTheme['on-background'])},${variableTheme['high-emphasis-opacity']})`,
+            fontSize: "24px",
+            color: `rgba(${hexToRgb(currentTheme["on-background"])},${variableTheme["high-emphasis-opacity"]})`,
             fontWeight: 600,
             offsetY: -5,
           },
@@ -51,9 +51,9 @@ const chartOptions = computed(() => {
       },
     },
     stroke: {
-      lineCap: 'round',
+      lineCap: "round",
     },
-    labels: ['Progress'],
+    labels: ["Progress"],
     responsive: [
       {
         breakpoint: 1442,
@@ -65,11 +65,11 @@ const chartOptions = computed(() => {
             radialBar: {
               dataLabels: {
                 value: {
-                  fontSize: '24px',
+                  fontSize: "24px",
                 },
               },
               hollow: {
-                size: '60%',
+                size: "60%",
               },
             },
           },
@@ -93,11 +93,11 @@ const chartOptions = computed(() => {
             radialBar: {
               dataLabels: {
                 value: {
-                  fontSize: '18px',
+                  fontSize: "18px",
                 },
               },
               hollow: {
-                size: '70%',
+                size: "70%",
               },
             },
           },
@@ -112,11 +112,11 @@ const chartOptions = computed(() => {
           plotOptions: {
             radialBar: {
               hollow: {
-                size: '70%',
+                size: "70%",
               },
               dataLabels: {
                 value: {
-                  fontSize: '24px',
+                  fontSize: "24px",
                 },
               },
             },
@@ -124,19 +124,15 @@ const chartOptions = computed(() => {
         },
       },
     ],
-  }
-})
+  };
+});
 </script>
 
 <template>
   <VCard>
     <VCardItem class="pb-3">
-      <VCardTitle>
-        82.5K
-      </VCardTitle>
-      <VCardSubtitle>
-        Expenses
-      </VCardSubtitle>
+      <VCardTitle> 82.5K </VCardTitle>
+      <VCardSubtitle> Expenses </VCardSubtitle>
     </VCardItem>
     <VCardText>
       <VueApexCharts

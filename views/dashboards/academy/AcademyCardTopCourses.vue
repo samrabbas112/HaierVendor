@@ -1,11 +1,36 @@
 <script setup lang="ts">
 const coursesData = [
-  { title: 'Videography Basic Design Course', views: '1.2k', icon: 'tabler-brand-zoom', color: 'primary' },
-  { title: 'Basic Front-end Development Course', views: '834', icon: 'tabler-code', color: 'info' },
-  { title: 'Basic Fundamentals of Photography', views: '3.7k', icon: 'tabler-camera', color: 'success' },
-  { title: 'Advance Dribble Base Visual Design', views: '2.5k', icon: 'tabler-brand-dribbble', color: 'warning' },
-  { title: 'Your First Singing Lesson', views: '948', icon: 'tabler-microphone-2', color: 'error' },
-]
+  {
+    title: "Videography Basic Design Course",
+    views: "1.2k",
+    icon: "tabler-brand-zoom",
+    color: "primary",
+  },
+  {
+    title: "Basic Front-end Development Course",
+    views: "834",
+    icon: "tabler-code",
+    color: "info",
+  },
+  {
+    title: "Basic Fundamentals of Photography",
+    views: "3.7k",
+    icon: "tabler-camera",
+    color: "success",
+  },
+  {
+    title: "Advance Dribble Base Visual Design",
+    views: "2.5k",
+    icon: "tabler-brand-dribbble",
+    color: "warning",
+  },
+  {
+    title: "Your First Singing Lesson",
+    views: "948",
+    icon: "tabler-microphone-2",
+    color: "error",
+  },
+];
 </script>
 
 <template>
@@ -18,20 +43,10 @@ const coursesData = [
 
     <VCardText>
       <VList class="card-list">
-        <VListItem
-          v-for="(course, index) in coursesData"
-          :key="index"
-        >
+        <VListItem v-for="(course, index) in coursesData" :key="index">
           <template #prepend>
-            <VAvatar
-              rounded
-              variant="tonal"
-              :color="course.color"
-            >
-              <VIcon
-                :icon="course.icon"
-                size="24"
-              />
+            <VAvatar rounded variant="tonal" :color="course.color">
+              <VIcon :icon="course.icon" size="24" />
             </VAvatar>
           </template>
 
@@ -41,12 +56,7 @@ const coursesData = [
                 {{ course.title }}
               </h6>
               <div>
-                <VChip
-                  variant="tonal"
-                  color="secondary"
-                  label
-                  size="small"
-                >
+                <VChip variant="tonal" color="secondary" label size="small">
                   {{ course.views }} Views
                 </VChip>
               </div>

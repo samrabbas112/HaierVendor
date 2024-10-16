@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import congoImg from '@images/illustrations/congo-illustration.png'
+import congoImg from "@images/illustrations/congo-illustration.png";
 </script>
 
 <template>
@@ -7,15 +7,9 @@ import congoImg from '@images/illustrations/congo-illustration.png'
     <VRow no-gutters>
       <VCol cols="8">
         <VCardText>
-          <h5 class="text-h5 text-no-wrap">
-            Congratulations John! 🎉
-          </h5>
-          <p class="mb-2">
-            Best seller of the month
-          </p>
-          <h4 class="text-h4 text-primary mb-1">
-            $48.9k
-          </h4>
+          <h5 class="text-h5 text-no-wrap">Congratulations John! 🎉</h5>
+          <p class="mb-2">Best seller of the month</p>
+          <h4 class="text-h4 text-primary mb-1">$48.9k</h4>
           <VBtn>View Sales</VBtn>
         </VCardText>
       </VCol>

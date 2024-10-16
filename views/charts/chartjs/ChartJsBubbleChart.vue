@@ -1,24 +1,26 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
-import type { ChartJsCustomColors } from '@/views/charts/chartjs/types'
-import { getBubbleChartConfig } from '@core/libs/chartjs/chartjsConfig'
-import BubbleChart from '@core/libs/chartjs/components/BubbleChart'
+import { useTheme } from "vuetify";
+import type { ChartJsCustomColors } from "@/views/charts/chartjs/types";
+import { getBubbleChartConfig } from "@core/libs/chartjs/chartjsConfig";
+import BubbleChart from "@core/libs/chartjs/components/BubbleChart";
 
 interface Props {
-  colors: ChartJsCustomColors
+  colors: ChartJsCustomColors;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const vuetifyTheme = useTheme()
+const vuetifyTheme = useTheme();
 
-const chartConfig = computed(() => getBubbleChartConfig(vuetifyTheme.current.value))
+const chartConfig = computed(() =>
+  getBubbleChartConfig(vuetifyTheme.current.value),
+);
 
 const data = {
   animation: { duration: 10000 },
   datasets: [
     {
-      label: 'Dataset 1',
+      label: "Dataset 1",
       borderColor: props.colors.primary,
       backgroundColor: props.colors.primary,
       data: [
@@ -38,7 +40,7 @@ const data = {
       ],
     },
     {
-      label: 'Dataset 2',
+      label: "Dataset 2",
       borderColor: props.colors.yellow,
       backgroundColor: props.colors.yellow,
       data: [
@@ -58,13 +60,9 @@ const data = {
       ],
     },
   ],
-}
+};
 </script>
 
 <template>
-  <BubbleChart
-    :height="400"
-    :chart-data="data"
-    :chart-options="chartConfig"
-  />
+  <BubbleChart :height="400" :chart-data="data" :chart-options="chartConfig" />
 </template>

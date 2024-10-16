@@ -31,6 +31,7 @@ export const getLatestBarChartConfig = (
     scales: {
       x: {
         grid: {
+          display: false,
           borderColor,
           drawBorder: false,
           color: borderColor,
@@ -38,16 +39,22 @@ export const getLatestBarChartConfig = (
         ticks: { color: labelColor },
       },
       y: {
-        min: 0,
-        max: 400,
+        beginAtZero: true,
         grid: {
+          display: false,
           borderColor,
           drawBorder: false,
           color: borderColor,
         },
         ticks: {
-          stepSize: 100,
+          callback: function (value, index, values) {
+            return value >= 1000 ? value / 1000 + "k" : value;
+          },
           color: labelColor,
+          drawTicks: false,
+        },
+        border: {
+          display: false,
         },
       },
     },
@@ -121,22 +128,32 @@ export const getLineChartConfig = (
       x: {
         ticks: { color: labelColor },
         grid: {
+          display: false,
           borderColor,
           drawBorder: false,
           color: borderColor,
+        },
+        border: {
+          display: false,
         },
       },
       y: {
-        min: 0,
-        max: 400,
+        beginAtZero: true,
         ticks: {
           stepSize: 100,
           color: labelColor,
+          callback: function (value, index, values) {
+            return value >= 1000 ? value / 1000 + "k" : value;
+          },
         },
         grid: {
+          display: false,
           borderColor,
           drawBorder: false,
           color: borderColor,
+        },
+        border: {
+          display: false,
         },
       },
     },

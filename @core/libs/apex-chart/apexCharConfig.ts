@@ -357,12 +357,19 @@ export const getDonutChartConfig = (
 
   return {
     stroke: { width: 0 },
-    labels: ["Operational", "Networking", "Hiring", "R&D"],
+    labels: [
+      "Closed",
+      "Picked",
+      "Rejected",
+      "Out For Delivery",
+      "Delivery Refused",
+    ],
     colors: [
       donutColors.series1,
       donutColors.series5,
       donutColors.series3,
       donutColors.series2,
+      donutColors.series4,
     ],
     dataLabels: {
       enabled: true,
@@ -384,17 +391,17 @@ export const getDonutChartConfig = (
           labels: {
             show: true,
             name: {
-              fontSize: "1.125rem",
+              fontSize: "1rem",
             },
             value: {
-              fontSize: "1.125rem",
+              fontSize: "1rem",
               color: themeSecondaryTextColor,
               formatter: (val: string) => `${Number.parseInt(val, 10)}`,
             },
             total: {
               show: true,
-              fontSize: "1.125rem",
-              label: "Operational",
+              fontSize: "1rem",
+              label: "Total",
               formatter: () => "31%",
               color: themePrimaryTextColor,
             },
@@ -426,13 +433,13 @@ export const getDonutChartConfig = (
                 labels: {
                   show: true,
                   name: {
-                    fontSize: "0.9375rem",
+                    fontSize: "0.5rem",
                   },
                   value: {
-                    fontSize: "0.9375rem",
+                    fontSize: "0.5rem",
                   },
                   total: {
-                    fontSize: "0.9375rem",
+                    fontSize: "0.5rem",
                   },
                 },
               },

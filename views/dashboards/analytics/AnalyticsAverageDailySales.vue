@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
+import { useTheme } from "vuetify";
 
-const vuetifyTheme = useTheme()
+const vuetifyTheme = useTheme();
 
-const currentTheme = vuetifyTheme.current.value.colors
+const currentTheme = vuetifyTheme.current.value.colors;
 
 const series = [
   {
     data: [400, 200, 650, 500],
   },
-]
+];
 
 const chartOptions = {
   chart: {
-    type: 'area',
+    type: "area",
     toolbar: {
       show: false,
     },
@@ -22,15 +22,15 @@ const chartOptions = {
     },
   },
   markers: {
-    colors: 'transparent',
-    strokeColors: 'transparent',
+    colors: "transparent",
+    strokeColors: "transparent",
   },
   grid: {
     show: false,
   },
   colors: [currentTheme.success],
   fill: {
-    type: 'gradient',
+    type: "gradient",
     gradient: {
       shadeIntensity: 0.8,
       opacityFrom: 0.6,
@@ -42,7 +42,7 @@ const chartOptions = {
   },
   stroke: {
     width: 2,
-    curve: 'smooth',
+    curve: "smooth",
   },
   xaxis: {
     show: true,
@@ -83,27 +83,17 @@ const chartOptions = {
       },
     },
   ],
-}
+};
 </script>
 
 <template>
   <VCard>
     <VCardText>
-      <h5 class="text-h5 mb-3">
-        Average Daily Sales
-      </h5>
-      <p class="mb-0">
-        Total Sales This Month
-      </p>
-      <h4 class="text-h4">
-        $28,450
-      </h4>
+      <h5 class="text-h5 mb-3">Average Daily Sales</h5>
+      <p class="mb-0">Total Sales This Month</p>
+      <h4 class="text-h4">$28,450</h4>
     </VCardText>
 
-    <VueApexCharts
-      :options="chartOptions"
-      :series="series"
-      :height="80"
-    />
+    <VueApexCharts :options="chartOptions" :series="series" :height="80" />
   </VCard>
 </template>

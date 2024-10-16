@@ -1,51 +1,39 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
-import type { ChartJsCustomColors } from '@/views/charts/chartjs/types'
-import { getLatestBarChartConfig } from '@core/libs/chartjs/chartjsConfig'
-import BarChart from '@core/libs/chartjs/components/BarChart'
+import { useTheme } from "vuetify";
+import type { ChartJsCustomColors } from "@/views/charts/chartjs/types";
+import { getLatestBarChartConfig } from "@core/libs/chartjs/chartjsConfig";
+import BarChart from "@core/libs/chartjs/components/BarChart";
 
 interface Props {
-  colors: ChartJsCustomColors
+  colors: ChartJsCustomColors;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const vuetifyTheme = useTheme()
+const vuetifyTheme = useTheme();
 
-const chartOptions = computed(() => getLatestBarChartConfig(vuetifyTheme.current.value))
+const chartOptions = computed(() =>
+  getLatestBarChartConfig(vuetifyTheme.current.value),
+);
 
 const data = {
-  labels: [
-    '7/12',
-    '8/12',
-    '9/12',
-    '10/12',
-    '11/12',
-    '12/12',
-    '13/12',
-    '14/12',
-    '15/12',
-    '16/12',
-    '17/12',
-    '18/12',
-    '19/12',
-  ],
+  labels: Array.from({ length: 30 }, (_, i) => i + 1),
   datasets: [
     {
-      maxBarThickness: 15,
-      backgroundColor: props.colors.barChartYellow,
-      borderColor: 'transparent',
+      maxBarThickness: 8,
+      backgroundColor: props.colors.polarChartInfo,
+      borderColor: "transparent",
       borderRadius: { topRight: 15, topLeft: 15 },
-      data: [275, 90, 190, 205, 125, 85, 55, 87, 127, 150, 230, 280, 190],
+      data: [
+        80, 150, 180, 270, 210, 160, 160, 202, 265, 210, 270, 255, 290, 360,
+        375, 80, 125, 105, 130, 215, 195, 140, 160, 230, 300, 220, 170, 210,
+        200, 280,
+      ],
     },
   ],
-}
+};
 </script>
 
 <template>
-  <BarChart
-    :height="400"
-    :chart-data="data"
-    :chart-options="chartOptions"
-  />
+  <BarChart :height="400" :chart-data="data" :chart-options="chartOptions" />
 </template>

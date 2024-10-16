@@ -1,32 +1,34 @@
 <script setup lang="ts">
 const chartColors = {
   line: {
-    series1: '#FFB400',
-    series2: '#9055FD',
-    series3: '#7367f029',
+    series1: "#FFB400",
+    series2: "#9055FD",
+    series3: "#7367f029",
   },
-}
+};
 
-const headingColor = 'rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity))'
-const labelColor = 'rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity))'
-const borderColor = 'rgba(var(--v-border-color), var(--v-border-opacity))'
+const headingColor =
+  "rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity))";
+const labelColor =
+  "rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity))";
+const borderColor = "rgba(var(--v-border-color), var(--v-border-opacity))";
 
 const series = [
   {
-    name: 'Shipment',
-    type: 'column',
+    name: "Shipment",
+    type: "column",
     data: [38, 45, 33, 38, 32, 48, 45, 40, 42, 37],
   },
   {
-    name: 'Delivery',
-    type: 'line',
+    name: "Delivery",
+    type: "line",
     data: [23, 28, 23, 32, 25, 42, 32, 32, 26, 24],
   },
-]
+];
 
 const shipmentConfig = {
   chart: {
-    type: 'line',
+    type: "line",
     stacked: false,
     parentHeightOffset: 0,
     toolbar: {
@@ -38,7 +40,7 @@ const shipmentConfig = {
   },
   markers: {
     size: 5,
-    colors: '#fff',
+    colors: "#fff",
     strokeColors: chartColors.line.series2,
     hover: {
       size: 6,
@@ -46,13 +48,13 @@ const shipmentConfig = {
     borderRadius: 4,
   },
   stroke: {
-    curve: 'smooth',
+    curve: "smooth",
     width: [0, 3],
-    lineCap: 'round',
+    lineCap: "round",
   },
   legend: {
     show: true,
-    position: 'bottom',
+    position: "bottom",
     markers: {
       width: 8,
       height: 8,
@@ -63,8 +65,8 @@ const shipmentConfig = {
       horizontal: 10,
       vertical: 0,
     },
-    fontSize: '15px',
-    fontFamily: 'Open Sans',
+    fontSize: "15px",
+    fontFamily: "Open Sans",
     fontWeight: 400,
     labels: {
       colors: headingColor,
@@ -82,9 +84,9 @@ const shipmentConfig = {
   },
   plotOptions: {
     bar: {
-      columnWidth: '30%',
+      columnWidth: "30%",
       borderRadius: 4,
-      borderRadiusApplication: 'end',
+      borderRadiusApplication: "end",
     },
   },
   dataLabels: {
@@ -92,11 +94,22 @@ const shipmentConfig = {
   },
   xaxis: {
     tickAmount: 10,
-    categories: ['1 Jan', '2 Jan', '3 Jan', '4 Jan', '5 Jan', '6 Jan', '7 Jan', '8 Jan', '9 Jan', '10 Jan'],
+    categories: [
+      "1 Jan",
+      "2 Jan",
+      "3 Jan",
+      "4 Jan",
+      "5 Jan",
+      "6 Jan",
+      "7 Jan",
+      "8 Jan",
+      "9 Jan",
+      "10 Jan",
+    ],
     labels: {
       style: {
         colors: labelColor,
-        fontSize: '13px',
+        fontSize: "13px",
         fontWeight: 400,
       },
     },
@@ -114,11 +127,11 @@ const shipmentConfig = {
     labels: {
       style: {
         colors: labelColor,
-        fontSize: '13px',
+        fontSize: "13px",
         fontWeight: 400,
       },
       formatter(val: string) {
-        return `${val}%`
+        return `${val}%`;
       },
     },
   },
@@ -132,7 +145,7 @@ const shipmentConfig = {
         xaxis: {
           labels: {
             style: {
-              fontSize: '10px',
+              fontSize: "10px",
             },
           },
         },
@@ -141,7 +154,7 @@ const shipmentConfig = {
             vertical: 0,
             horizontal: 10,
           },
-          fontSize: '13px',
+          fontSize: "13px",
           offsetY: 12,
         },
       },
@@ -154,7 +167,7 @@ const shipmentConfig = {
         },
         plotOptions: {
           bar: {
-            columnWidth: '50%',
+            columnWidth: "50%",
           },
         },
       },
@@ -164,7 +177,7 @@ const shipmentConfig = {
       options: {
         plotOptions: {
           bar: {
-            columnWidth: '30%',
+            columnWidth: "30%",
           },
         },
       },
@@ -181,7 +194,7 @@ const shipmentConfig = {
       },
     },
   ],
-}
+};
 </script>
 
 <template>
@@ -191,12 +204,7 @@ const shipmentConfig = {
       subtitle="Total number of deliveries 23.8k"
     >
       <template #append>
-        <VBtn
-          variant="tonal"
-          append-icon="tabler-chevron-down"
-        >
-          January
-        </VBtn>
+        <VBtn variant="tonal" append-icon="tabler-chevron-down"> January </VBtn>
       </template>
     </VCardItem>
 

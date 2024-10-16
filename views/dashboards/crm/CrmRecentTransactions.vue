@@ -1,89 +1,87 @@
 <script setup lang="ts">
-import aeIcon from '@images/icons/payments/ae-icon.png'
-import mastercardIcon from '@images/icons/payments/mastercard-icon.png'
-import visaIcon from '@images/icons/payments/visa-icon.png'
+import aeIcon from "@images/icons/payments/ae-icon.png";
+import mastercardIcon from "@images/icons/payments/mastercard-icon.png";
+import visaIcon from "@images/icons/payments/visa-icon.png";
 
 interface Status {
-  Verified: string
-  Rejected: string
-  Pending: string
+  Verified: string;
+  Rejected: string;
+  Pending: string;
 }
 
 interface Transition {
-  cardImg: string
-  lastDigit: string
-  cardType: string
-  sentDate: string
-  status: keyof Status
-  trend: string
+  cardImg: string;
+  lastDigit: string;
+  cardType: string;
+  sentDate: string;
+  status: keyof Status;
+  trend: string;
 }
 
 const lastTransitions: Transition[] = [
   {
     cardImg: visaIcon,
-    lastDigit: '*4230',
-    cardType: 'Credit',
-    sentDate: '17 Mar 2022',
-    status: 'Verified',
-    trend: '+$1,678',
+    lastDigit: "*4230",
+    cardType: "Credit",
+    sentDate: "17 Mar 2022",
+    status: "Verified",
+    trend: "+$1,678",
   },
   {
     cardImg: mastercardIcon,
-    lastDigit: '*5578',
-    cardType: 'Credit',
-    sentDate: '12 Feb 2022',
-    status: 'Rejected',
-    trend: '-$839',
+    lastDigit: "*5578",
+    cardType: "Credit",
+    sentDate: "12 Feb 2022",
+    status: "Rejected",
+    trend: "-$839",
   },
   {
     cardImg: aeIcon,
-    lastDigit: '*4567',
-    cardType: 'Credit',
-    sentDate: '28 Feb 2022',
-    status: 'Verified',
-    trend: '+$435',
+    lastDigit: "*4567",
+    cardType: "Credit",
+    sentDate: "28 Feb 2022",
+    status: "Verified",
+    trend: "+$435",
   },
   {
     cardImg: visaIcon,
-    lastDigit: '*5699',
-    cardType: 'Credit',
-    sentDate: '8 Jan 2022',
-    status: 'Pending',
-    trend: '+$2,345',
+    lastDigit: "*5699",
+    cardType: "Credit",
+    sentDate: "8 Jan 2022",
+    status: "Pending",
+    trend: "+$2,345",
   },
   {
     cardImg: visaIcon,
-    lastDigit: '*5699',
-    cardType: 'Credit',
-    sentDate: '8 Jan 2022',
-    status: 'Rejected',
-    trend: '-$234',
+    lastDigit: "*5699",
+    cardType: "Credit",
+    sentDate: "8 Jan 2022",
+    status: "Rejected",
+    trend: "-$234",
   },
-]
+];
 
 const resolveStatus: Status = {
-  Verified: 'success',
-  Rejected: 'error',
-  Pending: 'secondary',
-}
+  Verified: "success",
+  Rejected: "error",
+  Pending: "secondary",
+};
 
 const moreList = [
-  { title: 'Refresh', value: 'refresh' },
-  { title: 'Download', value: 'Download' },
-  { title: 'View All', value: 'View All' },
-]
+  { title: "Refresh", value: "refresh" },
+  { title: "Download", value: "Download" },
+  { title: "View All", value: "View All" },
+];
 
-const getPaddingStyle = (index: number) => index ? 'padding-block-end: 1.25rem;' : 'padding-block: 1.25rem;'
+const getPaddingStyle = (index: number) =>
+  index ? "padding-block-end: 1.25rem;" : "padding-block: 1.25rem;";
 </script>
 
 <template>
   <VCard title="Last Transaction">
     <template #append>
       <div class="me-n2">
-        <MoreBtn
-          size="small"
-          :menu-list="moreList"
-        />
+        <MoreBtn size="small" :menu-list="moreList" />
       </div>
     </template>
 
@@ -94,27 +92,19 @@ const getPaddingStyle = (index: number) => index ? 'padding-block-end: 1.25rem;'
           <th>CARD</th>
           <th>DATE</th>
           <th>STATUS</th>
-          <th>
-            TREND
-          </th>
+          <th>TREND</th>
         </tr>
       </thead>
 
       <tbody>
-        <tr
-          v-for="(transition, index) in lastTransitions"
-          :key="index"
-        >
+        <tr v-for="(transition, index) in lastTransitions" :key="index">
           <td
             :style="getPaddingStyle(index)"
-            style="padding-inline-end: 1.5rem;"
+            style="padding-inline-end: 1.5rem"
           >
             <div class="d-flex align-center">
               <div class="me-4">
-                <VImg
-                  :src="transition.cardImg"
-                  width="50"
-                />
+                <VImg :src="transition.cardImg" width="50" />
               </div>
               <div>
                 <p class="text-base mb-0 text-high-emphasis">
@@ -128,30 +118,24 @@ const getPaddingStyle = (index: number) => index ? 'padding-block-end: 1.25rem;'
           </td>
           <td
             :style="getPaddingStyle(index)"
-            style="padding-inline-end: 1.5rem;"
+            style="padding-inline-end: 1.5rem"
           >
-            <p class="text-high-emphasis text-base mb-0">
-              Sent
-            </p>
+            <p class="text-high-emphasis text-base mb-0">Sent</p>
             <div class="text-sm">
               {{ transition.sentDate }}
             </div>
           </td>
           <td
             :style="getPaddingStyle(index)"
-            style="padding-inline-end: 1.5rem;"
+            style="padding-inline-end: 1.5rem"
           >
-            <VChip
-              label
-              :color="resolveStatus[transition.status]"
-              size="small"
-            >
+            <VChip label :color="resolveStatus[transition.status]" size="small">
               {{ transition.status }}
             </VChip>
           </td>
           <td
             :style="getPaddingStyle(index)"
-            style="padding-inline-end: 1.5rem;"
+            style="padding-inline-end: 1.5rem"
             align="right"
           >
             <div class="text-high-emphasis text-base">

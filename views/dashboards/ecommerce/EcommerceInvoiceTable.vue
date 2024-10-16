@@ -1,112 +1,117 @@
 <script setup lang="ts">
-import type { Invoice } from '@db/apps/invoice/types'
+import type { Invoice } from "@db/apps/invoice/types";
 
-type invoiceStatus = 'Downloaded' | 'Draft' | 'Paid' | 'Sent' | 'Partial Payment' | 'Past Due' | null
+type invoiceStatus =
+  | "Downloaded"
+  | "Draft"
+  | "Paid"
+  | "Sent"
+  | "Partial Payment"
+  | "Past Due"
+  | null;
 
-const searchQuery = ref('')
-const selectedStatus = ref<invoiceStatus>(null)
-const selectedRows = ref<string[]>([])
+const searchQuery = ref("");
+const selectedStatus = ref<invoiceStatus>(null);
+const selectedRows = ref<string[]>([]);
 
 // Data table options
-const itemsPerPage = ref(6)
-const page = ref(1)
-const sortBy = ref()
-const orderBy = ref()
+const itemsPerPage = ref(6);
+const page = ref(1);
+const sortBy = ref();
+const orderBy = ref();
 
 // Update data table options
 const updateOptions = (options: any) => {
-  page.value = options.page
-  sortBy.value = options.sortBy[0]?.key
-  orderBy.value = options.sortBy[0]?.order
-}
+  page.value = options.page;
+  sortBy.value = options.sortBy[0]?.key;
+  orderBy.value = options.sortBy[0]?.order;
+};
 
 // 👉 headers
 const headers = [
-  { title: '#', key: 'id' },
-  { title: 'Status', key: 'status', sortable: false },
-  { title: 'Total', key: 'total' },
-  { title: 'Issued Date', key: 'date' },
-  { title: 'Balance', key: 'balance' },
-  { title: 'Actions', key: 'actions', sortable: false },
-]
+  { title: "#", key: "id" },
+  { title: "Status", key: "status", sortable: false },
+  { title: "Total", key: "total" },
+  { title: "Issued Date", key: "date" },
+  { title: "Balance", key: "balance" },
+  { title: "Actions", key: "actions", sortable: false },
+];
 
 // 👉 Fetch Invoices
-const { data: invoiceData, execute: fetchInvoices } = await useApi<any>(createUrl('/apps/invoice', {
-  query: {
-    q: searchQuery,
-    status: selectedStatus,
-    itemsPerPage,
-    page,
-    sortBy,
-    orderBy,
-  },
-}))
+const { data: invoiceData, execute: fetchInvoices } = await useApi<any>(
+  createUrl("/apps/invoice", {
+    query: {
+      q: searchQuery,
+      status: selectedStatus,
+      itemsPerPage,
+      page,
+      sortBy,
+      orderBy,
+    },
+  }),
+);
 
-const invoices = computed((): Invoice[] => invoiceData.value.invoices)
-const totalInvoices = computed(() => invoiceData.value.totalInvoices)
+const invoices = computed((): Invoice[] => invoiceData.value.invoices);
+const totalInvoices = computed(() => invoiceData.value.totalInvoices);
 
 // 👉 Invoice balance variant resolver
-const resolveInvoiceBalanceVariant = (balance: string | number, total: number) => {
-  if (balance === total)
-    return { status: 'Unpaid', chip: { color: 'error' } }
+const resolveInvoiceBalanceVariant = (
+  balance: string | number,
+  total: number,
+) => {
+  if (balance === total) return { status: "Unpaid", chip: { color: "error" } };
 
-  if (balance === 0)
-    return { status: 'Paid', chip: { color: 'success' } }
+  if (balance === 0) return { status: "Paid", chip: { color: "success" } };
 
-  return { status: balance, chip: { variant: 'text' } }
-}
+  return { status: balance, chip: { variant: "text" } };
+};
 
 // 👉 Invoice status variant resolver
 const resolveInvoiceStatusVariantAndIcon = (status: string) => {
-  if (status === 'Partial Payment')
-    return { variant: 'warning', icon: 'tabler-chart-pie-2' }
-  if (status === 'Paid')
-    return { variant: 'success', icon: 'tabler-check' }
-  if (status === 'Downloaded')
-    return { variant: 'info', icon: 'tabler-arrow-down' }
-  if (status === 'Draft')
-    return { variant: 'primary', icon: 'tabler-folder' }
-  if (status === 'Sent')
-    return { variant: 'secondary', icon: 'tabler-mail' }
-  if (status === 'Past Due')
-    return { variant: 'error', icon: 'tabler-help' }
+  if (status === "Partial Payment")
+    return { variant: "warning", icon: "tabler-chart-pie-2" };
+  if (status === "Paid") return { variant: "success", icon: "tabler-check" };
+  if (status === "Downloaded")
+    return { variant: "info", icon: "tabler-arrow-down" };
+  if (status === "Draft") return { variant: "primary", icon: "tabler-folder" };
+  if (status === "Sent") return { variant: "secondary", icon: "tabler-mail" };
+  if (status === "Past Due") return { variant: "error", icon: "tabler-help" };
 
-  return { variant: 'secondary', icon: 'tabler-x' }
-}
+  return { variant: "secondary", icon: "tabler-x" };
+};
 
 const computedMoreList = computed(() => {
-  return (paramId: number) => ([
-    { title: 'Download', value: 'download', prependIcon: 'tabler-download' },
+  return (paramId: number) => [
+    { title: "Download", value: "download", prependIcon: "tabler-download" },
     {
-      title: 'Edit',
-      value: 'edit',
-      prependIcon: 'tabler-pencil',
-      to: { name: 'apps-invoice-edit-id', params: { id: paramId } },
+      title: "Edit",
+      value: "edit",
+      prependIcon: "tabler-pencil",
+      to: { name: "apps-invoice-edit-id", params: { id: paramId } },
     },
-    { title: 'Duplicate', value: 'duplicate', prependIcon: 'tabler-layers-intersect' },
-  ])
-})
+    {
+      title: "Duplicate",
+      value: "duplicate",
+      prependIcon: "tabler-layers-intersect",
+    },
+  ];
+});
 
 // 👉 Delete Invoice
 const deleteInvoice = async (id: number) => {
-  await $api(`/apps/invoice/${id}`, { method: 'DELETE' })
+  await $api(`/apps/invoice/${id}`, { method: "DELETE" });
 
-  fetchInvoices()
-}
+  fetchInvoices();
+};
 </script>
 
 <template>
-  <VCard
-    v-if="invoices"
-    id="invoice-list"
-  >
+  <VCard v-if="invoices" id="invoice-list">
     <VCardText>
       <div class="d-flex justify-space-between flex-wrap gap-4">
         <div class="d-flex gap-4 align-center">
           <div class="d-flex align-center gap-x-2">
-            <div>
-              Show
-            </div>
+            <div>Show</div>
             <AppSelect
               :model-value="itemsPerPage"
               :items="[
@@ -121,20 +126,14 @@ const deleteInvoice = async (id: number) => {
             />
           </div>
           <!-- 👉 Create invoice -->
-          <VBtn
-            prepend-icon="tabler-plus"
-            :to="{ name: 'apps-invoice-add' }"
-          >
+          <VBtn prepend-icon="tabler-plus" :to="{ name: 'apps-invoice-add' }">
             Create invoice
           </VBtn>
         </div>
         <div class="d-flex align-center flex-wrap gap-4">
           <!-- 👉 Search  -->
           <div class="invoice-list-filter">
-            <AppTextField
-              v-model="searchQuery"
-              placeholder="Search Invoice"
-            />
+            <AppTextField v-model="searchQuery" placeholder="Search Invoice" />
           </div>
           <!-- 👉 Select status -->
           <div class="invoice-list-filter">
@@ -144,7 +143,14 @@ const deleteInvoice = async (id: number) => {
               clearable
               clear-icon="tabler-x"
               single-line
-              :items="['Downloaded', 'Draft', 'Sent', 'Paid', 'Partial Payment', 'Past Due']"
+              :items="[
+                'Downloaded',
+                'Draft',
+                'Sent',
+                'Paid',
+                'Partial Payment',
+                'Past Due',
+              ]"
             />
           </div>
         </div>
@@ -168,7 +174,9 @@ const deleteInvoice = async (id: number) => {
     >
       <!-- id -->
       <template #item.id="{ item }">
-        <NuxtLink :to="{ name: 'apps-invoice-preview-id', params: { id: item.id } }">
+        <NuxtLink
+          :to="{ name: 'apps-invoice-preview-id', params: { id: item.id } }"
+        >
           #{{ item.id }}
         </NuxtLink>
       </template>
@@ -180,31 +188,29 @@ const deleteInvoice = async (id: number) => {
             <VAvatar
               :size="28"
               v-bind="props"
-              :color="resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).variant"
+              :color="
+                resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).variant
+              "
               variant="tonal"
             >
               <VIcon
                 :size="16"
-                :icon="resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).icon"
+                :icon="
+                  resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).icon
+                "
               />
             </VAvatar>
           </template>
           <p class="mb-0">
             {{ item.invoiceStatus }}
           </p>
-          <p class="mb-0">
-            Balance: {{ item.balance }}
-          </p>
-          <p class="mb-0">
-            Due date: {{ item.dueDate }}
-          </p>
+          <p class="mb-0">Balance: {{ item.balance }}</p>
+          <p class="mb-0">Due date: {{ item.dueDate }}</p>
         </VTooltip>
       </template>
 
       <!-- Total -->
-      <template #item.total="{ item }">
-        ${{ item.total }}
-      </template>
+      <template #item.total="{ item }"> ${{ item.total }} </template>
 
       <!-- Date -->
       <template #item.date="{ item }">
@@ -214,17 +220,28 @@ const deleteInvoice = async (id: number) => {
       <!-- Balance -->
       <template #item.balance="{ item }">
         <VChip
-          v-if="typeof ((resolveInvoiceBalanceVariant(item.balance, item.total)).status) === 'string'"
-          :color="resolveInvoiceBalanceVariant(item.balance, item.total).chip.color"
+          v-if="
+            typeof resolveInvoiceBalanceVariant(item.balance, item.total)
+              .status === 'string'
+          "
+          :color="
+            resolveInvoiceBalanceVariant(item.balance, item.total).chip.color
+          "
           label
           size="x-small"
         >
-          {{ (resolveInvoiceBalanceVariant(item.balance, item.total)).status }}
+          {{ resolveInvoiceBalanceVariant(item.balance, item.total).status }}
         </VChip>
 
         <template v-else>
           <span class="text-base text-high-emphasis">
-            {{ Number((resolveInvoiceBalanceVariant(item.balance, item.total)).status) > 0 ? `$${(resolveInvoiceBalanceVariant(item.balance, item.total)).status}` : `-$${Math.abs(Number((resolveInvoiceBalanceVariant(item.balance, item.total)).status))}` }}
+            {{
+              Number(
+                resolveInvoiceBalanceVariant(item.balance, item.total).status,
+              ) > 0
+                ? `$${resolveInvoiceBalanceVariant(item.balance, item.total).status}`
+                : `-$${Math.abs(Number(resolveInvoiceBalanceVariant(item.balance, item.total).status))}`
+            }}
           </span>
         </template>
       </template>
@@ -235,7 +252,9 @@ const deleteInvoice = async (id: number) => {
           <VIcon icon="tabler-trash" />
         </IconBtn>
 
-        <IconBtn :to="{ name: 'apps-invoice-preview-id', params: { id: item.id } }">
+        <IconBtn
+          :to="{ name: 'apps-invoice-preview-id', params: { id: item.id } }"
+        >
           <VIcon icon="tabler-eye" />
         </IconBtn>
 

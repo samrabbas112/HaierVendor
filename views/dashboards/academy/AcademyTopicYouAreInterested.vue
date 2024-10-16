@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const borderColor = 'rgba(var(--v-border-color), var(--v-border-opacity))'
+const borderColor = "rgba(var(--v-border-color), var(--v-border-opacity))";
 
 // Topics Charts config
 const topicsChartConfig = {
   chart: {
     height: 270,
-    type: 'bar',
+    type: "bar",
     toolbar: {
       show: false,
     },
@@ -14,15 +14,20 @@ const topicsChartConfig = {
   plotOptions: {
     bar: {
       horizontal: true,
-      barHeight: '70%',
+      barHeight: "70%",
       distributed: true,
       borderRadius: 7,
-      borderRadiusApplication: 'end',
+      borderRadiusApplication: "end",
     },
   },
 
   colors: [
-    'rgba(var(--v-theme-primary),1)', 'rgba(var(--v-theme-info),1)', 'rgba(var(--v-theme-success),1)', 'rgba(var(--v-theme-secondary),1)', 'rgba(var(--v-theme-error),1)', 'rgba(var(--v-theme-warning),1)',
+    "rgba(var(--v-theme-primary),1)",
+    "rgba(var(--v-theme-info),1)",
+    "rgba(var(--v-theme-success),1)",
+    "rgba(var(--v-theme-secondary),1)",
+    "rgba(var(--v-theme-error),1)",
+    "rgba(var(--v-theme-warning),1)",
   ],
 
   grid: {
@@ -47,23 +52,29 @@ const topicsChartConfig = {
   dataLabels: {
     enabled: true,
     style: {
-      colors: ['#fff'],
+      colors: ["#fff"],
       fontWeight: 200,
-      fontSize: '13px',
-
+      fontSize: "13px",
     },
     offsetX: 0,
     dropShadow: {
       enabled: false,
     },
     formatter(val: string, opt: any) {
-      return topicsChartConfig.labels[opt.dataPointIndex]
+      return topicsChartConfig.labels[opt.dataPointIndex];
     },
   },
-  labels: ['UI Design', 'UX Design', 'Music', 'Animation', 'Vue', 'SEO'],
+  labels: [
+    "MicroWave Oven",
+    "Air Conditioner",
+    "Washing Machine",
+    "Refrigerator",
+    "Deep Freezer",
+    "LED",
+  ],
 
   xaxis: {
-    categories: ['6', '5', '4', '3', '2', '1'],
+    categories: ["6", "5", "4", "3", "2", "1"],
     axisBorder: {
       show: false,
     },
@@ -72,21 +83,21 @@ const topicsChartConfig = {
     },
     labels: {
       style: {
-        colors: 'rgba(var(--v-theme-on-background), var(--v-disabled-opacity))',
-        fontSize: '13px',
+        colors: "rgba(var(--v-theme-on-background), var(--v-disabled-opacity))",
+        fontSize: "13px",
       },
       formatter(val: string) {
-        return `${val}%`
+        return `${val}%`;
       },
     },
   },
 
   yaxis: {
-    max: 35,
+    max: 100,
     labels: {
       style: {
-        colors: 'rgba(var(--v-theme-on-background), var(--v-disabled-opacity))',
-        fontSize: '13px',
+        colors: "rgba(var(--v-theme-on-background), var(--v-disabled-opacity))",
+        fontSize: "13px",
       },
     },
   },
@@ -94,7 +105,7 @@ const topicsChartConfig = {
   tooltip: {
     enabled: true,
     style: {
-      fontSize: '12px',
+      fontSize: "12px",
     },
     onDatasetHover: {
       highlightDataSeries: false,
@@ -103,38 +114,31 @@ const topicsChartConfig = {
   legend: {
     show: false,
   },
-
-}
+};
 
 const topicsChartSeries = [
   {
-    data: [35, 20, 14, 12, 10, 9],
+    data: [95, 40, 60, 80, 100, 65],
   },
-]
+];
 
 const topicsData = [
-  { title: 'UI Design', value: 100, color: 'primary' },
-  { title: 'UX Design', value: 20, color: 'info' },
-  { title: 'Music', value: 14, color: 'success' },
-  { title: 'Animation', value: 12, color: 'secondary' },
-  { title: 'Vue', value: 10, color: 'error' },
-  { title: 'SEO', value: 9, color: 'warning' },
-]
+  { title: "UI Design", value: 100, color: "primary" },
+  { title: "UX Design", value: 20, color: "info" },
+  { title: "Music", value: 14, color: "success" },
+  { title: "Animation", value: 12, color: "secondary" },
+  { title: "Vue", value: 10, color: "error" },
+  { title: "SEO", value: 9, color: "warning" },
+];
 </script>
 
 <template>
   <VCard>
-    <VCardItem title="Topic you are interested in">
-    </VCardItem>
+    <VCardItem title="Top Items Sold"> </VCardItem>
 
     <VCardText>
       <VRow>
-        <VCol
-          cols="12"
-          md="12"
-          xl="12"
-          lg="12"
-        >
+        <VCol cols="12" md="12" xl="12" lg="12">
           <div>
             <VueApexCharts
               type="bar"

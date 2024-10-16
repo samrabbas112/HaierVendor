@@ -1,5 +1,5 @@
 export interface ProjectParams {
-  q?: string,
-  perPage: number,
-  currentPage: number,
+  q?: string;
+  perPage: number;
+  currentPage: number;
 }

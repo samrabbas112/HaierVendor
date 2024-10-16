@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
-import { hexToRgb } from '@layouts/utils'
+import { useTheme } from "vuetify";
+import { hexToRgb } from "@layouts/utils";
 
-const vuetifyTheme = useTheme()
+const vuetifyTheme = useTheme();
 
 const series = [
   {
     data: [0, 25, 10, 40, 25, 55],
   },
-]
+];
 
 const chartOptions = computed(() => {
-  const currentTheme = vuetifyTheme.current.value.colors
-  const variableTheme = vuetifyTheme.current.value.variables
+  const currentTheme = vuetifyTheme.current.value.colors;
+  const variableTheme = vuetifyTheme.current.value.variables;
 
   return {
     chart: {
       height: 90,
-      type: 'line',
+      type: "line",
       parentHeightOffset: 0,
       toolbar: {
         show: false,
       },
     },
     grid: {
-      borderColor: `rgba(${hexToRgb(String(variableTheme['border-color']))},${variableTheme['border-opacity']})`,
+      borderColor: `rgba(${hexToRgb(String(variableTheme["border-color"]))},${variableTheme["border-opacity"]})`,
       strokeDashArray: 6,
       xaxis: {
         lines: {
@@ -74,7 +74,7 @@ const chartOptions = computed(() => {
     markers: {
       size: 3.5,
       fillColor: currentTheme.info,
-      strokeColors: 'transparent',
+      strokeColors: "transparent",
       strokeWidth: 3.2,
       discrete: [
         {
@@ -83,7 +83,7 @@ const chartOptions = computed(() => {
           fillColor: currentTheme.surface,
           strokeColor: currentTheme.info,
           size: 5,
-          shape: 'circle',
+          shape: "circle",
         },
       ],
       hover: {
@@ -100,19 +100,15 @@ const chartOptions = computed(() => {
         },
       },
     ],
-  }
-})
+  };
+});
 </script>
 
 <template>
   <VCard>
     <VCardItem class="pb-3">
-      <VCardTitle>
-        Profit
-      </VCardTitle>
-      <VCardSubtitle>
-        Last Month
-      </VCardSubtitle>
+      <VCardTitle> Profit </VCardTitle>
+      <VCardSubtitle> Last Month </VCardSubtitle>
     </VCardItem>
     <VCardText>
       <VueApexCharts
@@ -123,12 +119,8 @@ const chartOptions = computed(() => {
       />
 
       <div class="d-flex align-center justify-space-between gap-x-2 mt-3">
-        <h4 class="text-h4 text-center font-weight-medium">
-          624k
-        </h4>
-        <span class="text-sm text-success">
-          +8.24%
-        </span>
+        <h4 class="text-h4 text-center font-weight-medium">624k</h4>
+        <span class="text-sm text-success"> +8.24% </span>
       </div>
     </VCardText>
   </VCard>

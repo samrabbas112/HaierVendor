@@ -1,12 +1,14 @@
 <script lang="ts" setup>
-import { useTheme } from 'vuetify'
-import { getRadialBarChartConfig } from '@core/libs/apex-chart/apexCharConfig'
+import { useTheme } from "vuetify";
+import { getRadialBarChartConfig } from "@core/libs/apex-chart/apexCharConfig";
 
-const vuetifyTheme = useTheme()
+const vuetifyTheme = useTheme();
 
-const statisticsChartConfig = computed(() => getRadialBarChartConfig(vuetifyTheme.current.value))
+const statisticsChartConfig = computed(() =>
+  getRadialBarChartConfig(vuetifyTheme.current.value),
+);
 
-const series = [80, 50, 35]
+const series = [80, 50, 35];
 </script>
 
 <template>

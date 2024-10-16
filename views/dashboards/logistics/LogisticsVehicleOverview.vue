@@ -1,10 +1,30 @@
 <script setup lang="ts">
 const vehicleData = [
-  { icon: 'tabler-car', title: 'On the way', time: '2hr 10min', percentage: 39.7 },
-  { icon: 'tabler-circle-arrow-down', title: 'Unloading', time: '3hr 15min', percentage: 28.3 },
-  { icon: 'tabler-circle-arrow-up', title: 'Loading', time: '1hr 24min', percentage: 17.4 },
-  { icon: 'tabler-clock', title: 'Waiting', time: '5hr 19min', percentage: 14.6 },
-]
+  {
+    icon: "tabler-car",
+    title: "On the way",
+    time: "2hr 10min",
+    percentage: 39.7,
+  },
+  {
+    icon: "tabler-circle-arrow-down",
+    title: "Unloading",
+    time: "3hr 15min",
+    percentage: 28.3,
+  },
+  {
+    icon: "tabler-circle-arrow-up",
+    title: "Loading",
+    time: "1hr 24min",
+    percentage: 17.4,
+  },
+  {
+    icon: "tabler-clock",
+    title: "Waiting",
+    time: "5hr 19min",
+    percentage: 14.6,
+  },
+];
 </script>
 
 <template>
@@ -16,8 +36,10 @@ const vehicleData = [
     </VCardItem>
     <VCardText>
       <div class="d-flex mb-6">
-        <div style="inline-size: 39.7%;">
-          <div class="vehicle-progress-label position-relative mb-6 text-body-1 d-none d-sm-block">
+        <div style="inline-size: 39.7%">
+          <div
+            class="vehicle-progress-label position-relative mb-6 text-body-1 d-none d-sm-block"
+          >
             On the way
           </div>
           <VProgressLinear
@@ -26,13 +48,13 @@ const vehicleData = [
             height="46"
             class="rounded-e-0 rounded-lg"
           >
-            <div class="text-start text-sm font-weight-medium">
-              39.7%
-            </div>
+            <div class="text-start text-sm font-weight-medium">39.7%</div>
           </VProgressLinear>
         </div>
-        <div style="inline-size: 28.3%;">
-          <div class="vehicle-progress-label position-relative mb-6 text-body-1 d-none d-sm-block">
+        <div style="inline-size: 28.3%">
+          <div
+            class="vehicle-progress-label position-relative mb-6 text-body-1 d-none d-sm-block"
+          >
             Unloading
           </div>
           <VProgressLinear
@@ -46,8 +68,10 @@ const vehicleData = [
             </div>
           </VProgressLinear>
         </div>
-        <div style="inline-size: 17.4%;">
-          <div class="vehicle-progress-label position-relative mb-6 text-body-1 d-none d-sm-block">
+        <div style="inline-size: 17.4%">
+          <div
+            class="vehicle-progress-label position-relative mb-6 text-body-1 d-none d-sm-block"
+          >
             Loading
           </div>
           <VProgressLinear
@@ -61,8 +85,10 @@ const vehicleData = [
             </div>
           </VProgressLinear>
         </div>
-        <div style="inline-size: 14.6%;">
-          <div class="vehicle-progress-label position-relative mb-6 text-body-1 d-none d-sm-block">
+        <div style="inline-size: 14.6%">
+          <div
+            class="vehicle-progress-label position-relative mb-6 text-body-1 d-none d-sm-block"
+          >
             Waiting
           </div>
           <VProgressLinear
@@ -79,14 +105,8 @@ const vehicleData = [
       </div>
       <VTable class="text-no-wrap">
         <tbody>
-          <tr
-            v-for="(vehicle, index) in vehicleData"
-            :key="index"
-          >
-            <td
-              width="70%"
-              style="padding-inline-start: 0 !important;"
-            >
+          <tr v-for="(vehicle, index) in vehicleData" :key="index">
+            <td width="70%" style="padding-inline-start: 0 !important">
               <div class="d-flex align-center gap-x-2">
                 <VIcon
                   :icon="vehicle.icon"
@@ -104,9 +124,7 @@ const vehicleData = [
               </h6>
             </td>
             <td>
-              <div class="text-body-1">
-                {{ vehicle.percentage }}%
-              </div>
+              <div class="text-body-1">{{ vehicle.percentage }}%</div>
             </td>
           </tr>
         </tbody>

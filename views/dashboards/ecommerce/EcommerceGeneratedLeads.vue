@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import { useDisplay, useTheme } from 'vuetify'
-import { hexToRgb } from '@layouts/utils'
+import { useDisplay, useTheme } from "vuetify";
+import { hexToRgb } from "@layouts/utils";
 
-const vuetifyTheme = useTheme()
-const display = useDisplay()
+const vuetifyTheme = useTheme();
+const display = useDisplay();
 
-const series = [45, 58, 30, 50]
+const series = [45, 58, 30, 50];
 
 const chartOptions = computed(() => {
-  const currentTheme = vuetifyTheme.current.value.colors
-  const variableTheme = vuetifyTheme.current.value.variables
+  const currentTheme = vuetifyTheme.current.value.colors;
+  const variableTheme = vuetifyTheme.current.value.variables;
 
-  const labelSuccessColor = `rgba(${hexToRgb(currentTheme.success)},0.2)`
-  const headingColor = `rgba(${hexToRgb(currentTheme['on-background'])},${variableTheme['high-emphasis-opacity']})`
+  const labelSuccessColor = `rgba(${hexToRgb(currentTheme.success)},0.2)`;
+  const headingColor = `rgba(${hexToRgb(currentTheme["on-background"])},${variableTheme["high-emphasis-opacity"]})`;
 
   const chartColors = {
     donut: {
       series1: currentTheme.success,
-      series2: '#28c76fb3',
-      series3: '#28c76f80',
+      series2: "#28c76fb3",
+      series3: "#28c76f80",
       series4: labelSuccessColor,
     },
-  }
+  };
 
   return {
     chart: {
       parentHeightOffset: 0,
-      type: 'donut',
+      type: "donut",
     },
-    labels: ['Electronic', 'Sports', 'Decor', 'Fashion'],
+    labels: ["Electronic", "Sports", "Decor", "Fashion"],
     colors: [
       chartColors.donut.series1,
       chartColors.donut.series2,
@@ -41,7 +41,7 @@ const chartOptions = computed(() => {
     dataLabels: {
       enabled: false,
       formatter(val: string) {
-        return `${Number.parseInt(val)}%`
+        return `${Number.parseInt(val)}%`;
       },
     },
     legend: {
@@ -61,39 +61,39 @@ const chartOptions = computed(() => {
     states: {
       hover: {
         filter: {
-          type: 'none',
+          type: "none",
         },
       },
     },
     plotOptions: {
       pie: {
         donut: {
-          size: '70%',
+          size: "70%",
           labels: {
             show: true,
             value: {
-              fontSize: '1.375rem',
-              fontFamily: 'Public Sans',
+              fontSize: "1.375rem",
+              fontFamily: "Public Sans",
               color: headingColor,
               fontWeight: 600,
               offsetY: -15,
               formatter(val: string) {
-                return `${Number.parseInt(val)}%`
+                return `${Number.parseInt(val)}%`;
               },
             },
             name: {
               offsetY: 20,
-              fontFamily: 'Public Sans',
+              fontFamily: "Public Sans",
             },
             total: {
               show: true,
               showAlways: true,
               color: currentTheme.success,
-              fontSize: '.8125rem',
-              label: 'Total',
-              fontFamily: 'Public Sans',
+              fontSize: ".8125rem",
+              label: "Total",
+              fontFamily: "Public Sans",
               formatter() {
-                return '184'
+                return "184";
               },
             },
           },
@@ -114,8 +114,8 @@ const chartOptions = computed(() => {
         },
       },
     ],
-  }
-})
+  };
+});
 </script>
 
 <template>
@@ -123,24 +123,14 @@ const chartOptions = computed(() => {
     <VCardText class="d-flex justify-space-between">
       <div class="d-flex flex-column">
         <div class="mb-auto">
-          <h5 class="text-h5 text-no-wrap">
-            Generated Leads
-          </h5>
-          <div class="text-base">
-            Monthly Report
-          </div>
+          <h5 class="text-h5 text-no-wrap">Generated Leads</h5>
+          <div class="text-base">Monthly Report</div>
         </div>
 
         <div>
-          <h3 class="text-h3">
-            4,350
-          </h3>
+          <h3 class="text-h3">4,350</h3>
           <div>
-            <VIcon
-              icon="tabler-chevron-up"
-              color="success"
-              class="me-1"
-            />
+            <VIcon icon="tabler-chevron-up" color="success" class="me-1" />
             <span class="text-success font-weight-medium">15.8% </span>
           </div>
         </div>

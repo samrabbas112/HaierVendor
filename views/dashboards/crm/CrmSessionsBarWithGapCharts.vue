@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
-import { hexToRgb } from '@layouts/utils'
+import { useTheme } from "vuetify";
+import { hexToRgb } from "@layouts/utils";
 
-const vuetifyTheme = useTheme()
+const vuetifyTheme = useTheme();
 
 const series = [
   {
-    name: 'PRODUCT A',
+    name: "PRODUCT A",
     data: [4, 3, 6, 4, 3],
   },
   {
-    name: 'PRODUCT B',
+    name: "PRODUCT B",
     data: [-3, -4, -3, -2, -3],
   },
-]
+];
 
 const chartOptions = computed(() => {
-  const currentTheme = vuetifyTheme.current.value.colors
+  const currentTheme = vuetifyTheme.current.value.colors;
 
   return {
     chart: {
-      type: 'bar',
+      type: "bar",
       parentHeightOffset: 0,
       stacked: true,
       toolbar: {
@@ -29,22 +29,22 @@ const chartOptions = computed(() => {
     },
     series: [
       {
-        name: 'PRODUCT A',
+        name: "PRODUCT A",
         data: [4, 3, 6, 4, 3],
       },
       {
-        name: 'PRODUCT B',
+        name: "PRODUCT B",
         data: [-3, -4, -3, -2, -3],
       },
     ],
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: '30%',
-        barHeight: '100%',
+        columnWidth: "30%",
+        barHeight: "100%",
         borderRadius: 5,
-        startingShape: 'rounded',
-        endingShape: 'rounded',
+        startingShape: "rounded",
+        endingShape: "rounded",
       },
     },
     dataLabels: {
@@ -54,15 +54,18 @@ const chartOptions = computed(() => {
       enabled: false,
     },
     stroke: {
-      curve: 'smooth',
+      curve: "smooth",
       width: 1,
-      lineCap: 'round',
+      lineCap: "round",
       colors: [currentTheme.surface],
     },
     legend: {
       show: false,
     },
-    colors: [`rgba(${hexToRgb(currentTheme.primary)},1)`, `rgba(${hexToRgb(currentTheme.success)},1)`],
+    colors: [
+      `rgba(${hexToRgb(currentTheme.primary)},1)`,
+      `rgba(${hexToRgb(currentTheme.success)},1)`,
+    ],
     grid: {
       show: false,
       padding: {
@@ -73,7 +76,7 @@ const chartOptions = computed(() => {
       },
     },
     xaxis: {
-      categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       labels: {
         show: false,
       },
@@ -93,7 +96,7 @@ const chartOptions = computed(() => {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '40%',
+              columnWidth: "40%",
             },
           },
         },
@@ -103,7 +106,7 @@ const chartOptions = computed(() => {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '50%',
+              columnWidth: "50%",
             },
           },
         },
@@ -114,7 +117,7 @@ const chartOptions = computed(() => {
           plotOptions: {
             bar: {
               borderRadius: 6,
-              columnWidth: '20%',
+              columnWidth: "20%",
             },
           },
         },
@@ -125,7 +128,7 @@ const chartOptions = computed(() => {
           plotOptions: {
             bar: {
               borderRadius: 7,
-              columnWidth: '25%',
+              columnWidth: "25%",
             },
           },
           chart: {
@@ -148,7 +151,7 @@ const chartOptions = computed(() => {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '30%',
+              columnWidth: "30%",
             },
           },
         },
@@ -159,7 +162,7 @@ const chartOptions = computed(() => {
           plotOptions: {
             bar: {
               borderRadius: 12,
-              columnWidth: '20%',
+              columnWidth: "20%",
             },
           },
           chart: {
@@ -191,44 +194,32 @@ const chartOptions = computed(() => {
     states: {
       hover: {
         filter: {
-          type: 'none',
+          type: "none",
         },
       },
       active: {
         filter: {
-          type: 'none',
+          type: "none",
         },
       },
     },
-  }
-})
+  };
+});
 </script>
 
 <template>
   <VCard>
     <VCardText>
       <div>
-        <h5 class="text-h5">
-          Sessions
-        </h5>
-        <p class="mb-0 text-sm text-disabled">
-          This Month
-        </p>
+        <h5 class="text-h5">Sessions</h5>
+        <p class="mb-0 text-sm text-disabled">This Month</p>
       </div>
 
-      <VueApexCharts
-        :options="chartOptions"
-        :series="series"
-        :height="75"
-      />
+      <VueApexCharts :options="chartOptions" :series="series" :height="75" />
 
       <div class="d-flex align-center justify-space-between mt-4">
-        <h4 class="text-h4">
-          45.1k
-        </h4>
-        <p class="mb-0 text-sm text-success">
-          +12.6%
-        </p>
+        <h4 class="text-h4">45.1k</h4>
+        <p class="mb-0 text-sm text-success">+12.6%</p>
       </div>
     </VCardText>
   </VCard>

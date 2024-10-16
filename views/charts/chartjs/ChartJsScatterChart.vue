@@ -1,28 +1,30 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
-import type { ChartJsCustomColors } from '@/views/charts/chartjs/types'
-import { getScatterChartConfig } from '@core/libs/chartjs/chartjsConfig'
-import ScatterChart from '@core/libs/chartjs/components/ScatterChart'
+import { useTheme } from "vuetify";
+import type { ChartJsCustomColors } from "@/views/charts/chartjs/types";
+import { getScatterChartConfig } from "@core/libs/chartjs/chartjsConfig";
+import ScatterChart from "@core/libs/chartjs/components/ScatterChart";
 
 interface Props {
-  colors: ChartJsCustomColors
+  colors: ChartJsCustomColors;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const vuetifyTheme = useTheme()
+const vuetifyTheme = useTheme();
 
-const chartConfig = computed(() => getScatterChartConfig(vuetifyTheme.current.value))
+const chartConfig = computed(() =>
+  getScatterChartConfig(vuetifyTheme.current.value),
+);
 
 const data = {
   datasets: [
     {
       pointRadius: 5,
-      label: 'iPhone',
+      label: "iPhone",
       pointBorderWidth: 2,
       backgroundColor: props.colors.primary,
       pointHoverBorderWidth: 2,
-      borderColor: 'transparent',
+      borderColor: "transparent",
       data: [
         { x: 72, y: 225 },
         { x: 81, y: 270 },
@@ -45,10 +47,10 @@ const data = {
     {
       pointRadius: 5,
       pointBorderWidth: 2,
-      label: 'Samsung Note',
+      label: "Samsung Note",
       backgroundColor: props.colors.scatterChartWarning,
       pointHoverBorderWidth: 2,
-      borderColor: 'transparent',
+      borderColor: "transparent",
       data: [
         { x: 13, y: 95 },
         { x: 22, y: 105 },
@@ -69,11 +71,11 @@ const data = {
     },
     {
       pointRadius: 5,
-      label: 'OnePlus',
+      label: "OnePlus",
       pointBorderWidth: 2,
       backgroundColor: props.colors.scatterChartGreen,
       pointHoverBorderWidth: 2,
-      borderColor: 'transparent',
+      borderColor: "transparent",
       data: [
         { x: 70, y: 195 },
         { x: 72, y: 270 },
@@ -92,13 +94,9 @@ const data = {
       ],
     },
   ],
-}
+};
 </script>
 
 <template>
-  <ScatterChart
-    :height="380"
-    :chart-data="data"
-    :chart-options="chartConfig"
-  />
+  <ScatterChart :height="380" :chart-data="data" :chart-options="chartConfig" />
 </template>

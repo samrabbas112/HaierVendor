@@ -1,68 +1,68 @@
 <script setup lang="ts">
 const transitions = [
   {
-    avatarIcon: 'tabler-wallet',
-    avatarColor: 'primary',
-    title: 'Wallet',
-    subtitle: 'Starbucks',
-    stats: '-$75',
+    avatarIcon: "tabler-wallet",
+    avatarColor: "primary",
+    title: "Wallet",
+    subtitle: "Starbucks",
+    stats: "-$75",
     profit: false,
   },
   {
-    avatarIcon: 'tabler-building-bank',
-    avatarColor: 'success',
-    title: 'Bank Transfer',
-    subtitle: 'Add Money',
-    stats: '+$480',
+    avatarIcon: "tabler-building-bank",
+    avatarColor: "success",
+    title: "Bank Transfer",
+    subtitle: "Add Money",
+    stats: "+$480",
     profit: true,
   },
   {
-    avatarIcon: 'tabler-brand-paypal',
-    avatarColor: 'error',
-    title: 'PayPal',
-    subtitle: 'Client Payment',
-    stats: '+$268',
+    avatarIcon: "tabler-brand-paypal",
+    avatarColor: "error",
+    title: "PayPal",
+    subtitle: "Client Payment",
+    stats: "+$268",
     profit: true,
   },
   {
-    avatarIcon: 'tabler-credit-card',
-    avatarColor: 'secondary',
-    title: 'Master Card',
-    subtitle: 'Ordered iPhone 13',
-    stats: '-$699',
+    avatarIcon: "tabler-credit-card",
+    avatarColor: "secondary",
+    title: "Master Card",
+    subtitle: "Ordered iPhone 13",
+    stats: "-$699",
     profit: false,
   },
   {
-    avatarIcon: 'tabler-currency-dollar',
-    avatarColor: 'info',
-    title: 'Bank Transactions',
-    subtitle: 'Refund',
-    stats: '+$98',
+    avatarIcon: "tabler-currency-dollar",
+    avatarColor: "info",
+    title: "Bank Transactions",
+    subtitle: "Refund",
+    stats: "+$98",
     profit: true,
   },
   {
-    avatarIcon: 'tabler-brand-paypal',
-    avatarColor: 'error',
-    title: 'PayPal',
-    subtitle: 'Client Payment',
-    stats: '+$126',
+    avatarIcon: "tabler-brand-paypal",
+    avatarColor: "error",
+    title: "PayPal",
+    subtitle: "Client Payment",
+    stats: "+$126",
     profit: true,
   },
   {
-    avatarIcon: 'tabler-building-bank',
-    avatarColor: 'success',
-    title: 'Bank Transfer',
-    subtitle: 'Pay Office Rent',
-    stats: '-$1290',
+    avatarIcon: "tabler-building-bank",
+    avatarColor: "success",
+    title: "Bank Transfer",
+    subtitle: "Pay Office Rent",
+    stats: "-$1290",
     profit: false,
   },
-]
+];
 
 const moreList = [
-  { title: 'Refresh', value: 'refresh' },
-  { title: 'Download', value: 'Download' },
-  { title: 'View All', value: 'View All' },
-]
+  { title: "Refresh", value: "refresh" },
+  { title: "Download", value: "Download" },
+  { title: "View All", value: "View All" },
+];
 </script>
 
 <template>
@@ -72,19 +72,13 @@ const moreList = [
   >
     <template #append>
       <div class="mt-n4 me-n2">
-        <MoreBtn
-          size="small"
-          :menu-list="moreList"
-        />
+        <MoreBtn size="small" :menu-list="moreList" />
       </div>
     </template>
 
     <VCardText>
       <VList class="card-list">
-        <VListItem
-          v-for="transition in transitions"
-          :key="transition.title"
-        >
+        <VListItem v-for="transition in transitions" :key="transition.title">
           <template #prepend>
             <VAvatar
               size="34"
@@ -93,10 +87,7 @@ const moreList = [
               class="me-1"
               rounded
             >
-              <VIcon
-                :icon="transition.avatarIcon"
-                size="22"
-              />
+              <VIcon :icon="transition.avatarIcon" size="22" />
             </VAvatar>
           </template>
 
@@ -109,7 +100,10 @@ const moreList = [
 
           <template #append>
             <div class="d-flex align-center">
-              <span :class="`${transition.profit ? 'text-success' : 'text-error'} font-weight-medium`">{{ transition.stats }}</span>
+              <span
+                :class="`${transition.profit ? 'text-success' : 'text-error'} font-weight-medium`"
+                >{{ transition.stats }}</span
+              >
             </div>
           </template>
         </VListItem>

@@ -1,141 +1,109 @@
 <script setup lang="ts">
-import type { Vehicle } from '@db/apps/logistics/types'
+const page = ref(1);
+const sortBy = ref();
+const orderBy = ref();
 
-const itemsPerPage = ref(5)
-const page = ref(1)
-const sortBy = ref()
-const orderBy = ref()
+const vehiclesData = {
+  totalVehicles: 25,
+  vehicles: [
+    {
+      created_at: "2024-10-01T12:30:00Z",
+      order_no: 1001,
+      price: 120.5,
+      payment_method: "Credit Card",
+      status: "Completed",
+    },
+    {
+      created_at: "2024-10-02T08:15:00Z",
+      order_no: 1002,
+      price: 75.99,
+      payment_method: "PayPal",
+      status: "Pending",
+    },
+    {
+      created_at: "2024-10-03T10:45:00Z",
+      order_no: 1003,
+      price: 49.99,
+      payment_method: "Debit Card",
+      status: "Cancelled",
+    },
+    {
+      created_at: "2024-10-04T14:00:00Z",
+      order_no: 1004,
+      price: 200.0,
+      payment_method: "Bank Transfer",
+      status: "Processing",
+    },
+    {
+      created_at: "2024-10-05T16:25:00Z",
+      order_no: 1005,
+      price: 150.75,
+      payment_method: "Credit Card",
+      status: "Completed",
+    },
+  ],
+};
 
-// Update data table options
-const updateOptions = (options: any) => {
-  sortBy.value = options.sortBy[0]?.key
-  orderBy.value = options.sortBy[0]?.order
-}
-
-const { data: vehiclesData } = await useApi<any>(createUrl('/apps/logistics/vehicles', {
-  query: {
-    page,
-    itemsPerPage,
-    sortBy,
-    orderBy,
-  },
-}))
-
-const vehicles = computed((): Vehicle[] => vehiclesData.value.vehicles)
-const totalVehicles = computed(() => vehiclesData.value.totalVehicles)
+const vehicles = computed((): Vehicle[] => vehiclesData.vehicles);
+const totalVehicles = computed(() => vehiclesData.totalVehicles);
 
 const headers = [
-  { title: 'LOCATION', key: 'location' },
-  { title: 'STARTING ROUTE', key: 'startRoute' },
-  { title: 'ENDING ROUTE', key: 'endRoute' },
-  { title: 'WARNINGS', key: 'warnings' },
-  { title: 'PROGRESS', key: 'progress' },
-]
+  { title: "CREATION TIME", key: "created_at" },
+  { title: "ORDER NO", key: "order_no" },
+  { title: "PRODUCT PRICE", key: "price" },
+  { title: "PAYMENT METHOD", key: "payment_method" },
+  { title: "STATUS", key: "status" },
+];
 
 const resolveChipColor = (warning: string) => {
-  if (warning === 'No Warnings')
-    return 'success'
-  if (warning === 'fuel problems')
-    return 'primary'
-  if (warning === 'Temperature Not Optimal')
-    return 'warning'
-  if (warning === 'Ecu Not Responding')
-    return 'error'
-  if (warning === 'Oil Leakage')
-    return 'info'
-}
+  if (warning === "Completed") return "success";
+  if (warning === "Completed") return "primary";
+  if (warning === "Pending") return "warning";
+  if (warning === "Cancelled") return "error";
+  if (warning === "Processing") return "info";
+};
 </script>
 
 <template>
   <VCard>
-    <VCardItem title="On Route vehicles">
-      <template #append>
-        <MoreBtn />
-      </template>
+    <VCardItem title="My Orders">
+      <template #append> </template>
     </VCardItem>
-
     <VDivider />
     <VDataTableServer
-      v-model:items-per-page="itemsPerPage"
-      v-model:page="page"
-      :items-per-page-options="[
-        { value: 5, title: '5' },
-        { value: 10, title: '10' },
-        { value: 20, title: '20' },
-        { value: -1, title: '$vuetify.dataFooter.itemsPerPageAll' },
-      ]"
       :items-length="totalVehicles"
       :items="vehicles"
-      item-value="location"
+      item-value="order_no"
       :headers="headers"
-      show-select
       class="text-no-wrap"
-      @update:options="updateOptions"
     >
-      <template #item.location="{ item }">
-        <VAvatar
-          variant="tonal"
-          color="secondary"
-          class="me-4"
-          size="40"
-        >
-          <VIcon
-            icon="tabler-car"
-            size="28"
-          />
-        </VAvatar>
-        <NuxtLink :to="{ name: 'apps-logistics-fleet' }">
-          <div class="text-link text-base font-weight-medium d-inline-block">
-            VOL-{{ item.location }}
-          </div>
-        </NuxtLink>
-      </template>
-
-      <template #item.startRoute="{ item }">
-        {{ item.startCity }}, {{ item.startCountry }}
-      </template>
-
-      <template #item.endRoute="{ item }">
-        {{ item.endCity }}, {{ item.endCountry }}
-      </template>
-
-      <template #item.warnings="{ item }">
-        <VChip
-          :color="resolveChipColor(item.warnings)"
-          label
-          size="small"
-        >
-          {{ item.warnings }}
-        </VChip>
-      </template>
-
-      <template #item.progress="{ item }">
-        <div
-          class="d-flex align-center gap-x-4"
-          style="min-inline-size: 240px;"
-        >
-          <div class="w-100">
-            <VProgressLinear
-              :model-value="item.progress"
-              rounded
-              color="primary"
-              :height="8"
-            />
-          </div>
-          <div>
-            {{ item.progress }}%
-          </div>
+      <template #item.created_at="{ item }">
+        <div class="text-link text-base font-weight-medium d-inline-block">
+          {{ item.created_at }}
         </div>
       </template>
 
-      <!-- pagination -->
-      <template #bottom>
-        <TablePagination
-          v-model:page="page"
-          :items-per-page="itemsPerPage"
-          :total-items="totalVehicles"
-        />
+      <template #item.order_no="{ item }">
+        {{ item.order_no }}
       </template>
+
+      <template #item.price="{ item }">
+        {{ item.price }}
+      </template>
+
+      <template #item.payment_method="{ item }">
+        {{ item.payment_method }}
+      </template>
+
+      <template #item.status="{ item }">
+        <VChip :color="resolveChipColor(item.status)" label size="small">
+          {{ item.status }}
+        </VChip>
+      </template>
+      <template #bottom> </template>
     </VDataTableServer>
+    <VCardItem>
+      <template #append> </template>
+    </VCardItem>
   </VCard>
 </template>

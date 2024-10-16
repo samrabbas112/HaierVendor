@@ -1,57 +1,60 @@
 <script setup lang="ts">
-import type { ProjectAnalytics } from '@db/dashboard/type'
+import type { ProjectAnalytics } from "@db/dashboard/type";
 
 const projectTableHeaders = [
-  { title: 'PROJECT', key: 'project' },
-  { title: 'LEADER', key: 'leader' },
-  { title: 'Team', key: 'team', sortable: false },
-  { title: 'PROGRESS', key: 'progress' },
-  { title: 'Action', key: 'Action', sortable: false },
-]
+  { title: "PROJECT", key: "project" },
+  { title: "LEADER", key: "leader" },
+  { title: "Team", key: "team", sortable: false },
+  { title: "PROGRESS", key: "progress" },
+  { title: "Action", key: "Action", sortable: false },
+];
 
-const search = ref('')
+const search = ref("");
 
-const itemsPerPage = ref(5)
-const page = ref(1)
-const sortBy = ref()
-const orderBy = ref()
+const itemsPerPage = ref(5);
+const page = ref(1);
+const sortBy = ref();
+const orderBy = ref();
 
-const { data: projectsData } = await useApi<any>(createUrl('/dashboard/analytics/projects', {
-  query: {
-    q: search,
-    itemsPerPage,
-    page,
-    sortBy,
-    orderBy,
-  },
-}))
+const { data: projectsData } = await useApi<any>(
+  createUrl("/dashboard/analytics/projects", {
+    query: {
+      q: search,
+      itemsPerPage,
+      page,
+      sortBy,
+      orderBy,
+    },
+  }),
+);
 
 const updateOptions = (options: any) => {
-  sortBy.value = options.sortBy[0]?.key
-  orderBy.value = options.sortBy[0]?.order
-}
+  sortBy.value = options.sortBy[0]?.key;
+  orderBy.value = options.sortBy[0]?.order;
+};
 
-const projects = computed((): ProjectAnalytics[] => projectsData.value?.projects)
-const totalProjects = computed(() => projectsData.value?.totalProjects)
+const projects = computed(
+  (): ProjectAnalytics[] => projectsData.value?.projects,
+);
+const totalProjects = computed(() => projectsData.value?.totalProjects);
 
 const moreList = [
-  { title: 'Download', value: 'Download' },
-  { title: 'Delete', value: 'Delete' },
-  { title: 'View', value: 'View' },
-]
+  { title: "Download", value: "Download" },
+  { title: "Delete", value: "Delete" },
+  { title: "View", value: "View" },
+];
 </script>
 
 <template>
   <VCard v-if="projects">
-    <VCardItem class="project-header d-flex flex-wrap justify-space-between gap-4">
+    <VCardItem
+      class="project-header d-flex flex-wrap justify-space-between gap-4"
+    >
       <VCardTitle>Project List</VCardTitle>
 
       <template #append>
-        <div style="inline-size: 250px;">
-          <AppTextField
-            v-model="search"
-            placeholder="Search Project"
-          />
+        <div style="inline-size: 250px">
+          <AppTextField v-model="search" placeholder="Search Project" />
         </div>
       </template>
     </VCardItem>
@@ -72,14 +75,8 @@ const moreList = [
     >
       <!-- projects -->
       <template #item.project="{ item }">
-        <div
-          class="d-flex align-center gap-x-3"
-          style="padding-block: 7px;"
-        >
-          <VAvatar
-            :size="34"
-            :image="item.logo"
-          />
+        <div class="d-flex align-center gap-x-3" style="padding-block: 7px">
+          <VAvatar :size="34" :image="item.logo" />
           <div>
             <h6 class="text-h6 text-no-wrap">
               {{ item.name }}
@@ -101,11 +98,7 @@ const moreList = [
       <template #item.team="{ item }">
         <div class="d-flex">
           <div class="v-avatar-group">
-            <VAvatar
-              v-for="(data, index) in item.team"
-              :key="index"
-              size="26"
-            >
+            <VAvatar v-for="(data, index) in item.team" :key="index" size="26">
               <VImg :src="data" />
             </VAvatar>
             <VAvatar
@@ -132,9 +125,7 @@ const moreList = [
               rounded
             />
           </div>
-          <div class="text-body-1 text-high-emphasis">
-            {{ item.progress }}%
-          </div>
+          <div class="text-body-1 text-high-emphasis">{{ item.progress }}%</div>
         </div>
       </template>
 

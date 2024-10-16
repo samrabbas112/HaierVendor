@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
-import { hexToRgb } from '@layouts/utils'
+import { useTheme } from "vuetify";
+import { hexToRgb } from "@layouts/utils";
 
-const vuetifyTheme = useTheme()
+const vuetifyTheme = useTheme();
 
 const series = [
   {
-    name: 'Sales',
+    name: "Sales",
     data: [32, 27, 27, 30, 25, 25],
   },
   {
-    name: 'Visits',
+    name: "Visits",
     data: [25, 35, 20, 20, 20, 20],
   },
-]
+];
 
 const chartOptions = computed(() => {
-  const currentTheme = vuetifyTheme.current.value.colors
-  const variableTheme = vuetifyTheme.current.value.variables
+  const currentTheme = vuetifyTheme.current.value.colors;
+  const variableTheme = vuetifyTheme.current.value.variables;
 
-  const borderColor = `rgba(${hexToRgb(String(variableTheme['border-color']))},${variableTheme['border-opacity']})`
-  const labelColor = `rgba(${hexToRgb(currentTheme['on-surface'])},${variableTheme['disabled-opacity']})`
-  const legendColor = `rgba(${hexToRgb(currentTheme['on-background'])},${variableTheme['medium-emphasis-opacity']})`
+  const borderColor = `rgba(${hexToRgb(String(variableTheme["border-color"]))},${variableTheme["border-opacity"]})`;
+  const labelColor = `rgba(${hexToRgb(currentTheme["on-surface"])},${variableTheme["disabled-opacity"]})`;
+  const legendColor = `rgba(${hexToRgb(currentTheme["on-background"])},${variableTheme["medium-emphasis-opacity"]})`;
 
   return {
     chart: {
-      type: 'radar',
+      type: "radar",
       toolbar: {
         show: false,
       },
@@ -44,8 +44,8 @@ const chartOptions = computed(() => {
     },
     legend: {
       show: true,
-      fontSize: '13px',
-      position: 'bottom',
+      fontSize: "13px",
+      position: "bottom",
       labels: {
         colors: legendColor,
         useSeriesColors: false,
@@ -77,13 +77,20 @@ const chartOptions = computed(() => {
       },
     },
     xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
       labels: {
         show: true,
         style: {
-          colors: [labelColor, labelColor, labelColor, labelColor, labelColor, labelColor],
-          fontSize: '13px',
-          fontFamily: 'Public Sans',
+          colors: [
+            labelColor,
+            labelColor,
+            labelColor,
+            labelColor,
+            labelColor,
+            labelColor,
+          ],
+          fontSize: "13px",
+          fontFamily: "Public Sans",
         },
       },
     },
@@ -103,13 +110,13 @@ const chartOptions = computed(() => {
         },
       },
     ],
-  }
-})
+  };
+});
 
 const moreList = [
-  { title: 'View More', value: 'View More' },
-  { title: 'Delete', value: 'Delete' },
-]
+  { title: "View More", value: "View More" },
+  { title: "Delete", value: "Delete" },
+];
 </script>
 
 <template>
@@ -120,20 +127,13 @@ const moreList = [
 
       <template #append>
         <div class="mt-n4 me-n2">
-          <MoreBtn
-            size="small"
-            :menu-list="moreList"
-          />
+          <MoreBtn size="small" :menu-list="moreList" />
         </div>
       </template>
     </VCardItem>
 
     <VCardText>
-      <VueApexCharts
-        :options="chartOptions"
-        :series="series"
-        height="290"
-      />
+      <VueApexCharts :options="chartOptions" :series="series" height="290" />
     </VCardText>
   </VCard>
 </template>

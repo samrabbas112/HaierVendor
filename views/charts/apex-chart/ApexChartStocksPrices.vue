@@ -1,10 +1,12 @@
 <script lang="ts" setup>
-import { useTheme } from 'vuetify'
-import { getCandlestickChartConfig } from '@core/libs/apex-chart/apexCharConfig'
+import { useTheme } from "vuetify";
+import { getCandlestickChartConfig } from "@core/libs/apex-chart/apexCharConfig";
 
-const vuetifyTheme = useTheme()
+const vuetifyTheme = useTheme();
 
-const chartConfig = computed(() => getCandlestickChartConfig(vuetifyTheme.current.value))
+const chartConfig = computed(() =>
+  getCandlestickChartConfig(vuetifyTheme.current.value),
+);
 
 const series = [
   {
@@ -67,7 +69,7 @@ const series = [
       },
     ],
   },
-]
+];
 </script>
 
 <template>

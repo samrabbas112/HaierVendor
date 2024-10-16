@@ -1,6 +1,6 @@
 <script setup lang="ts">
-const currentTab = ref('New')
-const tabsData = ['New', 'Preparing', 'Shipping']
+const currentTab = ref("New");
+const tabsData = ["New", "Preparing", "Shipping"];
 </script>
 
 <template>
@@ -15,15 +15,8 @@ const tabsData = ['New', 'Preparing', 'Shipping']
       </template>
     </VCardItem>
 
-    <VTabs
-      v-model="currentTab"
-      grow
-      class="disable-tab-transition"
-    >
-      <VTab
-        v-for="(tab, index) in tabsData"
-        :key="index"
-      >
+    <VTabs v-model="currentTab" grow class="disable-tab-transition">
+      <VTab v-for="(tab, index) in tabsData" :key="index">
         {{ tab }}
       </VTab>
     </VTabs>
@@ -51,9 +44,7 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-uppercase text-success">
                   Sender
                 </div>
-                <div class="app-timeline-title">
-                  Myrtle Ullrich
-                </div>
+                <div class="app-timeline-title">Myrtle Ullrich</div>
                 <div class="app-timeline-text">
                   101 Boulder, California(CA), 95959
                 </div>
@@ -69,18 +60,13 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-primary text-uppercase">
                   Receiver
                 </div>
-                <div class="app-timeline-title">
-                  Barry Schowalter
-                </div>
+                <div class="app-timeline-title">Barry Schowalter</div>
                 <div class="app-timeline-text">
                   939 Orange, California(CA), 92118
                 </div>
               </VTimelineItem>
             </VTimeline>
-            <VDivider
-              class="my-4"
-              style="border-style: dashed;"
-            />
+            <VDivider class="my-4" style="border-style: dashed" />
             <VTimeline
               align="start"
               truncate-line="both"
@@ -100,11 +86,9 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-uppercase text-success">
                   Sender
                 </div>
-                <div class="app-timeline-title">
-                  Veronica Herman
-                </div>
+                <div class="app-timeline-title">Veronica Herman</div>
                 <div class="app-timeline-text">
-                  162  Windsor, California(CA), 95492
+                  162 Windsor, California(CA), 95492
                 </div>
               </VTimelineItem>
 
@@ -119,9 +103,7 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-primary text-uppercase">
                   Receiver
                 </div>
-                <div class="app-timeline-title">
-                  Helen Jacobs
-                </div>
+                <div class="app-timeline-title">Helen Jacobs</div>
                 <div class="app-timeline-text">
                   487 Sunset, California(CA), 94043
                 </div>
@@ -151,9 +133,7 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-uppercase text-success">
                   Sender
                 </div>
-                <div class="app-timeline-title">
-                  Myrtle Ullrich
-                </div>
+                <div class="app-timeline-title">Myrtle Ullrich</div>
                 <div class="app-timeline-text">
                   101 Boulder, California(CA), 95959
                 </div>
@@ -169,18 +149,13 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-primary text-uppercase">
                   Receiver
                 </div>
-                <div class="app-timeline-title">
-                  Barry Schowalter
-                </div>
+                <div class="app-timeline-title">Barry Schowalter</div>
                 <div class="app-timeline-text">
                   939 Orange, California(CA), 92118
                 </div>
               </VTimelineItem>
             </VTimeline>
-            <VDivider
-              class="my-4"
-              style="border-style: dashed;"
-            />
+            <VDivider class="my-4" style="border-style: dashed" />
             <VTimeline
               align="start"
               truncate-line="both"
@@ -200,11 +175,9 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-uppercase text-success">
                   Sender
                 </div>
-                <div class="app-timeline-title">
-                  Veronica Herman
-                </div>
+                <div class="app-timeline-title">Veronica Herman</div>
                 <div class="app-timeline-text">
-                  162  Windsor, California(CA), 95492
+                  162 Windsor, California(CA), 95492
                 </div>
               </VTimelineItem>
 
@@ -219,9 +192,7 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-primary text-uppercase">
                   Receiver
                 </div>
-                <div class="app-timeline-title">
-                  Helen Jacobs
-                </div>
+                <div class="app-timeline-title">Helen Jacobs</div>
                 <div class="app-timeline-text">
                   487 Sunset, California(CA), 94043
                 </div>
@@ -251,9 +222,7 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-uppercase text-success">
                   Sender
                 </div>
-                <div class="app-timeline-title">
-                  Myrtle Ullrich
-                </div>
+                <div class="app-timeline-title">Myrtle Ullrich</div>
                 <div class="app-timeline-text">
                   101 Boulder, California(CA), 95959
                 </div>
@@ -269,18 +238,13 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-primary text-uppercase">
                   Receiver
                 </div>
-                <div class="app-timeline-title">
-                  Barry Schowalter
-                </div>
+                <div class="app-timeline-title">Barry Schowalter</div>
                 <div class="app-timeline-text">
                   939 Orange, California(CA), 92118
                 </div>
               </VTimelineItem>
             </VTimeline>
-            <VDivider
-              class="my-4"
-              style="border-style: dashed;"
-            />
+            <VDivider class="my-4" style="border-style: dashed" />
             <VTimeline
               align="start"
               truncate-line="both"
@@ -300,11 +264,9 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-uppercase text-success">
                   Sender
                 </div>
-                <div class="app-timeline-title">
-                  Veronica Herman
-                </div>
+                <div class="app-timeline-title">Veronica Herman</div>
                 <div class="app-timeline-text">
-                  162  Windsor, California(CA), 95492
+                  162 Windsor, California(CA), 95492
                 </div>
               </VTimelineItem>
 
@@ -319,9 +281,7 @@ const tabsData = ['New', 'Preparing', 'Shipping']
                 <div class="text-body-2 text-primary text-uppercase">
                   Receiver
                 </div>
-                <div class="app-timeline-title">
-                  Helen Jacobs
-                </div>
+                <div class="app-timeline-title">Helen Jacobs</div>
                 <div class="app-timeline-text">
                   487 Sunset, California(CA), 94043
                 </div>

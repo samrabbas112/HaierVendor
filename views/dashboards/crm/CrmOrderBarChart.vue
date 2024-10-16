@@ -1,17 +1,17 @@
 <script setup lang="ts">
 const series = [
   {
-    name: '2020',
+    name: "2020",
     data: [60, 50, 20, 45, 50, 30, 70],
   },
-]
+];
 
 const chartOptions = computed(() => {
   return {
     chart: {
       height: 90,
       parentHeightOffset: 0,
-      type: 'bar',
+      type: "bar",
       toolbar: {
         show: false,
       },
@@ -21,33 +21,33 @@ const chartOptions = computed(() => {
     },
     plotOptions: {
       bar: {
-        barHeight: '100%',
-        columnWidth: '30%',
-        startingShape: 'rounded',
-        endingShape: 'rounded',
+        barHeight: "100%",
+        columnWidth: "30%",
+        startingShape: "rounded",
+        endingShape: "rounded",
         borderRadius: 4,
         colors: {
           backgroundBarColors: [
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
-            'rgba(var(--v-track-bg))',
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
+            "rgba(var(--v-track-bg))",
           ],
           backgroundBarRadius: 4,
         },
       },
     },
-    colors: ['rgba(var(--v-theme-primary),1)'],
+    colors: ["rgba(var(--v-theme-primary),1)"],
     grid: {
       show: false,
       padding: {
@@ -64,7 +64,7 @@ const chartOptions = computed(() => {
       show: false,
     },
     xaxis: {
-      categories: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+      categories: ["M", "T", "W", "T", "F", "S", "S"],
       axisBorder: {
         show: false,
       },
@@ -86,7 +86,7 @@ const chartOptions = computed(() => {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '30%',
+              columnWidth: "30%",
               borderRadius: 4,
             },
           },
@@ -97,7 +97,7 @@ const chartOptions = computed(() => {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '48%',
+              columnWidth: "48%",
             },
           },
         },
@@ -108,7 +108,7 @@ const chartOptions = computed(() => {
           plotOptions: {
             bar: {
               borderRadius: 6,
-              columnWidth: '30%',
+              columnWidth: "30%",
               colors: {
                 backgroundBarRadius: 6,
               },
@@ -121,7 +121,7 @@ const chartOptions = computed(() => {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '15%',
+              columnWidth: "15%",
               borderRadius: 4,
             },
           },
@@ -132,7 +132,7 @@ const chartOptions = computed(() => {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '20%',
+              columnWidth: "20%",
             },
           },
         },
@@ -142,7 +142,7 @@ const chartOptions = computed(() => {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '25%',
+              columnWidth: "25%",
             },
           },
         },
@@ -152,7 +152,7 @@ const chartOptions = computed(() => {
         options: {
           plotOptions: {
             bar: {
-              columnWidth: '15%',
+              columnWidth: "15%",
               borderRadius: 4,
             },
             colors: {
@@ -191,9 +191,8 @@ const chartOptions = computed(() => {
         },
       },
     ],
-
-  }
-})
+  };
+});
 </script>
 
 <template>
@@ -204,19 +203,11 @@ const chartOptions = computed(() => {
     </VCardItem>
 
     <VCardText>
-      <VueApexCharts
-        :options="chartOptions"
-        :series="series"
-        :height="62"
-      />
+      <VueApexCharts :options="chartOptions" :series="series" :height="62" />
 
       <div class="d-flex align-center justify-space-between gap-x-2 mt-3">
-        <h4 class="text-h4 text-center">
-          124k
-        </h4>
-        <div class="text-sm text-success">
-          +12.6%
-        </div>
+        <h4 class="text-h4 text-center">124k</h4>
+        <div class="text-sm text-success">+12.6%</div>
       </div>
     </VCardText>
   </VCard>

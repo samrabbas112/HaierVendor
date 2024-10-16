@@ -1,12 +1,20 @@
 <script lang="ts" setup>
-import { useTheme } from 'vuetify'
-import { getDonutChartConfig } from '@core/libs/apex-chart/apexCharConfig'
+import { useTheme } from "vuetify";
+import { getDonutChartConfig } from "@core/libs/apex-chart/apexCharConfig";
+const vuetifyTheme = useTheme();
+const props = defineProps({
+  series: {
+    type: Array,
+  },
+  labels: {
+    type: Array,
+  },
+});
+const expenseRationChartConfig = computed(() =>
+  getDonutChartConfig(vuetifyTheme.current.value),
+);
 
-const vuetifyTheme = useTheme()
-
-const expenseRationChartConfig = computed(() => getDonutChartConfig(vuetifyTheme.current.value))
-
-const series = [85, 16, 50, 50]
+expenseRationChartConfig.value.labels = props.labels;
 </script>
 
 <template>
