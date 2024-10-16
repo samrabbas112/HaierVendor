@@ -4,6 +4,11 @@ import LogisticsCardStatistics from '@/views/dashboards/logistics/LogisticsCardS
 import AcademyTopicYouAreInterested from '@/views/dashboards/academy/AcademyTopicYouAreInterested.vue'
 import ApexChartExpenseRatio from '@/views/charts/apex-chart/ApexChartExpenseRatio.vue'
 import ChartJsLineChart from "@/views/charts/chartjs/ChartJsLineChart.vue";
+
+definePageMeta({
+  middleware: ["auth"]
+})
+
 const chartJsCustomColors: ChartJsCustomColors = {
   white: '#fff',
   yellow: '#ffe802',

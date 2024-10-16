@@ -1,17 +1,28 @@
-export default defineNuxtRouteMiddleware((to, from) => {
-  console.log('middleware/auth')
-  console.log('to', to)
-  console.log('from', from)
+import { useAuthStore } from '~/stores/auth'
 
-  // Check for an auth token
-  const token = localStorage.getItem('token')
+export default defineNuxtRouteMiddleware(async (to, from) => {
+  const authStore = useAuthStore()
 
-  console.log('=======token=========', token)
-
-  // If there's no token, navigate to the login page
-  if (!token) {
-    console.log('No token found, redirecting to login...')
-
-    return navigateTo('/login')
+  console.log(to)
+    console.log(from)
+  // Ensure this code runs only in the client
+  if (process.client) {
+    await authStore.initialize() // Initializes the auth state from localStorage or API
   }
+
+  const isLoggedIn = authStore.isAuthenticated()
+
+  console.log('Current route:', to.path)
+  console.log('Logged in:', isLoggedIn)
+  // Prevent an infinite loop: only redirect if user is not logged in
+  if (!isLoggedIn && to.path !== '/login') {
+    return navigateTo('/login')  // Redirect to login if user is not logged in and not already on login page
+  }
+
+  // Prevent logged-in users from accessing the login page
+  if (isLoggedIn && to.path === '/login') {
+    return navigateTo('/dashboard')  // Redirect to dashboard if logged in and trying to access login page
+  }
+
+  // If already on the correct page (e.g., logged in and on dashboard), no redirect is needed
 })
