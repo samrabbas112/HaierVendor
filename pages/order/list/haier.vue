@@ -56,6 +56,26 @@ const resolveStatus = (status: string) => {
   if (status === "Dispatched") return { text: "Dispatched", color: "warning" };
 };
 
+const status = ref([
+  { title: 'Scheduled', value: 'Scheduled' },
+  { title: 'Publish', value: 'Published' },
+  { title: 'Inactive', value: 'Inactive' },
+])
+
+const categories = ref([
+  { title: 'Accessories', value: 'Accessories' },
+  { title: 'Home Decor', value: 'Home Decor' },
+  { title: 'Electronics', value: 'Electronics' },
+  { title: 'Shoes', value: 'Shoes' },
+  { title: 'Office', value: 'Office' },
+  { title: 'Games', value: 'Games' },
+])
+
+const stockStatus = ref([
+  { title: 'In Stock', value: true },
+  { title: 'Out of Stock', value: false },
+])
+
 // Fetch Orders
 const ordersData = {
   total: 100,
@@ -218,6 +238,7 @@ const deleteOrder = async (id: number) => {};
       <!-- 👉 Widgets  -->
       <VCardText>
         <VRow>
+
           <template v-for="(data, id) in widgetData" :key="id">
             <VCol cols="12" sm="6" md="3" class="px-6">
               <div
@@ -273,29 +294,51 @@ const deleteOrder = async (id: number) => {};
     <VCard>
       <!-- 👉 Filters -->
       <VCardText>
-        <div
-          class="d-flex justify-sm-space-between justify-start flex-wrap gap-4"
-        >
-          <AppTextField
-            v-model="searchQuery"
-            placeholder="Search Order"
-            style="max-inline-size: 200px; min-inline-size: 200px"
-          />
+        <VCardText>
+          <VRow>
+            <!-- 👉 Select Status -->
+            <VCol
+              cols="12"
+              sm="4"
+            >
+              <AppSelect
+                v-model="selectedStatus"
+                placeholder="Status"
+                :items="status"
+                clearable
+                clear-icon="tabler-x"
+              />
+            </VCol>
 
-          <div class="d-flex gap-x-4 align-center">
-            <AppSelect
-              v-model="itemsPerPage"
-              style="min-inline-size: 6.25rem"
-              :items="[5, 10, 20, 50, 100]"
-            />
-            <VBtn
-              variant="tonal"
-              color="secondary"
-              prepend-icon="tabler-upload"
-              text="Export"
-            />
-          </div>
-        </div>
+            <!-- 👉 Select Category -->
+            <VCol
+              cols="12"
+              sm="4"
+            >
+              <AppSelect
+                v-model="selectedCategory"
+                placeholder="Category"
+                :items="categories"
+                clearable
+                clear-icon="tabler-x"
+              />
+            </VCol>
+
+            <!-- 👉 Select Stock Status -->
+            <VCol
+              cols="12"
+              sm="4"
+            >
+              <AppSelect
+                v-model="selectedStock"
+                placeholder="Stock"
+                :items="stockStatus"
+                clearable
+                clear-icon="tabler-x"
+              />
+            </VCol>
+          </VRow>
+        </VCardText>
       </VCardText>
 
       <VDivider />
@@ -308,7 +351,6 @@ const deleteOrder = async (id: number) => {};
         :headers="headers"
         :items="orders"
         :items-length="totalOrder"
-        show-select
         class="text-no-wrap"
         @update:options="updateOptions"
       >
