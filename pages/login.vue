@@ -97,7 +97,9 @@ const submitForm = async () => {
         <VCardText>
           <h4 class="text-h4 mb-1">
             Welcome to
-            <span class="text-capitalize">{{ themeConfig.app.title }}</span
+            <span class="text-capitalize">
+              Haier Portal
+            </span
             >! 👋🏻
           </h4>
           <p class="mb-0">
@@ -152,17 +154,6 @@ const submitForm = async () => {
                 >
                   Create an account
                 </a>
-              </VCol>
-
-              <VCol cols="12" class="d-flex align-center">
-                <VDivider />
-                <span class="mx-4">or</span>
-                <VDivider />
-              </VCol>
-
-              <!-- auth providers -->
-              <VCol cols="12" class="text-center">
-                <AuthProvider />
               </VCol>
             </VRow>
           </VForm>
