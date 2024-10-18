@@ -72,7 +72,7 @@ const setNonce = (len = 32) => {
  * @returns {Object} - Modified headers with additional security headers.
  */
 const signTheHeaders = (headers) => {
-  const token = useCookie("authToken").value;
+  const token =  useCookie("auth").value?.token;
   const nonce = setNonce(32);
   const timestamp = new Date().getTime();
   const key = "rh5ffurhv28m2q14";

@@ -214,90 +214,53 @@ const deleteOrder = async (id: number) => {};
 
 <template>
   <div>
-    <VCard class="mb-6">
-      <!-- 👉 Widgets  -->
-      <VCardText>
-        <VRow>
-          <template v-for="(data, id) in widgetData" :key="id">
-            <VCol cols="12" sm="6" md="3" class="px-6">
-              <div
-                class="d-flex justify-space-between"
-                :class="
-                  $vuetify.display.xs
-                    ? id !== widgetData.length - 1
-                      ? 'border-b pb-4'
-                      : ''
-                    : $vuetify.display.sm
-                      ? id < widgetData.length / 2
-                        ? 'border-b pb-4'
-                        : ''
-                      : ''
-                "
-              >
-                <div class="d-flex flex-column">
-                  <h4 class="text-h4">
-                    {{ data.value }}
-                  </h4>
-
-                  <div class="text-body-1">
-                    {{ data.title }}
-                  </div>
-                </div>
-
-                <VAvatar variant="tonal" rounded size="42">
-                  <VIcon
-                    :icon="data.icon"
-                    size="26"
-                    class="text-high-emphasis"
-                  />
-                </VAvatar>
-              </div>
-            </VCol>
-            <VDivider
-              v-if="
-                $vuetify.display.mdAndUp
-                  ? id !== widgetData.length - 1
-                  : $vuetify.display.smAndUp
-                    ? id % 2 === 0
-                    : false
-              "
-              vertical
-              inset
-              length="60"
-            />
-          </template>
-        </VRow>
-      </VCardText>
-    </VCard>
-
     <VCard>
       <!-- 👉 Filters -->
       <VCardText>
-        <div
-          class="d-flex justify-sm-space-between justify-start flex-wrap gap-4"
-        >
-          <AppTextField
-            v-model="searchQuery"
-            placeholder="Search Order"
-            style="max-inline-size: 200px; min-inline-size: 200px"
-          />
-
-          <div class="d-flex gap-x-4 align-center">
+        <VRow>
+          <!-- 👉 Select Status -->
+          <VCol
+            cols="12"
+            sm="4"
+          >
             <AppSelect
-              v-model="itemsPerPage"
-              style="min-inline-size: 6.25rem"
-              :items="[5, 10, 20, 50, 100]"
+              v-model="selectedStatus"
+              placeholder="Status"
+              :items="status"
+              clearable
+              clear-icon="tabler-x"
             />
-            <VBtn
-              variant="tonal"
-              color="secondary"
-              prepend-icon="tabler-upload"
-              text="Export"
-            />
-          </div>
-        </div>
-      </VCardText>
+          </VCol>
 
+          <!-- 👉 Select Category -->
+          <VCol
+            cols="12"
+            sm="4"
+          >
+            <AppSelect
+              v-model="selectedCategory"
+              placeholder="Category"
+              :items="categories"
+              clearable
+              clear-icon="tabler-x"
+            />
+          </VCol>
+
+          <!-- 👉 Select Stock Status -->
+          <VCol
+            cols="12"
+            sm="4"
+          >
+            <AppSelect
+              v-model="selectedStock"
+              placeholder="Stock"
+              :items="stockStatus"
+              clearable
+              clear-icon="tabler-x"
+            />
+          </VCol>
+        </VRow>
+      </VCardText>
       <VDivider />
 
       <!-- 👉 Order Table -->
@@ -308,15 +271,12 @@ const deleteOrder = async (id: number) => {};
         :headers="headers"
         :items="orders"
         :items-length="totalOrder"
-        show-select
         class="text-no-wrap"
         @update:options="updateOptions"
       >
         <!-- Order ID -->
         <template #item.order="{ item }">
-          <NuxtLink
-
-          >
+          <NuxtLink>
             #{{ item.order }}
           </NuxtLink>
         </template>
@@ -334,19 +294,22 @@ const deleteOrder = async (id: number) => {};
               :color="!item.avatar.length ? 'primary' : ''"
               :variant="!item.avatar.length ? 'tonal' : undefined"
             >
-              <VImg v-if="item.avatar" :src="item.avatar" />
+              <VImg
+                v-if="item.avatar"
+                :src="item.avatar"
+              />
 
-              <span v-else class="font-weight-medium">{{
-                avatarText(item.customer)
-              }}</span>
+              <span
+                v-else
+                class="font-weight-medium"
+              >{{
+                  avatarText(item.customer)
+                }}</span>
             </VAvatar>
 
             <div class="d-flex flex-column">
               <div class="text-body-1 font-weight-medium">
-                <NuxtLink
-
-                  class="text-link"
-                >
+                <NuxtLink class="text-link">
                   {{ item.customer }}
                 </NuxtLink>
               </div>
@@ -363,7 +326,10 @@ const deleteOrder = async (id: number) => {};
             :class="`text-${resolvePaymentStatus(item.payment)?.color}`"
             class="font-weight-medium d-flex align-center gap-x-2"
           >
-            <VIcon icon="tabler-circle-filled" size="10" />
+            <VIcon
+              icon="tabler-circle-filled"
+              size="10"
+            />
             <div style="line-height: 22px">
               {{ resolvePaymentStatus(item.payment)?.text }}
             </div>
@@ -372,7 +338,11 @@ const deleteOrder = async (id: number) => {};
 
         <!-- Status -->
         <template #item.status="{ item }">
-          <VChip v-bind="resolveStatus(item.status)" label size="small" />
+          <VChip
+            v-bind="resolveStatus(item.status)"
+            label
+            size="small"
+          />
         </template>
 
         <!-- Method -->
@@ -381,7 +351,7 @@ const deleteOrder = async (id: number) => {};
             <img
               :src="item.method === 'mastercard' ? mastercard : paypal"
               height="18"
-            />
+            >
             <div class="text-body-1">
               ...{{
                 item.method === "mastercard" ? item.methodNumber : "@gmail.com"
@@ -396,12 +366,13 @@ const deleteOrder = async (id: number) => {};
             <VIcon icon="tabler-dots-vertical" />
             <VMenu activator="parent">
               <VList>
-                <VListItem
-                  value="view"
-                >
+                <VListItem value="view">
                   View
                 </VListItem>
-                <VListItem value="delete" @click="deleteOrder(item.id)">
+                <VListItem
+                  value="delete"
+                  @click="deleteOrder(item.id)"
+                >
                   Delete
                 </VListItem>
               </VList>
