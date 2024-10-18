@@ -108,11 +108,6 @@ export default defineNuxtConfig({
         tag === "swiper-container" || tag === "swiper-slide",
     },
   },
-
-  router: {
-    middleware: ["auth"],
-  },
-
   vite: {
     define: { "process.env": {} },
 

@@ -20,7 +20,7 @@ export default [
   },
   {
     title: 'Management',
-    icon: { icon: 'tabler-shopping-cart' },
+    icon: { icon: 'tabler-device-imac-cog' },
     children: [
       {
         title: 'Vendors',
@@ -41,7 +41,7 @@ export default [
     icon: { icon: 'tabler-activity' },
     children: [
       {
-        title: 'cashback',
+        title: 'Cashback',
         to: { name: 'activity-cashback' },
       }
     ]

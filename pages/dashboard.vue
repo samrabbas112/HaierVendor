@@ -14,11 +14,7 @@ const authStore = useAuthStore()
 const api = useApi()
 
 await authStore.initialize()
-
 const userId = authStore.user.user_id
-
-console.log(userId)
-
 const ordersData = reactive({ totalOrders: 0, totalSales: 0, totalCustomer: 0 })
 const tableData = reactive([])
 
