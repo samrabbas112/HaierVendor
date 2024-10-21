@@ -14,9 +14,13 @@ const authStore = useAuthStore()
 const api = useApi()
 
 await authStore.initialize()
+
 const userId = authStore?.user?.user_id
 const ordersData = reactive({ totalOrders: 0, totalSales: 0, totalCustomer: 0 })
 const tableData = reactive([])
+const selectedDate = ref('monthly')
+
+const rangeDate = ref(['2024-05-20'], ['2024-05-20'])
 
 const chartJsCustomColors: ChartJsCustomColors = {
   white: '#fff',
@@ -54,7 +58,7 @@ const getOrderData = async () => {
     vendor_id: userId,
   }
 
-  const response = await api.makeRequest('/dashboard/vendor/stats', 'post', params)
+  const response = await api.makeRequest('admin/dashboard/stats', 'post', params)
 
   console.log('response', response)
 
@@ -64,15 +68,86 @@ const getOrderData = async () => {
   console.log('res:', response.data)
 }
 
+const getChartData = async () => {
+  try {
+    const params = { vendor_id: userId, filter: selectedDate.value }
+
+    console.log('params', params)
+
+    const res = await api.makeRequest('admin/dashboard/orders/graphs', 'post', params)
+
+    console.log('res', res)
+  }
+  catch (err) {
+    console.error('Error: ', err)
+  }
+}
+
+const getCustomerData = async () => {
+  try {
+    const params = {
+      vendor_id: userId,
+      filter: selectedDate.value,
+    }
+
+    console.log('params', params)
+
+    const res = await api.makeRequest('admin/dashboard/customer/graphs', 'post', params)
+
+    console.log('res', res)
+  }
+  catch (err) {
+    console.error('Error: ', err)
+  }
+}
+
+const getTopSelling = async () => {
+  try {
+    const params = {
+      vendor_id: userId,
+      filter: selectedDate.value,
+      fromDate: rangeDate.value[0],
+      toDate: rangeDate.value[1],
+    }
+
+    console.log('params', params)
+
+    const res = await api.makeRequest('admin/dashboard/top/items', 'post', params)
+
+    console.log('res', res)
+  }
+  catch (err) {
+    console.error('Error: ', err)
+  }
+}
+
+const getOrderSummery = async () => {
+  try {
+    const params = {
+      vendor_id: userId,
+    }
+
+    console.log('params', params)
+
+    const res = await api.makeRequest('admin/dashboard/orders/summary', 'post', params)
+
+    console.log('res', res)
+  }
+  catch (err) {
+    console.error('Error: ', err)
+  }
+}
+
 function getTableData() {
   const params = {
     vendor_id: userId,
   }
 
-  api.makeRequest('/dashboard/vendor/orders', 'post', params)
+  api.makeRequest('admin/dashboard/orders', 'post', params)
     .then(res => {
       console.log('public/dashboard/vendor/orders=>', res.data)
       tableData = res.data
+
       // tableData.length = 0
       // res.data.data.forEach(order => {
       //   tableData.push({
@@ -90,6 +165,10 @@ function getTableData() {
 onMounted(() => {
   getOrderData()
   getTableData()
+  getChartData()
+  getCustomerData()
+  getTopSelling()
+  getOrderSummery()
 })
 </script>
 

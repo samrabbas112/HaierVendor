@@ -1,31 +1,30 @@
 <script setup lang="ts">
-import AuthProvider from "@/views/pages/authentication/AuthProvider.vue";
-import { useGenerateImageVariant } from "@core/composable/useGenerateImageVariant";
-import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
-import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
-import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
-import authV2LoginIllustrationLight from "@images/pages/auth-v2-login-illustration-light.png";
-import authV2MaskDark from "@images/pages/misc-mask-dark.png";
-import authV2MaskLight from "@images/pages/misc-mask-light.png";
-import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
-import { themeConfig } from "@themeConfig";
+import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
+import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
+import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
+import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
+import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustration-light.png'
+import authV2MaskDark from '@images/pages/misc-mask-dark.png'
+import authV2MaskLight from '@images/pages/misc-mask-light.png'
+import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
+import { themeConfig } from '@themeConfig'
 
 definePageMeta({
-  layout: "blank",
+  layout: 'blank',
   public: true,
-  middleware: ["guest"],
-});
+  middleware: ['guest'],
+})
 
 const form = ref({
-  email: "lahore@haier.com",
-  password: "Haier@123",
+  email: 'lahore@haier.com',
+  password: 'Haier@123',
   remember: false,
-});
+})
 
-const isPasswordVisible = ref(false);
-const authStore = useAuthStore();
-const router = useRouter();
-const apiRequestObj = useApi();
+const isPasswordVisible = ref(false)
+const authStore = useAuthStore()
+const router = useRouter()
+const apiRequestObj = useApi()
 
 const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationLight,
@@ -33,26 +32,36 @@ const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationBorderedLight,
   authV2LoginIllustrationBorderedDark,
   true,
-);
+)
 
-const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark);
+const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
 const submitForm = async () => {
+  /**
+   * Constructing the payload object for the login request
+   *
+   * - email: The user's email address from the form input.
+   * - password: The user's password from the form input.
+   * - termsConditions: Default value set to true, indicating the user agrees to the terms and conditions.
+   * - firebase_token: Retrieves the Firebase token from localStorage if available, or an empty string if not.
+   */
   const payload = {
     email: form.value.email,
     password: form.value.password,
     termsConditions: true,
-    firebase_token: localStorage.getItem("firebaseToken") ?? "",
-  };
-  const response = await apiRequestObj.makeRequest("login", "post", payload);
-  if (response && response.success) {
-    authStore.login({ user: response.data, token: response.data.authToken });
-    await router.push("/dashboard");
-  } else {
-    console.error("Login failed");
+    firebase_token: localStorage.getItem('firebaseToken') ?? '',
   }
-  console.log("response", response);
-};
+
+  const response = await apiRequestObj.makeRequest('login', 'post', payload)
+  if (response && response.success) {
+    authStore.login({ user: response.data, token: response.data.authToken })
+    await router.push('/dashboard')
+  }
+  else {
+    console.error('Login failed')
+  }
+  console.log('response', response)
+}
 </script>
 
 <template>
@@ -65,8 +74,14 @@ const submitForm = async () => {
     </div>
   </a>
 
-  <VRow no-gutters class="auth-wrapper bg-surface">
-    <VCol md="8" class="d-none d-md-flex">
+  <VRow
+    no-gutters
+    class="auth-wrapper bg-surface"
+  >
+    <VCol
+      md="8"
+      class="d-none d-md-flex"
+    >
       <div class="position-relative bg-background w-100 me-0">
         <div
           class="d-flex align-center justify-center w-100 h-100"
@@ -85,7 +100,7 @@ const submitForm = async () => {
           alt="auth-footer-mask"
           height="280"
           width="100"
-        />
+        >
       </div>
     </VCol>
 
@@ -94,14 +109,17 @@ const submitForm = async () => {
       md="4"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-6">
+      <VCard
+        flat
+        :max-width="500"
+        class="mt-12 mt-sm-0 pa-6"
+      >
         <VCardText>
           <h4 class="text-h4 mb-1">
             Welcome to
             <span class="text-capitalize">
               Haier Portal
-            </span
-            >! 👋🏻
+            </span>! 👋🏻
           </h4>
           <p class="mb-0">
             Please sign-in to your account and start the adventure
@@ -134,18 +152,30 @@ const submitForm = async () => {
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
-                <div
-                  class="d-flex align-center flex-wrap justify-space-between my-6"
-                >
-                  <VCheckbox v-model="form.remember" label="Remember me" />
-                  <a class="text-primary" href="javascript:void(0)">
+                <div class="d-flex align-center flex-wrap justify-space-between my-6">
+                  <VCheckbox
+                    v-model="form.remember"
+                    label="Remember me"
+                  />
+                  <a
+                    class="text-primary"
+                    href="javascript:void(0)"
+                  >
                     Forgot Password?
                   </a>
                 </div>
 
-                <VBtn block @click="submitForm"> Login </VBtn>
+                <VBtn
+                  block
+                  @click="submitForm"
+                >
+                  Login
+                </VBtn>
               </VCol>
-              <VCol cols="12" class="text-body-1 text-right">
+              <VCol
+                cols="12"
+                class="text-body-1 text-right"
+              >
                 <span>By signing up, you agree to the </span><a
                   class="text-primary ms-1 d-inline-block text-body-1"
                   href="javascript:void(0)"
@@ -162,7 +192,10 @@ const submitForm = async () => {
               </VCol>
 
               <!-- create account -->
-              <VCol cols="12" class="text-body-1 text-center">
+              <VCol
+                cols="12"
+                class="text-body-1 text-center"
+              >
                 <span class="d-inline-block"> New on our platform? </span>
                 <a
                   class="text-primary ms-1 d-inline-block text-body-1"
