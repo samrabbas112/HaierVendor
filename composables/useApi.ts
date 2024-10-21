@@ -1,5 +1,4 @@
 const aes = new Aes();
-
 export const useApi = () => {
   const makeRequest = async (
     url: string,
@@ -16,7 +15,7 @@ export const useApi = () => {
       }
       return await $api(url, options);
     } catch (error) {
-      return handleError(error);
+      return await handleError(error);
     }
   };
 
@@ -70,14 +69,16 @@ export const useApi = () => {
   };
 
   const handleError = (error: any) => {
-    console.log("============Catch Block=============");
+    if(error.status == RequestStatusCode.HTTP_UNAUTHORIZED) {
+      useAuthStore().logout();
+      await useRouter().push('/login')
+    }
     log("<-", {
       method: "error",
       path: "",
       data: error.data,
       color: "#ff6633",
     });
-    console.log("=============End Block============");
     return error.data ?? error;
   };
 

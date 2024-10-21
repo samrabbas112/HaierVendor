@@ -7,7 +7,13 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   const isLoggedIn = authStore.isAuthenticated(); // Check if the user is authenticated
 
   if (isLoggedIn) {
-      return navigateTo("/dashboard");
+    if (to.path === "/login") {
+      return navigateTo("/dashboard"); // Redirect to dashboard if already logged in
+    }
+  } else {
+    // If not authenticated, allow access to login page but redirect if accessing other pages
+    if (to.path !== "/login") {
+      return navigateTo("/login"); // Redirect to login if not logged in and trying to access a different page
+    }
   }
-  return navigateTo(to);
 });
