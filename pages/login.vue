@@ -41,6 +41,7 @@ const submitForm = async () => {
   const payload = {
     email: form.value.email,
     password: form.value.password,
+    termsConditions: true,
     firebase_token: localStorage.getItem("firebaseToken") ?? "",
   };
   const response = await apiRequestObj.makeRequest("login", "post", payload);
@@ -143,6 +144,21 @@ const submitForm = async () => {
                 </div>
 
                 <VBtn block @click="submitForm"> Login </VBtn>
+              </VCol>
+              <VCol cols="12" class="text-body-1 text-right">
+                <span>By signing up, you agree to the </span><a
+                  class="text-primary ms-1 d-inline-block text-body-1"
+                  href="javascript:void(0)"
+                >Haier terms of service
+                </a>
+              </VCol>
+              <VCol
+                cols="12"
+                class="d-flex align-center"
+              >
+                <VDivider />
+                <span class="mx-4">or</span>
+                <VDivider />
               </VCol>
 
               <!-- create account -->
