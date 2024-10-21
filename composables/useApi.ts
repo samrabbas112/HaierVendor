@@ -1,4 +1,5 @@
 const aes = new Aes();
+import { RequestStatusCode } from "@/utils/constants";
 export const useApi = () => {
   const makeRequest = async (
     url: string,
@@ -15,7 +16,7 @@ export const useApi = () => {
       }
       return await $api(url, options);
     } catch (error) {
-      return await handleError(error);
+      return handleError(error);
     }
   };
 
@@ -68,10 +69,11 @@ export const useApi = () => {
     }
   };
 
-  const handleError = (error: any) => {
+  const handleError =  (error: any) => {
     if(error.status == RequestStatusCode.HTTP_UNAUTHORIZED) {
-      useAuthStore().logout();
-      await useRouter().push('/login')
+      console.log('status',RequestStatusCode.HTTP_UNAUTHORIZED)
+      // useAuthStore().logout();
+      // useRouter().push('/login').then();
     }
     log("<-", {
       method: "error",

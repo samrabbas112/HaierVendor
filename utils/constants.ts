@@ -65,3 +65,4 @@ class RequestStatusCode {
   static HTTP_NOT_EXTENDED = 510; // RFC2774
   static HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511; // RFC6585
 }
+export  { RequestStatusCode };

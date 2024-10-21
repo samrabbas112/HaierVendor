@@ -35,8 +35,10 @@ export const $api = $fetch.create({
    */
   async onResponse({ response }) {
     // Decrypt the response
+    console.log({response})
     if (response._data) {
       const decryptedData = aes.doDecrypt(response._data);
+      console.log({dc:decryptedData});
       log("<-", {
         method: "response",
         path: response.url,
@@ -72,7 +74,9 @@ const setNonce = (len = 32) => {
  * @returns {Object} - Modified headers with additional security headers.
  */
 const signTheHeaders = (headers) => {
+
   const token =  useCookie("auth").value?.token;
+  console.log({token});
   const nonce = setNonce(32);
   const timestamp = new Date().getTime();
   const key = "rh5ffurhv28m2q14";
