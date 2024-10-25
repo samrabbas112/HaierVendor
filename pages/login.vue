@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
@@ -21,6 +22,8 @@ const form = ref({
   remember: false,
 })
 
+const toast = useToastStore()
+const loader = useLoaderStore()
 const isPasswordVisible = ref(false)
 const authStore = useAuthStore()
 const router = useRouter()
@@ -62,6 +65,11 @@ const submitForm = async () => {
   }
   console.log('response', response)
 }
+
+onMounted(() => {
+  // toast.showToast('Component mounted successfully!', 'error')
+  // loader.showLoader();
+})
 </script>
 
 <template>

@@ -243,11 +243,14 @@ const deleteOrder = async (id: number) => {}
     <VCard>
       <!-- 👉 Filters -->
       <VCardText>
-        <VRow>
+        <VRow
+          cols="12"
+          sm="8"
+        >
           <!-- 👉 Select Status -->
           <VCol
             cols="12"
-            sm="4"
+            sm="3"
           >
             <AppSelect
               v-model="selectedStatus"
@@ -261,7 +264,7 @@ const deleteOrder = async (id: number) => {}
           <!-- 👉 Select Category -->
           <VCol
             cols="12"
-            sm="4"
+            sm="3"
           >
             <AppSelect
               v-model="selectedCategory"
@@ -275,7 +278,7 @@ const deleteOrder = async (id: number) => {}
           <!-- 👉 Select Stock Status -->
           <VCol
             cols="12"
-            sm="4"
+            sm="3"
           >
             <AppSelect
               v-model="selectedStock"
@@ -284,6 +287,20 @@ const deleteOrder = async (id: number) => {}
               clearable
               clear-icon="tabler-x"
             />
+          </VCol>
+          <VCol
+            cols="12"
+            sm="3"
+          >
+            <VBtn
+              variant="outlined"
+              color="secondary"
+            >
+              Reset
+            </VBtn>
+            <VBtn variant="flat">
+              Search
+            </VBtn>
           </VCol>
         </VRow>
       </VCardText>

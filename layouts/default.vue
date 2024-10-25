@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import Alert from '@/components/alert/Alert.vue';
+import Loader from '@/components/loader/Loader.vue';
 import { useConfigStore } from "@core/stores/config";
 import { AppContentLayoutNav } from "@layouts/enums";
 import { switchToVerticalNavOnLtOverlayNavBreakpoint } from "@layouts/utils";
@@ -30,6 +32,8 @@ injectSkinClasses();
         : DefaultLayoutWithHorizontalNav
     "
   >
+    <Loader />
+    <Alert />
     <slot />
   </Component>
 </template>

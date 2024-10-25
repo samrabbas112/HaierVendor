@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import Alert from '@/components/alert/alert.vue';
+import Loader from '@/components/loader/Loader.vue';
+
 const { injectSkinClasses } = useSkins();
 
 injectSkinClasses();
@@ -14,6 +17,8 @@ onMounted(() => {
 
 <template>
   <div class="layout-wrapper layout-blank">
+    <Loader />
+    <Alert />
     <slot />
   </div>
 </template>
