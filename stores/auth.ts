@@ -24,9 +24,11 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {object} loginData - Contains user info and token.
    */
   const login = (loginData: { user: any; token: string }) => {
+    console.log('==============Login form =======================================')
     user.value = loginData.user
     token.value = loginData.token
-
+    console.log(user, login)
+    console.log('=====================================================')
     const authUser = useCookie('auth') // useCookie new hook in nuxt 3
 
     authUser.value = {

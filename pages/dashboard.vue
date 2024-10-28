@@ -15,7 +15,8 @@ const api = useApi()
 
 await authStore.initialize()
 
-const userId = authStore?.user?.user_id
+const userId = authStore?.user
+console.log("userid", userId)
 const ordersData = reactive({ totalOrders: 0, totalSales: 0, totalCustomer: 0 })
 const tableData = reactive([])
 const selectedDate = ref('monthly')
@@ -55,7 +56,7 @@ const labels = [
 
 const getOrderData = async () => {
   const params = {
-    vendor_id: userId,
+    vendor_id: 5,
   }
 
   const response = await api.makeRequest('admin/dashboard/stats', 'post', params)
@@ -164,11 +165,11 @@ function getTableData() {
 }
 onMounted(() => {
   getOrderData()
-  getTableData()
-  getChartData()
-  getCustomerData()
-  getTopSelling()
-  getOrderSummery()
+  // getTableData()
+  // getChartData()
+  // getCustomerData()
+  // getTopSelling()
+  // getOrderSummery()
 })
 </script>
 
