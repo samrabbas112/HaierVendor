@@ -57,6 +57,7 @@ const submitForm = async () => {
 
   const response = await apiRequestObj.makeRequest('login', 'post', payload)
   if (response && response.success) {
+    console.log("response:", response)
     authStore.login({ user: response.data, token: response.data.authToken })
     await router.push('/dashboard')
   }
