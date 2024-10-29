@@ -15,11 +15,13 @@ const api = useApi()
 
 await authStore.initialize()
 
-const userId = authStore?.user
-console.log("userid", userId)
+const userId = authStore?.user?.user_id
+
 const ordersData = reactive({ totalOrders: 0, totalSales: 0, totalCustomer: 0 })
 const tableData = reactive([])
 const selectedDate = ref('monthly')
+const salesData = reactive({ labels: [], datasets: [] })
+const customerChart = reactive({ labels: [], datasets: [] })
 
 const rangeDate = ref(['2024-05-20'], ['2024-05-20'])
 
@@ -56,7 +58,7 @@ const labels = [
 
 const getOrderData = async () => {
   const params = {
-    vendor_id: 5,
+    vendor_id: userId,
   }
 
   const response = await api.makeRequest('admin/dashboard/stats', 'post', params)
@@ -77,6 +79,8 @@ const getChartData = async () => {
 
     const res = await api.makeRequest('admin/dashboard/orders/graphs', 'post', params)
 
+    salesData.labels = res.data.labels
+    salesData.datasets = res.data.datasets
     console.log('res', res)
   }
   catch (err) {
@@ -95,6 +99,8 @@ const getCustomerData = async () => {
 
     const res = await api.makeRequest('admin/dashboard/customer/graphs', 'post', params)
 
+    customerChart.labels = res.data.labels
+    customerChart.datasets = res.data.datasets
     console.log('res', res)
   }
   catch (err) {
@@ -146,8 +152,9 @@ function getTableData() {
 
   api.makeRequest('admin/dashboard/orders', 'post', params)
     .then(res => {
-      console.log('public/dashboard/vendor/orders=>', res.data)
-      tableData = res.data
+      console.log('public/dashboard/vendor/orders=>', res)
+
+      // tableData = res.data
 
       // tableData.length = 0
       // res.data.data.forEach(order => {
@@ -165,11 +172,11 @@ function getTableData() {
 }
 onMounted(() => {
   getOrderData()
-  // getTableData()
-  // getChartData()
-  // getCustomerData()
-  // getTopSelling()
-  // getOrderSummery()
+  getTableData()
+  getChartData()
+  getCustomerData()
+  getTopSelling()
+  getOrderSummery()
 })
 </script>
 
@@ -185,7 +192,10 @@ onMounted(() => {
         subtitle=""
       >
         <VCardText>
-          <ChartJsLineChart :colors="chartJsCustomColors" />
+          <ChartJsLineChart
+            :colors="chartJsCustomColors"
+            :sales="salesData"
+          />
         </VCardText>
       </VCard>
     </VCol>
@@ -214,7 +224,10 @@ onMounted(() => {
         </VCardItem>
 
         <VCardText>
-          <ChartJsBarChart :colors="chartJsCustomColors" />
+          <ChartJsBarChart
+            :colors="chartJsCustomColors"
+            :customers="customerChart"
+          />
         </VCardText>
       </VCard>
     </VCol>

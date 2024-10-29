@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed, defineProps } from 'vue'
+
 const props = defineProps({
   stats: {
     type: Object,
@@ -6,7 +8,7 @@ const props = defineProps({
   },
 })
 
-const logisticData = ref([
+const logisticData = computed(() => [
   {
     icon: 'tabler-truck',
     color: 'primary',
@@ -32,44 +34,6 @@ const logisticData = ref([
     isHover: false,
   },
 ])
-
-const updateLogisticData = () => {
-  logisticData.value = [
-    {
-      icon: 'tabler-truck',
-      color: 'primary',
-      title: 'Delivered Orders',
-      value: props.stats.totalOrders || 0,
-      change: 18.2,
-      isHover: false,
-    },
-    {
-      icon: 'tabler-chart-pie-2',
-      color: 'warning',
-      title: 'Total Sales',
-      value: props.stats.totalSales || 0,
-      change: -8.7,
-      isHover: false,
-
-    },
-    {
-      icon: 'tabler-users',
-      color: 'info',
-      title: 'Total Customers',
-      value: props.stats.totalCustomer || 0,
-      change: 4.3,
-      isHover: false,
-    },
-  ]
-}
-
-watch(() => props.stats, () => {
-  updateLogisticData()
-})
-
-onMounted(() => {
-  updateLogisticData()
-})
 </script>
 
 <template>
