@@ -18,6 +18,7 @@ await authStore.initialize()
 const userId = authStore?.user?.user_id
 
 const ordersData = reactive({ totalOrders: 0, totalSales: 0, totalCustomer: 0 })
+const topItemsSold = reactive([])
 const tableData = reactive([])
 const selectedDate = ref('monthly')
 const salesData = reactive({ labels: [], datasets: [] })
@@ -121,7 +122,8 @@ const getTopSelling = async () => {
 
     const res = await api.makeRequest('admin/dashboard/top/items', 'post', params)
 
-    console.log('res', res)
+    topItemsSold.length = 0 // Clear the array
+    topItemsSold.push(...res.data)
   }
   catch (err) {
     console.error('Error: ', err)
@@ -237,7 +239,7 @@ onMounted(() => {
       cols="12"
       md="6"
     >
-      <AcademyTopicYouAreInterested />
+      <AcademyTopicYouAreInterested :top-items-sold="topItemsSold" />
     </VCol>
     <!-- 👉 Top Sold Items End -->
 

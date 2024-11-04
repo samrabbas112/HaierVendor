@@ -1,8 +1,43 @@
 <script setup lang="ts">
-const borderColor = "rgba(var(--v-border-color), var(--v-border-opacity))";
+import { defineProps } from 'vue';
+
+const props = defineProps<{
+  topItemsSold: Array<{ vendor_id: number; product_name: string; total_sales: string }>
+}>()
+
+const borderColor = 'rgba(var(--v-border-color), var(--v-border-opacity))'
+
+const chartData = computed(() => {
+  // Clear the array first to avoid duplicating values
+  const topicsChartLabels = [...new Set(props.topItemsSold.map(item => item.product_name))];
+
+  const totalSales = props.topItemsSold.reduce((sum, item) => sum + Number.parseInt(item.total_sales, 10), 0);
+
+  const topicsChartSeries = [
+    {
+      data: props.topItemsSold.map(item => {
+        // Calculate percentage only if totalSales is greater than zero to avoid division by zero
+        return totalSales > 0
+          ? (Number.parseInt(item.total_sales, 10) / totalSales) * 100
+          : 0; // Return 0 if totalSales is 0
+      })
+    }
+  ];
+
+  const xAxisCategories = Array.from({ length: props.topItemsSold.length }, (_, i) => (props.topItemsSold.length - i).toString());
+
+  const yMax = Math.max(...topicsChartSeries[0].data) || 30;
+
+  return {
+    labels: topicsChartLabels,
+    series: topicsChartSeries,
+    xCategories: xAxisCategories,
+    yMax,
+  };
+});
 
 // Topics Charts config
-const topicsChartConfig = {
+const topicsChartConfig = computed(() => ({
   chart: {
     height: 270,
     type: "bar",
@@ -61,20 +96,23 @@ const topicsChartConfig = {
       enabled: false,
     },
     formatter(val: string, opt: any) {
-      return topicsChartConfig.labels[opt.dataPointIndex];
+      return chartData?.value?.labels[opt.dataPointIndex];
     },
   },
-  labels: [
-    "MicroWave Oven",
-    "Air Conditioner",
-    "Washing Machine",
-    "Refrigerator",
-    "Deep Freezer",
-    "LED",
-  ],
+
+  // labels: [
+  //   "MicroWave Oven",
+  //   "Air Conditioner",
+  //   "Washing Machine",
+  //   "Refrigerator",
+  //   "Deep Freezer",
+  //   "LED",
+  // ],
+  labels: chartData?.value?.labels,
 
   xaxis: {
-    categories: ["6", "5", "4", "3", "2", "1"],
+    // categories: ["6", "5", "4", "3", "2", "1"],
+    categories: chartData?.value?.xCategories,
     axisBorder: {
       show: false,
     },
@@ -93,7 +131,7 @@ const topicsChartConfig = {
   },
 
   yaxis: {
-    max: 100,
+    max: chartData?.value?.yMax,
     labels: {
       style: {
         colors: "rgba(var(--v-theme-on-background), var(--v-disabled-opacity))",
@@ -114,13 +152,13 @@ const topicsChartConfig = {
   legend: {
     show: false,
   },
-};
+}));
 
-const topicsChartSeries = [
-  {
-    data: [95, 40, 60, 80, 100, 65],
-  },
-];
+// const topicsChartSeries = [
+//   {
+//     data: [95, 40, 60, 80, 100],
+//   },
+// ];
 
 const topicsData = [
   { title: "UI Design", value: 100, color: "primary" },
@@ -144,7 +182,7 @@ const topicsData = [
               type="bar"
               height="260"
               :options="topicsChartConfig"
-              :series="topicsChartSeries"
+              :series="chartData.series"
             />
           </div>
         </VCol>
