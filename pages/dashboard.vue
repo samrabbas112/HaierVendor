@@ -19,6 +19,8 @@ const userId = authStore?.user?.user_id
 
 const ordersData = reactive({ totalOrders: 0, totalSales: 0, totalCustomer: 0 })
 const topItemsSold = reactive([])
+const orderSummary = reactive([])
+const orderSummaryLabels = reactive([])
 const tableData = reactive([])
 const selectedDate = ref('monthly')
 const salesData = reactive({ labels: [], datasets: [] })
@@ -47,15 +49,14 @@ const chartJsCustomColors: ChartJsCustomColors = {
   scatterChartWarning: '#ff9f43',
 }
 
-const series = [85, 16, 50, 50, 20]
+// const series = [85, 16, 50, 50, 20]
 
-const labels = [
-  'Closed',
-  'Picked',
-  'Rejected',
-  'OutForDelivery',
-  'Delivery Refused',
-]
+// const labels = [
+//   'Closed',
+//   'Delivery Refused',
+//   'OutForDelivery',
+//   'Picked',
+// ]
 
 const getOrderData = async () => {
   const params = {
@@ -140,6 +141,19 @@ const getOrderSummery = async () => {
 
     const res = await api.makeRequest('admin/dashboard/orders/summary', 'post', params)
 
+    // Update the ref object with the response data
+
+    if (res?.data) {
+      // Clear arrays to avoid duplicating data
+      orderSummary.length = 0
+      orderSummaryLabels.length = 0
+
+      Object.keys(res?.data).forEach(key => {
+        orderSummaryLabels.push(key)
+        orderSummary.push(res?.data?.[key] || 10)
+      })
+    }
+
     console.log('res', res)
   }
   catch (err) {
@@ -147,31 +161,40 @@ const getOrderSummery = async () => {
   }
 }
 
-function getTableData() {
+const getTableData = async () => {
   const params = {
     vendor_id: userId,
   }
 
-  api.makeRequest('admin/dashboard/orders', 'post', params)
-    .then(res => {
-      console.log('public/dashboard/vendor/orders=>', res)
+  try {
+    const res = await api.makeRequest('admin/dashboard/orders', 'post', params)
 
-      // tableData = res.data
+    console.log('public/dashboard/vendor/orders =>', res)
 
-      // tableData.length = 0
-      // res.data.data.forEach(order => {
-      //   tableData.push({
-      //     // formattedDate: formatDate(order.created_at),
-      //     orderNo: order.order_no,
-      //     price: order.paymentAmount,
-      //     payment: JSON.parse(order.payload).channel,
-      //     status: order.pick_status.name,
-      //   })
+    // Ensure tableData is cleared before pushing new items
+    tableData.length = 0
+    res?.data?.forEach(order => {
+      let paymentChannel
+      try {
+        paymentChannel = JSON.parse(order.payload)?.channel || 'Unknown'
+      } catch (error) {
+        console.error('Error parsing order payload:', error)
+        paymentChannel = 'Unknown'
+      }
+
+      tableData.push({
+        created_at: order.created_at,
+        order_no: order.order_no,
+        price: order.paymentAmount,
+        payment_method: paymentChannel,
+        status: order.pick_status?.name || 'Unknown',
+      })
     })
-    .catch(error => {
-      console.log('error', error)
-    })
+  } catch (error) {
+    console.error('Error fetching orders:', error)
+  }
 }
+
 onMounted(() => {
   getOrderData()
   getTableData()
@@ -189,74 +212,45 @@ onMounted(() => {
     </VCol>
 
     <VCol cols="6">
-      <VCard
-        title="Delivered Orders"
-        subtitle=""
-      >
+      <VCard title="Delivered Orders" subtitle="">
         <VCardText>
-          <ChartJsLineChart
-            :colors="chartJsCustomColors"
-            :sales="salesData"
-          />
+          <ChartJsLineChart :colors="chartJsCustomColors" :sales="salesData" />
         </VCardText>
       </VCard>
     </VCol>
     <!-- 👉 Latest Statistics -->
-    <VCol
-      cols="12"
-      md="6"
-    >
+    <VCol cols="12" md="6">
       <VCard>
         <VCardItem class="d-flex flex-wrap justify-space-between gap-4">
           <VCardTitle>Latest Statistics</VCardTitle>
           <template #append>
             <div class="date-picker-wrapper">
-              <AppDateTimePicker
-                model-value="2022-06-09"
-                prepend-inner-icon="tabler-calendar"
-                placeholder="Select Date"
-                :config="
-                  $vuetify.display.smAndDown
+              <AppDateTimePicker model-value="2022-06-09" prepend-inner-icon="tabler-calendar" placeholder="Select Date"
+                :config="$vuetify.display.smAndDown
                     ? { position: 'auto center' }
                     : { position: 'auto right' }
-                "
-              />
+                  " />
             </div>
           </template>
         </VCardItem>
 
         <VCardText>
-          <ChartJsBarChart
-            :colors="chartJsCustomColors"
-            :customers="customerChart"
-          />
+          <ChartJsBarChart :colors="chartJsCustomColors" :customers="customerChart" />
         </VCardText>
       </VCard>
     </VCol>
 
     <!-- 👉 Top Sold Items -->
-    <VCol
-      cols="12"
-      md="6"
-    >
+    <VCol cols="12" md="6">
       <AcademyTopicYouAreInterested :top-items-sold="topItemsSold" />
     </VCol>
     <!-- 👉 Top Sold Items End -->
 
     <!-- 👉 Order Summary  -->
-    <VCol
-      cols="12"
-      md="6"
-    >
-      <VCard
-        title="Order Summary"
-        subtitle=""
-      >
+    <VCol cols="12" md="6">
+      <VCard title="Order Summary" subtitle="">
         <VCardText>
-          <ApexChartExpenseRatio
-            :series="series"
-            :labels="labels"
-          />
+          <ApexChartExpenseRatio :series="orderSummary" :labels="orderSummaryLabels" />
         </VCardText>
       </VCard>
     </VCol>
