@@ -5,6 +5,11 @@ const props = defineProps<{
   topItemsSold: Array<{ vendor_id: number; product_name: string; total_sales: string }>
 }>()
 
+// Function to round to the nearest even number
+const roundToNearestFive = num => {
+  return Math.round(num / 5) * 5
+}
+
 const borderColor = 'rgba(var(--v-border-color), var(--v-border-opacity))'
 
 const chartData = computed(() => {
@@ -18,7 +23,7 @@ const chartData = computed(() => {
       data: props.topItemsSold.map(item => {
         // Calculate percentage only if totalSales is greater than zero to avoid division by zero
         return totalSales > 0
-          ? (Number.parseInt(item.total_sales, 10) / totalSales) * 100
+          ? Math.round((Number.parseInt(item.total_sales, 10) / totalSales) * 100)
           : 0; // Return 0 if totalSales is 0
       })
     }
@@ -26,7 +31,7 @@ const chartData = computed(() => {
 
   const xAxisCategories = Array.from({ length: props.topItemsSold.length }, (_, i) => (props.topItemsSold.length - i).toString());
 
-  const yMax = Math.max(...topicsChartSeries[0].data) || 30;
+  const yMax = roundToNearestFive(Math.max(...topicsChartSeries[0].data) || 30);
 
   return {
     labels: topicsChartLabels,

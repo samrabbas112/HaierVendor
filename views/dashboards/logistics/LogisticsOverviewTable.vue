@@ -69,11 +69,13 @@ const headers = [
 ];
 
 const resolveChipColor = (warning: string) => {
-  if (warning === "Completed") return "success";
-  if (warning === "Completed") return "primary";
-  if (warning === "Pending") return "warning";
-  if (warning === "Cancelled") return "error";
-  if (warning === "Processing") return "info";
+  if (warning === "Picked") return "success";
+  if (warning === "Closed") return "primary";
+  if (warning === "Delivery_Refused") return "warning";
+  if (warning === "Delivery_Timeout") return "error";
+  if (warning === "Out_For_Delivery") return "info";
+  if (warning === "Ready_To_Ship") return "warning";
+  if (warning === "Rejected") return "error";
   return "info";
 }
 
