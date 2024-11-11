@@ -1,13 +1,23 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { defineEmits, defineProps } from 'vue';
 
 const props = defineProps<{
   topItemsSold: Array<{ vendor_id: number; product_name: string; total_sales: string }>
+  minDate: string
 }>()
+
+// Define emit for update:modelValue event
+const emit = defineEmits(['dateChange'])
+
+// Emit event function to trigger 'update:modelValue' with the selected date
+const handleDateChange = (newDate: string) => {
+  let key = 'top-item-sold'
+  emit('dateChange', newDate, key);
+};
 
 // Function to round to the nearest even number
 const roundToNearestFive = num => {
-  return Math.round(num / 5) * 5
+  return Math.ceil(num / 5) * 5
 }
 
 const borderColor = 'rgba(var(--v-border-color), var(--v-border-opacity))'
@@ -31,13 +41,14 @@ const chartData = computed(() => {
 
   const xAxisCategories = Array.from({ length: props.topItemsSold.length }, (_, i) => (props.topItemsSold.length - i).toString());
 
-  const yMax = roundToNearestFive(Math.max(...topicsChartSeries[0].data) || 30);
+  const yMax = roundToNearestFive(Math.max(...topicsChartSeries[0].data) || 50);
 
   return {
     labels: topicsChartLabels,
     series: topicsChartSeries,
     xCategories: xAxisCategories,
     yMax,
+    totalSales,
   };
 });
 
@@ -101,7 +112,16 @@ const topicsChartConfig = computed(() => ({
       enabled: false,
     },
     formatter(val: string, opt: any) {
-      return chartData?.value?.labels[opt.dataPointIndex];
+      // return chartData?.value?.labels[opt.dataPointIndex];
+      const percentage = chartData.value.series[0].data[opt.dataPointIndex];
+      const productName = chartData.value.labels[opt.dataPointIndex];
+
+      // If percentage is less than 5%, show truncated name with ellipsis
+      if (percentage <= (chartData.value.yMax / 5)) {
+        return `${productName.substring(0, 4)}...`;
+      } else {
+        return productName;
+      }
     },
   },
 
@@ -153,6 +173,20 @@ const topicsChartConfig = computed(() => ({
     onDatasetHover: {
       highlightDataSeries: false,
     },
+    custom: ({ seriesIndex, dataPointIndex }) => {
+      // Access product name and total sales directly
+      const productName = chartData.value.labels[dataPointIndex]
+      const sale = props.topItemsSold[dataPointIndex].total_sales
+
+      // Customize tooltip content without "Series-1"
+      return `
+      <div style="background-color: #333; color: #fff; padding: 8px; border-radius: 4px; font-size: 12px;">
+        <strong>${productName}</strong><br/>
+        Quantity Sold: ${sale}<br/>
+        Percentage: ${((Number.parseInt(sale, 10) / chartData.value.totalSales) * 100).toFixed(2)}%
+      </div>
+    `;
+    },
   },
   legend: {
     show: false,
@@ -177,7 +211,20 @@ const topicsData = [
 
 <template>
   <VCard>
-    <VCardItem title="Top Items Sold"> </VCardItem>
+    <VCardItem title="Top Items Sold" class="d-flex flex-wrap justify-space-between gap-4"> 
+          <template #append>
+            <div class="date-picker-wrapper">
+              <AppDateTimePicker
+                @update:modelValue="handleDateChange"
+                model-value="2024-05-05" prepend-inner-icon="tabler-calendar"
+                placeholder="Select Date" :config="$vuetify.display.smAndDown
+                  ? { position: 'auto center' }
+                  : { position: 'auto right' }
+                  " />
+            </div>
+          </template>
+
+    </VCardItem>
 
     <VCardText>
       <VRow>

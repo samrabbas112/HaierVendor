@@ -5,11 +5,13 @@ import ApexChartExpenseRatio from '@/views/charts/apex-chart/ApexChartExpenseRat
 import ChartJsLineChart from '@/views/charts/chartjs/ChartJsLineChart.vue'
 import LogisticsOverviewTable from '@/views/dashboards/logistics/LogisticsOverviewTable.vue'
 import ChartJsBarChart from '@/views/charts/chartjs/ChartJsBarChart.vue'
+import { useLoaderStore } from '@/stores/loader'
 
 definePageMeta({
   middleware: ['auth'],
 })
 
+const loaderStore = useLoaderStore()
 const authStore = useAuthStore()
 const api = useApi()
 
@@ -22,11 +24,11 @@ const topItemsSold = reactive([])
 const orderSummary = reactive([])
 const orderSummaryLabels = reactive([])
 const tableData = reactive([])
-const selectedDate = ref('monthly')
+const intervalType = ref('monthly')
 const salesData = reactive({ labels: [], datasets: [] })
 const customerChart = reactive({ labels: [], datasets: [] })
-
-const rangeDate = ref(['2024-05-20'], ['2024-05-20'])
+const rangeDate = ref([])
+const minDateOncustomerChart = ref(new Date())
 
 const chartJsCustomColors: ChartJsCustomColors = {
   white: '#fff',
@@ -75,7 +77,7 @@ const getOrderData = async () => {
 
 const getChartData = async () => {
   try {
-    const params = { vendor_id: userId, filter: selectedDate.value }
+    const params = { vendor_id: userId, filter: intervalType.value }
 
     console.log('params', params)
 
@@ -94,15 +96,20 @@ const getCustomerData = async () => {
   try {
     const params = {
       vendor_id: userId,
-      filter: selectedDate.value,
+      filter: intervalType.value,
+      fromDate: rangeDate.value[0],
+      toDate: rangeDate.value[1],
     }
 
-    console.log('params', params)
+    console.log('params-ahmad', params)
 
     const res = await api.makeRequest('admin/dashboard/customer/graphs', 'post', params)
 
     customerChart.labels = res.data.labels
     customerChart.datasets = res.data.datasets
+
+    minDateOncustomerChart.value = new Date(Math.min(...customerChart.labels.map(label => new Date(label))))
+
     console.log('res', res)
   }
   catch (err) {
@@ -114,7 +121,7 @@ const getTopSelling = async () => {
   try {
     const params = {
       vendor_id: userId,
-      filter: selectedDate.value,
+      filter: intervalType.value,
       fromDate: rangeDate.value[0],
       toDate: rangeDate.value[1],
     }
@@ -150,7 +157,8 @@ const getOrderSummery = async () => {
 
       Object.keys(res?.data).forEach(key => {
         orderSummaryLabels.push(key)
-        orderSummary.push(res?.data?.[key] || 10)
+        orderSummary.push(res?.data?.[key] || 0)
+        // orderSummary.push(0)
       })
     }
 
@@ -195,13 +203,82 @@ const getTableData = async () => {
   }
 }
 
+const lastDateRanges = new Map();
+
+const handleDateChange = async (newDate, key) => {
+
+  const dateRegex = /(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})/;
+
+   // Check if the current date is null
+   const isNewDateNull = !newDate || !newDate.trim();
+   const wasPreviousDateNull = !lastDateRanges.has(key) || !lastDateRanges.get(key);
+
+   // If newDate and previous date are both null, skip the API call
+  if (isNewDateNull && wasPreviousDateNull) {
+    console.log("No change detected and both dates are null, skipping API call.");
+    return;
+  }
+  if(newDate && !newDate.includes("to")){
+    return;
+  }
+
+  if (newDate && newDate.includes("to")) {
+    const match = newDate.match(dateRegex);
+
+    // Check if the current range matches the last range for this key
+    if (
+      lastDateRanges.has(key) && 
+      lastDateRanges.get(key) &&
+      lastDateRanges.get(key).start === match[1] &&
+      lastDateRanges.get(key).end === match[2]
+    ) {
+      console.log("No change detected in date range, skipping API call.");
+      return;
+    }
+
+    intervalType.value = 'custom';
+    rangeDate.value = [match[1], match[2]];
+
+    // Store the new date range for the current key
+    lastDateRanges.set(key, { start: match[1], end: match[2] });
+  } else if (isNewDateNull) {
+    // If newDate is null, reset to 'monthly' and clear the range
+    intervalType.value = 'monthly';
+    rangeDate.value = [new Date(), new Date()];
+    lastDateRanges.set(key, null);  // Set the last date range to null
+  }
+
+  try {
+    loaderStore.showLoader();
+    if (key === 'top-item-sold') {
+      await getTopSelling();
+    } else {
+      await getCustomerData();
+    }
+  } finally {
+    loaderStore.hideLoader();
+  }
+};
+
+const fetchData = async () => {
+  try {
+    loaderStore.showLoader()
+    await Promise.all([
+      getOrderData(),
+      getTableData(),
+      getChartData(),
+      getCustomerData(),
+      getTopSelling(),
+      getOrderSummery(),
+    ])
+  }
+  finally {
+    loaderStore.hideLoader()
+  }
+}
+
 onMounted(() => {
-  getOrderData()
-  getTableData()
-  getChartData()
-  getCustomerData()
-  getTopSelling()
-  getOrderSummery()
+  fetchData()
 })
 </script>
 
@@ -225,10 +302,12 @@ onMounted(() => {
           <VCardTitle>Latest Statistics</VCardTitle>
           <template #append>
             <div class="date-picker-wrapper">
-              <AppDateTimePicker model-value="2022-06-09" prepend-inner-icon="tabler-calendar" placeholder="Select Date"
-                :config="$vuetify.display.smAndDown
-                    ? { position: 'auto center' }
-                    : { position: 'auto right' }
+              <!-- <AppDateTimePicker @update:modelValue="handleDateChange" -->
+              <AppDateTimePicker @update:modelValue="(val) => handleDateChange(val, 'customer-graphs')"
+                :model-value="minDateOncustomerChart.toISOString().split('T')[0]" prepend-inner-icon="tabler-calendar"
+                placeholder="Select Date" :config="$vuetify.display.smAndDown
+                  ? { position: 'auto center' }
+                  : { position: 'auto right' }
                   " />
             </div>
           </template>
@@ -242,7 +321,7 @@ onMounted(() => {
 
     <!-- 👉 Top Sold Items -->
     <VCol cols="12" md="6">
-      <AcademyTopicYouAreInterested :top-items-sold="topItemsSold" />
+      <AcademyTopicYouAreInterested :top-items-sold="topItemsSold" @dateChange="handleDateChange" :min-date="minDateOncustomerChart"/>
     </VCol>
     <!-- 👉 Top Sold Items End -->
 

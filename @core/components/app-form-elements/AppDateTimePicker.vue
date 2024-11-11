@@ -77,6 +77,7 @@ if (compAttrs.config && compAttrs.config.inline) {
 
 compAttrs.config = {
   ...compAttrs.config,
+  mode: "range",
   prevArrow:
     '<i class="tabler-chevron-left v-icon" style="font-size: 20px; height: 20px; width: 20px;"></i>',
   nextArrow:

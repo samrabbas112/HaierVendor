@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { useTheme } from "vuetify";
-import { getDonutChartConfig } from "@core/libs/apex-chart/apexCharConfig";
-const vuetifyTheme = useTheme();
+import { useTheme } from 'vuetify'
+import { getDonutChartConfig } from '@core/libs/apex-chart/apexCharConfig'
+
 const props = defineProps({
   series: {
     type: Array,
@@ -9,12 +9,49 @@ const props = defineProps({
   labels: {
     type: Array,
   },
-});
-const expenseRationChartConfig = computed(() =>
-  getDonutChartConfig(vuetifyTheme.current.value),
-);
+})
 
-expenseRationChartConfig.value.labels = props.labels;
+const vuetifyTheme = useTheme()
+
+// const expenseRationChartConfig = computed(() =>
+//   getDonutChartConfig(vuetifyTheme.current.value),
+// );
+
+// expenseRationChartConfig.value.labels = props.labels;
+
+// Check if all values in series are 0
+const isSeriesZero = computed(() => props.series.every(value => value === 0));
+
+// Configure the chart
+const expenseRationChartConfig = computed(() => {
+  const config = getDonutChartConfig(vuetifyTheme.current.value);
+
+  config.labels = props.labels
+
+  // Apply gray color if all series values are zero
+  config.colors = isSeriesZero.value ? ['#D3D3D3'] : undefined; // Gray color for zero values
+
+  // Customize the center label to show 0% if series is zero
+  config.plotOptions = {
+    pie: {
+      donut: {
+        labels: {
+          show: true,
+          total: {
+            show: true,
+            label: 'Total',
+            formatter: () => {
+              // Show "0%" if all values are zero
+              return isSeriesZero.value ? '0%' : '100%'
+            },
+          },
+        },
+      },
+    },
+  }
+
+  return config
+})
 </script>
 
 <template>
