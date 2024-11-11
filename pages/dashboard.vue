@@ -6,12 +6,14 @@ import ChartJsLineChart from '@/views/charts/chartjs/ChartJsLineChart.vue'
 import LogisticsOverviewTable from '@/views/dashboards/logistics/LogisticsOverviewTable.vue'
 import ChartJsBarChart from '@/views/charts/chartjs/ChartJsBarChart.vue'
 import { useLoaderStore } from '@/stores/loader'
+import { useSnackbarStore } from '@/stores/snackbar'
 
 definePageMeta({
   middleware: ['auth'],
 })
 
 const loaderStore = useLoaderStore()
+const snackbarStore = useSnackbarStore()
 const authStore = useAuthStore()
 const api = useApi()
 
@@ -209,16 +211,17 @@ const handleDateChange = async (newDate, key) => {
 
   const dateRegex = /(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})/;
 
-   // Check if the current date is null
-   const isNewDateNull = !newDate || !newDate.trim();
-   const wasPreviousDateNull = !lastDateRanges.has(key) || !lastDateRanges.get(key);
+  // Check if the current date is null
+  const isNewDateNull = !newDate || !newDate.trim();
+  const wasPreviousDateNull = !lastDateRanges.has(key) || !lastDateRanges.get(key);
 
-   // If newDate and previous date are both null, skip the API call
+  // If newDate and previous date are both null, skip the API call
   if (isNewDateNull && wasPreviousDateNull) {
     console.log("No change detected and both dates are null, skipping API call.");
     return;
   }
-  if(newDate && !newDate.includes("to")){
+  if (newDate && !newDate.includes("to")) {
+    snackbarStore.showSnackbar("Please select date in range", 'primary')
     return;
   }
 
@@ -227,7 +230,7 @@ const handleDateChange = async (newDate, key) => {
 
     // Check if the current range matches the last range for this key
     if (
-      lastDateRanges.has(key) && 
+      lastDateRanges.has(key) &&
       lastDateRanges.get(key) &&
       lastDateRanges.get(key).start === match[1] &&
       lastDateRanges.get(key).end === match[2]
@@ -283,6 +286,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <SnackBar />
   <VRow class="match-height">
     <VCol cols="12">
       <LogisticsCardStatistics :stats="ordersData" />
