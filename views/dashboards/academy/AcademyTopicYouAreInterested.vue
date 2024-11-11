@@ -3,7 +3,6 @@ import { defineEmits, defineProps } from 'vue';
 
 const props = defineProps<{
   topItemsSold: Array<{ vendor_id: number; product_name: string; total_sales: string }>
-  minDate: string
 }>()
 
 // Define emit for update:modelValue event
@@ -216,7 +215,7 @@ const topicsData = [
             <div class="date-picker-wrapper">
               <AppDateTimePicker
                 @update:modelValue="handleDateChange"
-                model-value="2024-05-05" prepend-inner-icon="tabler-calendar"
+                :model-value="new Date()" prepend-inner-icon="tabler-calendar"
                 placeholder="Select Date" :config="$vuetify.display.smAndDown
                   ? { position: 'auto center' }
                   : { position: 'auto right' }

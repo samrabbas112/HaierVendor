@@ -321,7 +321,7 @@ onMounted(() => {
 
     <!-- 👉 Top Sold Items -->
     <VCol cols="12" md="6">
-      <AcademyTopicYouAreInterested :top-items-sold="topItemsSold" @dateChange="handleDateChange" :min-date="minDateOncustomerChart"/>
+      <AcademyTopicYouAreInterested :top-items-sold="topItemsSold" @dateChange="handleDateChange" />
     </VCol>
     <!-- 👉 Top Sold Items End -->
 
