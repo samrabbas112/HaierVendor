@@ -9,9 +9,9 @@ const props = defineProps<{
 const emit = defineEmits(['dateChange'])
 
 // Emit event function to trigger 'update:modelValue' with the selected date
-const handleDateChange = (newDate: string) => {
+const handleDateChange = (newDate: string, isCalenderOpen) => {
   let key = 'top-item-sold'
-  emit('dateChange', newDate, key);
+  emit('dateChange', newDate, isCalenderOpen.value, key);
 };
 
 // Function to round to the nearest even number
@@ -212,7 +212,7 @@ const topicsData = [
   <VCard>
     <VCardItem title="Top Items Sold" class="d-flex flex-wrap justify-space-between gap-4"> 
           <template #append>
-            <div class="date-picker-wrapper">
+            <div class="date-picker-wrapper" style="width: 240px;">
               <AppDateTimePicker
                 @update:modelValue="handleDateChange"
                 model-value="" prepend-inner-icon="tabler-calendar"

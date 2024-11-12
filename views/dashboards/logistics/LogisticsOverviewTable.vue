@@ -134,8 +134,8 @@ const formattedDate = unFormattedDate => {
       </template>
       <template #bottom> </template>
     </VDataTableServer>
-    <VCardItem>
+    <!-- <VCardItem>
       <template #append> </template>
-    </VCardItem>
+    </VCardItem> -->
   </VCard>
 </template>

@@ -119,7 +119,7 @@ onMounted(() => {
 });
 
 const emitModelValue = (val: string) => {
-  emit("update:modelValue", val);
+  emit("update:modelValue", val, isCalendarOpen);
 };
 
 watch(
@@ -310,14 +310,15 @@ input[altinputclass="inlinePicker"] {
     &.today {
       &:not(.selected) {
         border: none !important;
-        background: rgba(var(--v-theme-primary), 0.24);
-        color: rgb(var(--v-theme-primary));
+        // background: rgba(var(--v-theme-primary), 0.24);
+        // color: rgb(var(--v-theme-primary));
       }
 
       &:hover {
         border: none !important;
-        background: rgba(var(--v-theme-primary), 0.24);
-        color: rgb(var(--v-theme-primary));
+        // background: rgba(var(--v-theme-primary), 0.24);
+        // color: rgb(var(--v-theme-primary));
+        color: #393939;;
       }
     }
 

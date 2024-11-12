@@ -53,6 +53,10 @@ const chartJsCustomColors: ChartJsCustomColors = {
   scatterChartWarning: '#ff9f43',
 }
 
+function replaceUnderscoreWithSpace(inputString) {
+  return inputString.replace(/_/g, ' ');
+}
+
 // const series = [85, 16, 50, 50, 20]
 
 // const labels = [
@@ -103,7 +107,7 @@ const getCustomerData = async () => {
       toDate: rangeDate.value[1],
     }
 
-    console.log('params-ahmad', params)
+    console.log('params', params)
 
     const res = await api.makeRequest('admin/dashboard/customer/graphs', 'post', params)
 
@@ -158,7 +162,7 @@ const getOrderSummery = async () => {
       orderSummaryLabels.length = 0
 
       Object.keys(res?.data).forEach(key => {
-        orderSummaryLabels.push(key)
+        orderSummaryLabels.push(replaceUnderscoreWithSpace(key))
         orderSummary.push(res?.data?.[key] || 0)
         // orderSummary.push(0)
       })
@@ -207,9 +211,8 @@ const getTableData = async () => {
 
 const lastDateRanges = new Map();
 
-const handleDateChange = async (newDate, key) => {
-
-  const dateRegex = /(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})/;
+const handleDateChange = async (newDate, isCalendarOpen, key) => {
+  const dateRegex = /(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})/
 
   // Check if the current date is null
   const isNewDateNull = !newDate || !newDate.trim();
@@ -221,7 +224,7 @@ const handleDateChange = async (newDate, key) => {
     return;
   }
   if (newDate && !newDate.includes("to")) {
-    snackbarStore.showSnackbar("Please select a start and end date", 'primary')
+    !isCalendarOpen && snackbarStore.showSnackbar("Please select a start and end date", 'primary')
     return;
   }
 
@@ -292,7 +295,7 @@ onMounted(() => {
       <LogisticsCardStatistics :stats="ordersData" />
     </VCol>
 
-    <VCol cols="6">
+    <VCol cols="12" md="6">
       <VCard title="Delivered Orders" subtitle="">
         <VCardText>
           <ChartJsLineChart :colors="chartJsCustomColors" :sales="salesData" />
@@ -305,9 +308,10 @@ onMounted(() => {
         <VCardItem class="d-flex flex-wrap justify-space-between gap-4">
           <VCardTitle>Latest Statistics</VCardTitle>
           <template #append>
-            <div class="date-picker-wrapper">
+            <div class="date-picker-wrapper" style="width: 240px;">
               <!-- <AppDateTimePicker @update:modelValue="handleDateChange" -->
-              <AppDateTimePicker @update:modelValue="(val) => handleDateChange(val, 'customer-graphs')"
+              <AppDateTimePicker @update:modelValue="(val, isCalendarOpen) => handleDateChange(val,isCalendarOpen.value, 'customer-graphs')"
+                @click:clear="handleNext"
                 model-value="" prepend-inner-icon="tabler-calendar"
                 placeholder="Select Date" :config="$vuetify.display.smAndDown
                   ? { position: 'auto center' }
