@@ -221,7 +221,7 @@ const handleDateChange = async (newDate, key) => {
     return;
   }
   if (newDate && !newDate.includes("to")) {
-    snackbarStore.showSnackbar("Please select date in range", 'primary')
+    snackbarStore.showSnackbar("Please select a start and end date", 'primary')
     return;
   }
 
@@ -308,7 +308,7 @@ onMounted(() => {
             <div class="date-picker-wrapper">
               <!-- <AppDateTimePicker @update:modelValue="handleDateChange" -->
               <AppDateTimePicker @update:modelValue="(val) => handleDateChange(val, 'customer-graphs')"
-                :model-value="minDateOncustomerChart.toISOString().split('T')[0]" prepend-inner-icon="tabler-calendar"
+                model-value="" prepend-inner-icon="tabler-calendar"
                 placeholder="Select Date" :config="$vuetify.display.smAndDown
                   ? { position: 'auto center' }
                   : { position: 'auto right' }

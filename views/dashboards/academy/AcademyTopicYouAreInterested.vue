@@ -215,7 +215,7 @@ const topicsData = [
             <div class="date-picker-wrapper">
               <AppDateTimePicker
                 @update:modelValue="handleDateChange"
-                :model-value="new Date()" prepend-inner-icon="tabler-calendar"
+                model-value="" prepend-inner-icon="tabler-calendar"
                 placeholder="Select Date" :config="$vuetify.display.smAndDown
                   ? { position: 'auto center' }
                   : { position: 'auto right' }
