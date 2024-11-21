@@ -2,9 +2,11 @@
 import avatar1 from "@images/avatars/avatar-1.png";
 const authStore = useAuthStore();
 const router = useRouter();
+const snackBarStore = useSnackbarStore()
 
 const logOut = () => {
   authStore.logout();
+  snackBarStore.showSnackbar("Goodbye! You have been successfully logged out.", 'primary')
   router.push("/login");
 };
 </script>

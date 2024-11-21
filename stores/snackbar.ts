@@ -8,6 +8,7 @@ export const useSnackbarStore = defineStore('snackbar', () => {
 
   // Show snackbar with a custom message and optional color
   function showSnackbar(newMessage: string, newColor: string = 'success') {
+    isVisible.value = false;
     message.value = newMessage;
     color.value = newColor;
     isVisible.value = true;
@@ -15,7 +16,7 @@ export const useSnackbarStore = defineStore('snackbar', () => {
     // Auto-hide after 3 seconds (or any time you prefer)
   setTimeout(() => {
     isVisible.value = false;
-  }, 3000);  // 3000 ms = 3 seconds
+  }, 5000);  // 3000 ms = 3 seconds
   
   }
 

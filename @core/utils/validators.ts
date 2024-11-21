@@ -115,4 +115,19 @@ export const alphaDashValidator = (value: unknown) => {
   const valueAsString = String(value);
 
   return /^[\w-]*$/.test(valueAsString) || "All Character are not valid";
+}
+export const phoneValidator = (value: unknown) => {
+  let phoneNumber = String(value).trim();
+
+  // Remove non-digit characters
+  phoneNumber = phoneNumber.replace(/\D/g, '');
+
+  // Regular expression to check if the phone number starts with 03 and is followed by 9 digits
+  const phoneNumberRegex = /^03\d{9}$/;
+
+  if (!phoneNumberRegex.test(phoneNumber)) {
+    return 'Phone number should start with 03 and must be exactly 11 digits long.';
+  }
+
+  return true; // Return true if validation passes
 };
