@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { useGenerateImageVariant } from "@core/composable/useGenerateImageVariant";
-import authV2LoginIllustrationBorderedDark from "@images/pages/auth-v2-login-illustration-bordered-dark.png";
-import authV2LoginIllustrationBorderedLight from "@images/pages/auth-v2-login-illustration-bordered-light.png";
-import authV2LoginIllustrationDark from "@images/pages/auth-v2-login-illustration-dark.png";
-import authV2LoginIllustrationLight from "@images/pages/auth-v2-login-illustration-light.png";
-import authV2MaskDark from "@images/pages/misc-mask-dark.png";
-import authV2MaskLight from "@images/pages/misc-mask-light.png";
-import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
-import { themeConfig } from "@themeConfig";
+import { onMounted, ref } from 'vue'
+import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
+import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
+import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
+import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
+import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustration-light.png'
+import authV2MaskDark from '@images/pages/misc-mask-dark.png'
+import authV2MaskLight from '@images/pages/misc-mask-light.png'
+import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
+import { themeConfig } from '@themeConfig'
 import { useSnackbarStore } from '@/stores/snackbar'
 
 definePageMeta({
-  layout: "blank",
+  layout: 'blank',
   public: true,
-  middleware: ["guest"],
-});
+  middleware: ['guest'],
+})
 
 const form = ref({
-  email: "lahore@haier.com",
-  password: "Haier@123",
+  email: 'lahore@haier.com',
+  password: 'Password@123',
   remember: false,
-});
+})
 
-const toast = useToastStore();
-const loader = useLoaderStore();
+const toast = useToastStore()
+const loader = useLoaderStore()
 const snackbarStore = useSnackbarStore()
-const isPasswordVisible = ref(false);
-const authStore = useAuthStore();
-const router = useRouter();
-const apiRequestObj = useApi();
+const isPasswordVisible = ref(false)
+const authStore = useAuthStore()
+const router = useRouter()
+const apiRequestObj = useApi()
 
 const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationLight,
@@ -37,14 +37,15 @@ const authThemeImg = useGenerateImageVariant(
   authV2LoginIllustrationBorderedLight,
   authV2LoginIllustrationBorderedDark,
   true,
-);
+)
 
-const isLoading = ref(false);
+const isLoading = ref(false)
 
-const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark);
+const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
 const submitForm = async () => {
   isLoading.value = true
+
   /**
    * Constructing the payload object for the login request
    *
@@ -57,32 +58,34 @@ const submitForm = async () => {
     email: form.value.email,
     password: form.value.password,
     termsConditions: true,
-    firebase_token: localStorage.getItem("firebaseToken") ?? "",
-    remember_token: form.value.remember
-  };
+    firebase_token: localStorage.getItem('firebaseToken') ?? '',
+    remember_token: form.value.remember,
+  }
 
   const response = await apiRequestObj.makeRequest(
-    "admin/authentication/login",
-    "post",
+    'admin/authentication/login',
+    'post',
     payload,
-  );
+  )
+
   if (response && response.success) {
-    console.log("response:", response);
-    authStore.login({ user: response.data, token: response.data.authToken });
-    await router.push("/dashboard");
-    snackbarStore.showSnackbar("Logged in successfully", 'success');
-  } else {
-    snackbarStore.showSnackbar("Incorrect Email or Password", 'error');
-    console.error("Login failed");
+    console.log('response:', response)
+    authStore.login({ user: response.data, token: response.data.authToken })
+    await router.push('/dashboard')
+    snackbarStore.showSnackbar('Logged in successfully', 'success')
   }
-  console.log("respose", response);
+  else {
+    snackbarStore.showSnackbar('Incorrect Email or Password', 'error')
+    console.error('Login failed')
+  }
+  console.log('respose', response)
   isLoading.value = false
-};
+}
 
 onMounted(() => {
   // toast.showToast('Component mounted successfully!', 'error')
   // loader.showLoader();
-});
+})
 </script>
 
 <template>
@@ -96,8 +99,14 @@ onMounted(() => {
     </div>
   </a>
 
-  <VRow no-gutters class="auth-wrapper bg-surface">
-    <VCol md="8" class="d-none d-md-flex">
+  <VRow
+    no-gutters
+    class="auth-wrapper bg-surface"
+  >
+    <VCol
+      md="8"
+      class="d-none d-md-flex"
+    >
       <div class="position-relative bg-background w-100 me-0">
         <div
           class="d-flex align-center justify-center w-100 h-100"
@@ -116,7 +125,7 @@ onMounted(() => {
           alt="auth-footer-mask"
           height="280"
           width="100"
-        />
+        >
       </div>
     </VCol>
 
@@ -125,7 +134,11 @@ onMounted(() => {
       md="4"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-6">
+      <VCard
+        flat
+        :max-width="500"
+        class="mt-12 mt-sm-0 pa-6"
+      >
         <VCardText>
           <h4 class="text-h4 mb-1">
             Welcome to
@@ -162,10 +175,11 @@ onMounted(() => {
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
-                <div
-                  class="d-flex align-center flex-wrap justify-space-between my-6"
-                >
-                  <VCheckbox v-model="form.remember" label="Remember me" />
+                <div class="d-flex align-center flex-wrap justify-space-between my-6">
+                  <VCheckbox
+                    v-model="form.remember"
+                    label="Remember me"
+                  />
                   <NuxtLink
                     class="text-primary"
                     :to="{ name: 'authentication-forgot-password' }"
@@ -174,45 +188,56 @@ onMounted(() => {
                   </NuxtLink>
                 </div>
 
-                <VBtn block @click="!isLoading && submitForm()">
+                <VBtn
+                  block
+                  @click="!isLoading && submitForm()"
+                >
                   <VProgressCircular
                     v-if="isLoading"
                     indeterminate
                     color="white"
                   />
-                  <template v-else> Login </template>
+                  <template v-else>
+                    Login
+                  </template>
                 </VBtn>
               </VCol>
-              <VCol cols="12" class="text-body-1 text-right">
-                <span>By signing up, you agree to the </span
-                ><a
+              <VCol
+                cols="12"
+                class="text-body-1 text-right"
+              >
+                <span>By signing up, you agree to the </span><a
                   class="text-primary ms-1 d-inline-block text-body-1"
                   href="javascript:void(0)"
-                  >Haier terms of service
+                >Haier terms of service
                 </a>
               </VCol>
-              <!-- <VCol
+              <!--
+                <VCol
                 cols="12"
                 class="d-flex align-center"
-              >
+                >
                 <VDivider />
                 <span class="mx-4">or</span>
                 <VDivider />
-              </VCol> -->
+                </VCol>
+              -->
 
               <!-- create account -->
-              <!-- <VCol
+              <!--
+                <VCol
                 cols="12"
                 class="text-body-1 text-center"
-              >
+                >
                 <span class="d-inline-block"> New on our platform? </span>
                 <NuxtLink
-                  class="text-primary ms-1 d-inline-block text-body-1"
-                  :to="{ name: 'authentication-register' }"
+                class="text-primary ms-1 d-inline-block text-body-1"
+                :to="{ name: 'authentication-register' }"
                 >
-                  Create an account
+                Create an account
                 </NuxtLink>
-              </VCol> -->
+                </VCol>
+              -->
             </VRow>
           </VForm>
         </VCardText>

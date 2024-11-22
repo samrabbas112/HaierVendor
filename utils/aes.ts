@@ -143,7 +143,7 @@ export class Aes {
     this.times = key;
   }
 
-  private doEncrypt(plainText: string): string {
+  public doEncrypt(plainText: string): string {
     const encrypted = CryptoJS.AES.encrypt(plainText, this.times, {
       iv: CryptoJS.enc.Latin1.parse(this.iv),
       mode: CryptoJS.mode.ECB,

@@ -2,6 +2,22 @@ import { RequestStatusCode } from '@/utils/constants'
 
 const aes = new Aes()
 export const useApi = () => {
+  const handleError = (error: any) => {
+    if (error.status === RequestStatusCode.HTTP_UNAUTHORIZED) {
+      console.log('status', RequestStatusCode.HTTP_UNAUTHORIZED)
+      useAuthStore().logout()
+      useRouter().push('/login').then()
+    }
+    log('<-', {
+      method: 'error',
+      path: '',
+      data: error.data,
+      color: '#ff6633',
+    })
+
+    return error.data ?? error
+  }
+
   const makeRequest = async (
     url: string,
     method: string,
@@ -72,22 +88,6 @@ export const useApi = () => {
     catch (error) {
       handleError(error)
     }
-  }
-
-  const handleError = (error: any) => {
-    if (error.status === RequestStatusCode.HTTP_UNAUTHORIZED) {
-      console.log('status', RequestStatusCode.HTTP_UNAUTHORIZED)
-      useAuthStore().logout()
-      useRouter().push('/login').then()
-    }
-    log('<-', {
-      method: 'error',
-      path: '',
-      data: error.data,
-      color: '#ff6633',
-    })
-
-    return error.data ?? error
   }
 
   return {

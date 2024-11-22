@@ -1,20 +1,15 @@
 <script setup lang="ts">
-import masterCardDark from '@images/icons/payments/img/master-dark.png'
-import masterCardLight from '@images/icons/payments/img/mastercard.png'
-import paypalDark from '@images/icons/payments/img/paypal-dark.png'
-import paypalLight from '@images/icons/payments/img/paypal-light.png'
+import mockUsers from './mock-json/mock-users.json'
+// Adjust the path as necessary
+import AddNewUserDrawer from '@/views/user/list/AddNewUserDrawer.vue'
+import type { UserProperties } from '@db/apps/users/types'
 
-const widgetData = ref([
-  { title: 'Pending Payment', value: 56, icon: 'tabler-calendar-stats' },
-  { title: 'Completed', value: 12689, icon: 'tabler-checks' },
-  { title: 'Refunded', value: 124, icon: 'tabler-wallet' },
-  { title: 'Failed', value: 32, icon: 'tabler-alert-octagon' },
-])
-
-const mastercard = useGenerateImageVariant(masterCardLight, masterCardDark)
-const paypal = useGenerateImageVariant(paypalLight, paypalDark)
-
+// 👉 Store
 const searchQuery = ref('')
+const selectedRole = ref()
+const selectedPlan = ref()
+const selectedStatus = ref()
+// const usersData = ref();
 
 // Data table options
 const itemsPerPage = ref(10)
@@ -23,227 +18,227 @@ const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
 
-// Data table Headers
-const headers = [
-  { title: 'Order', key: 'order' },
-  { title: 'Date', key: 'date' },
-  { title: 'Customers', key: 'customers' },
-  { title: 'Payment', key: 'payment', sortable: false },
-  { title: 'Status', key: 'status' },
-  { title: 'Method', key: 'method', sortable: false },
-  { title: 'Action', key: 'actions', sortable: false },
-]
-
 // Update data table options
 const updateOptions = (options: any) => {
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
 }
 
-const resolvePaymentStatus = (status: number) => {
-  if (status === 1)
-    return { text: 'Paid', color: 'success' }
-  if (status === 2)
-    return { text: 'Pending', color: 'warning' }
-  if (status === 3)
-    return { text: 'Cancelled', color: 'secondary' }
-  if (status === 4)
-    return { text: 'Failed', color: 'error' }
+// Headers
+const headers = [
+  { title: 'SR', key: 'sr' },
+  { title: 'Vendor ID', key: 'vendor-id' },
+  { title: 'Vendor Detail', key: 'vendor-detail' },
+  { title: 'Status', key: 'status' },
+  { title: 'Creation Time', key: 'create-time' },
+  { title: 'Actions', key: 'actions', sortable: false },
+]
+
+// Async function to fetch mock data
+async function fetchMockUsers() {
+  return mockUsers
 }
 
-const resolveStatus = (status: string) => {
-  if (status === 'Delivered')
-    return { text: 'Delivered', color: 'success' }
-  if (status === 'Out for Delivery')
-    return { text: 'Out for Delivery', color: 'primary' }
-  if (status === 'Ready to Pickup')
-    return { text: 'Ready to Pickup', color: 'info' }
-  if (status === 'Dispatched')
-    return { text: 'Dispatched', color: 'warning' }
+const { data: usersData } = await fetchMockUsers()
+
+// Log the fetched data
+if (usersData)
+  console.log('Fetched Users Data:', usersData)
+else
+  console.error('No data fetched.')
+
+// 👉 Fetch users on component mount
+onMounted(async () => {
+  const fetchedData = await fetchMockUsers();
+  if (fetchedData?.data) {
+    usersData.value = fetchedData.data; // Populate the `usersData` array
+    totalUsers.value = fetchedData.data.length; // Calculate total users
+    console.log('Fetched Users Data:', usersData.value);
+  } else {
+    console.error('No data fetched.');
+  }
+});
+
+// Computed properties
+const users = computed(() => usersData.value || []); // Reactive `users` array
+
+console.log('users: ', usersData);
+console.log('totalUsers: ', usersData.length)
+// 👉 search filters
+const roles = [
+  { title: 'Admin', value: 'admin' },
+  { title: 'Author', value: 'author' },
+  { title: 'Editor', value: 'editor' },
+  { title: 'Maintainer', value: 'maintainer' },
+  { title: 'Subscriber', value: 'subscriber' },
+]
+
+const plans = [
+  { title: 'Basic', value: 'basic' },
+  { title: 'Company', value: 'company' },
+  { title: 'Enterprise', value: 'enterprise' },
+  { title: 'Team', value: 'team' },
+]
+
+const status = [
+  { title: 'Pending', value: 'pending' },
+  { title: 'Active', value: 'active' },
+  { title: 'Inactive', value: 'inactive' },
+]
+
+const resolveUserRoleVariant = (role: string) => {
+  const roleLowerCase = role.toLowerCase()
+
+  if (roleLowerCase === 'subscriber')
+    return { color: 'success', icon: 'tabler-user' }
+  if (roleLowerCase === 'author')
+    return { color: 'error', icon: 'tabler-device-desktop' }
+  if (roleLowerCase === 'maintainer')
+    return { color: 'info', icon: 'tabler-chart-pie' }
+  if (roleLowerCase === 'editor')
+    return { color: 'warning', icon: 'tabler-edit' }
+  if (roleLowerCase === 'admin')
+    return { color: 'primary', icon: 'tabler-crown' }
+
+  return { color: 'primary', icon: 'tabler-user' }
 }
 
-const status = ref([
-  { title: 'Scheduled', value: 'Scheduled' },
-  { title: 'Publish', value: 'Published' },
-  { title: 'Inactive', value: 'Inactive' },
-])
+const resolveUserStatusVariant = (stat: string) => {
+  const statLowerCase = stat.toLowerCase()
+  if (statLowerCase === 'pending')
+    return 'warning'
+  if (statLowerCase === 'active')
+    return 'success'
+  if (statLowerCase === 'inactive')
+    return 'secondary'
 
-const categories = ref([
-  { title: 'Accessories', value: 'Accessories' },
-  { title: 'Home Decor', value: 'Home Decor' },
-  { title: 'Electronics', value: 'Electronics' },
-  { title: 'Shoes', value: 'Shoes' },
-  { title: 'Office', value: 'Office' },
-  { title: 'Games', value: 'Games' },
-])
-
-const stockStatus = ref([
-  { title: 'In Stock', value: true },
-  { title: 'Out of Stock', value: false },
-])
-
-// Fetch Orders
-const ordersData = {
-  total: 100,
-  orders: [
-    {
-      id: 100,
-      order: 9042,
-      customer: 'Chere Schofield',
-      email: 'cschofield2r@ucsd.edu',
-      avatar: '',
-      payment: 2,
-      status: 'Ready to Pickup',
-      spent: 815.77,
-      method: 'mastercard',
-      date: '2/1/2023',
-      time: '4:12 PM',
-      methodNumber: 3949,
-    },
-    {
-      id: 99,
-      order: 7189,
-      customer: 'Boycie Hartmann',
-      email: 'bhartmann2q@addthis.com',
-      avatar: '',
-      payment: 3,
-      status: 'Out for Delivery',
-      spent: 704.86,
-      method: 'paypalLogo',
-      date: '1/2/2023',
-      time: '8:55 PM',
-      methodNumber: 6424,
-    },
-    {
-      id: 98,
-      order: 8114,
-      customer: 'Ulysses Goodlife',
-      email: 'ugoodlife2p@blogger.com',
-      avatar: '/images/avatars/avatar-2.png',
-      payment: 3,
-      status: 'Ready to Pickup',
-      spent: 746.38,
-      method: 'mastercard',
-      date: '4/8/2023',
-      time: '3:39 AM',
-      methodNumber: 4509,
-    },
-    {
-      id: 97,
-      order: 7064,
-      customer: 'Carmon Vasiljevic',
-      email: 'cvasiljevic2o@odnoklassniki.ru',
-      avatar: '/images/avatars/avatar-8.png',
-      payment: 3,
-      status: 'Delivered',
-      spent: 595.25,
-      method: 'paypalLogo',
-      date: '3/20/2023',
-      time: '3:11 PM',
-      methodNumber: 4892,
-    },
-    {
-      id: 96,
-      order: 5911,
-      customer: 'Hilliard Merck',
-      email: 'hmerck2n@printfriendly.com',
-      avatar: '',
-      payment: 4,
-      status: 'Out for Delivery',
-      spent: 237.91,
-      method: 'paypalLogo',
-      date: '8/14/2022',
-      time: '3:26 PM',
-      methodNumber: 3196,
-    },
-    {
-      id: 95,
-      order: 6111,
-      customer: 'Chad Cock',
-      email: 'ccock2m@g.co',
-      avatar: '',
-      payment: 4,
-      status: 'Ready to Pickup',
-      spent: 669.45,
-      method: 'mastercard',
-      date: '3/11/2023',
-      time: '10:43 AM',
-      methodNumber: 1014,
-    },
-    {
-      id: 94,
-      order: 8767,
-      customer: 'Lyndsey Dorey',
-      email: 'ldorey2l@barnesandnoble.com',
-      avatar: '/images/avatars/avatar-2.png',
-      payment: 3,
-      status: 'Ready to Pickup',
-      spent: 738.42,
-      method: 'mastercard',
-      date: '8/29/2022',
-      time: '5:24 AM',
-      methodNumber: 3432,
-    },
-    {
-      id: 93,
-      order: 7931,
-      customer: 'Octavius Whitchurch',
-      email: 'owhitchurch2k@google.ca',
-      avatar: '/images/avatars/avatar-7.png',
-      payment: 3,
-      status: 'Dispatched',
-      spent: 383.52,
-      method: 'mastercard',
-      date: '12/26/2022',
-      time: '9:49 AM',
-      methodNumber: 8585,
-    },
-    {
-      id: 92,
-      order: 7280,
-      customer: 'Sibley Braithwait',
-      email: 'sbraithwait2j@webmd.com',
-      avatar: '',
-      payment: 1,
-      status: 'Ready to Pickup',
-      spent: 554.91,
-      method: 'mastercard',
-      date: '12/6/2022',
-      time: '2:11 AM',
-      methodNumber: 8535,
-    },
-    {
-      id: 91,
-      order: 7094,
-      customer: 'Damara Figgins',
-      email: 'dfiggins2i@de.vu',
-      avatar: '',
-      payment: 2,
-      status: 'Delivered',
-      spent: 62.62,
-      method: 'mastercard',
-      date: '6/29/2022',
-      time: '6:51 AM',
-      methodNumber: 8321,
-    },
-  ],
+  return 'primary'
 }
 
-console.log({ ordersData })
+const isAddNewUserDrawerVisible = ref(false)
 
-const orders = computed((): Order[] => ordersData.orders)
-const totalOrder = computed(() => ordersData.total)
+// 👉 Add new user
+const addNewUser = async (userData: UserProperties) => {
+  await $api('/apps/users', {
+    method: 'POST',
+    body: userData,
+  })
 
-// Delete Orders
-const deleteOrder = async (id: number) => {}
+  // Refetch User
+  fetchUsers()
+}
+
+// 👉 Delete user
+const deleteUser = async (id: number) => {
+  await $api(`/apps/users/${id}`, {
+    method: 'DELETE',
+  })
+
+  // Delete from selectedRows
+  const index = selectedRows.value.findIndex(row => row === id)
+  if (index !== -1)
+    selectedRows.value.splice(index, 1)
+
+  // refetch User
+  // TODO: Make this async
+  fetchUsers()
+}
+
+const widgetData = ref([
+  { title: 'Total Customers', value: '21', change: 29, desc: 'Total Vendor', icon: 'tabler-users', iconColor: 'primary' },
+  { title: 'Active Customers', value: '19', change: -14, desc: 'Total Active Vendor', icon: 'tabler-user-check', iconColor: 'success' },
+  { title: 'InActive Customers', value: '2', change: 42, desc: 'Last Week Analytics', icon: 'tabler-user-search', iconColor: 'error' },
+])
 </script>
 
 <template>
-  <div>
-    <VCard>
-      <!-- 👉 Filters -->
+  <section>
+    <!-- 👉 Widgets -->
+    <div class="d-flex mb-6">
+      <VRow>
+        <template
+          v-for="(data, id) in widgetData"
+          :key="id"
+        >
+          <VCol
+            cols="12"
+            md="3"
+            sm="6"
+          >
+            <VCard>
+              <VCardText>
+                <div class="d-flex justify-space-between">
+                  <div class="d-flex flex-column gap-y-1">
+                    <div class="text-body-1 text-high-emphasis">
+                      {{ data.title }}
+                    </div>
+                    <div class="d-flex gap-x-2 align-center">
+                      <h4 class="text-h4">
+                        {{ data.value }}
+                      </h4>
+                      <div
+                        class="text-base"
+                        :class="data.change > 0 ? 'text-success' : 'text-error'"
+                      >
+                        ({{ prefixWithPlus(data.change) }}%)
+                      </div>
+                    </div>
+                    <div class="text-sm">
+                      {{ data.desc }}
+                    </div>
+                  </div>
+                  <VAvatar
+                    :color="data.iconColor"
+                    variant="tonal"
+                    rounded
+                    size="42"
+                  >
+                    <VIcon
+                      :icon="data.icon"
+                      size="26"
+                    />
+                  </VAvatar>
+                </div>
+              </VCardText>
+            </VCard>
+          </VCol>
+        </template>
+      </VRow>
+    </div>
+
+    <VCard class="mb-6">
+      <VCardItem class="pb-4">
+        <VCardTitle>Filters</VCardTitle>
+      </VCardItem>
+
       <VCardText>
         <VRow>
+          <!-- 👉 Select Role -->
+          <VCol
+            cols="12"
+            sm="4"
+          >
+            <AppSelect
+              v-model="selectedRole"
+              placeholder="Select Role"
+              :items="roles"
+              clearable
+              clear-icon="tabler-x"
+            />
+          </VCol>
+          <!-- 👉 Select Plan -->
+          <VCol
+            cols="12"
+            sm="4"
+          >
+            <AppSelect
+              v-model="selectedPlan"
+              placeholder="Select Plan"
+              :items="plans"
+              clearable
+              clear-icon="tabler-x"
+            />
+          </VCol>
           <!-- 👉 Select Status -->
           <VCol
             cols="12"
@@ -251,159 +246,176 @@ const deleteOrder = async (id: number) => {}
           >
             <AppSelect
               v-model="selectedStatus"
-              placeholder="Status"
+              placeholder="Select Status"
               :items="status"
-              clearable
-              clear-icon="tabler-x"
-            />
-          </VCol>
-
-          <!-- 👉 Select Category -->
-          <VCol
-            cols="12"
-            sm="4"
-          >
-            <AppSelect
-              v-model="selectedCategory"
-              placeholder="Category"
-              :items="categories"
-              clearable
-              clear-icon="tabler-x"
-            />
-          </VCol>
-
-          <!-- 👉 Select Stock Status -->
-          <VCol
-            cols="12"
-            sm="4"
-          >
-            <AppSelect
-              v-model="selectedStock"
-              placeholder="Stock"
-              :items="stockStatus"
               clearable
               clear-icon="tabler-x"
             />
           </VCol>
         </VRow>
       </VCardText>
+
       <VDivider />
 
-      <!-- 👉 Order Table -->
+      <VCardText class="d-flex flex-wrap gap-4">
+        <div class="me-3 d-flex gap-3">
+          <AppSelect
+            :model-value="itemsPerPage"
+            :items="[
+              { value: 10, title: '10' },
+              { value: 25, title: '25' },
+              { value: 50, title: '50' },
+              { value: 100, title: '100' },
+              { value: -1, title: 'All' },
+            ]"
+            style="inline-size: 6.25rem;"
+            @update:model-value="itemsPerPage = parseInt($event, 10)"
+          />
+        </div>
+        <VSpacer />
+
+        <div class="app-user-search-filter d-flex align-center flex-wrap gap-4">
+          <!-- 👉 Search  -->
+          <div style="inline-size: 15.625rem;">
+            <AppTextField
+              v-model="searchQuery"
+              placeholder="Search User"
+            />
+          </div>
+
+
+
+          <!-- 👉 Add user button -->
+          <VBtn
+            prepend-icon="tabler-plus"
+            @click="isAddNewUserDrawerVisible = true"
+          >
+            Add New Customer
+          </VBtn>
+        </div>
+      </VCardText>
+
+      <VDivider />
+
+      <!-- SECTION datatable -->
       <VDataTableServer
         v-model:items-per-page="itemsPerPage"
         v-model:model-value="selectedRows"
         v-model:page="page"
+        :items="users"
+        item-value="id"
+        :items-length="totalUsers"
         :headers="headers"
-        :items="orders"
-        :items-length="totalOrder"
         class="text-no-wrap"
+        show-select
         @update:options="updateOptions"
       >
-        <!-- Order ID -->
-        <template #item.order="{ item }">
-          <NuxtLink>
-            #{{ item.order }}
-          </NuxtLink>
-        </template>
-
-        <!-- Date -->
-        <template #item.date="{ item }">
-          {{ new Date(item.date).toDateString() }}
-        </template>
-
-        <!-- Customers  -->
-        <template #item.customers="{ item }">
-          <div class="d-flex align-center gap-x-3">
+        <!-- User -->
+        <template #item.user="{ item }">
+          <div class="d-flex align-center gap-x-4">
             <VAvatar
               size="34"
-              :color="!item.avatar.length ? 'primary' : ''"
-              :variant="!item.avatar.length ? 'tonal' : undefined"
+              :variant="!item.avatar ? 'tonal' : undefined"
+              :color="!item.avatar ? resolveUserRoleVariant(item.role).color : undefined"
             >
               <VImg
                 v-if="item.avatar"
                 :src="item.avatar"
               />
-
-              <span
-                v-else
-                class="font-weight-medium"
-              >{{
-                  avatarText(item.customer)
-                }}</span>
+              <span v-else>{{ avatarText(item.fullName) }}</span>
             </VAvatar>
-
             <div class="d-flex flex-column">
-              <div class="text-body-1 font-weight-medium">
-                <NuxtLink class="text-link">
-                  {{ item.customer }}
+              <h6 class="text-base">
+                <NuxtLink
+                  :to="{ name: 'apps-user-view-id', params: { id: item.id } }"
+                  class="font-weight-medium text-link"
+                >
+                  {{ item.fullName }}
                 </NuxtLink>
-              </div>
-              <div class="text-body-2">
+              </h6>
+              <div class="text-sm">
                 {{ item.email }}
               </div>
             </div>
           </div>
         </template>
 
-        <!-- Payments -->
-        <template #item.payment="{ item }">
-          <div
-            :class="`text-${resolvePaymentStatus(item.payment)?.color}`"
-            class="font-weight-medium d-flex align-center gap-x-2"
-          >
+        <!-- 👉 Role -->
+        <template #item.role="{ item }">
+          <div class="d-flex align-center gap-x-2">
             <VIcon
-              icon="tabler-circle-filled"
-              size="10"
+              :size="22"
+              :icon="resolveUserRoleVariant(item.role).icon"
+              :color="resolveUserRoleVariant(item.role).color"
             />
-            <div style="line-height: 22px">
-              {{ resolvePaymentStatus(item.payment)?.text }}
+
+            <div class="text-capitalize text-high-emphasis text-body-1">
+              {{ item.role }}
             </div>
+          </div>
+        </template>
+
+        <!-- Plan -->
+        <template #item.plan="{ item }">
+          <div class="text-body-1 text-high-emphasis text-capitalize">
+            {{ item.currentPlan }}
           </div>
         </template>
 
         <!-- Status -->
         <template #item.status="{ item }">
           <VChip
-            v-bind="resolveStatus(item.status)"
-            label
+            :color="resolveUserStatusVariant(item.status)"
             size="small"
-          />
-        </template>
-
-        <!-- Method -->
-        <template #item.method="{ item }">
-          <div class="d-flex align-center">
-            <img
-              :src="item.method === 'mastercard' ? mastercard : paypal"
-              height="18"
-            >
-            <div class="text-body-1">
-              ...{{
-                item.method === "mastercard" ? item.methodNumber : "@gmail.com"
-              }}
-            </div>
-          </div>
+            label
+            class="text-capitalize"
+          >
+            {{ item.status }}
+          </VChip>
         </template>
 
         <!-- Actions -->
         <template #item.actions="{ item }">
+          <IconBtn @click="deleteUser(item.id)">
+            <VIcon icon="tabler-trash" />
+          </IconBtn>
+
           <IconBtn>
+            <VIcon icon="tabler-eye" />
+          </IconBtn>
+
+          <VBtn
+            icon
+            variant="text"
+            color="medium-emphasis"
+          >
             <VIcon icon="tabler-dots-vertical" />
             <VMenu activator="parent">
               <VList>
-                <VListItem value="view">
-                  View
+                <VListItem :to="{ name: 'apps-user-view-id', params: { id: item.id } }">
+                  <template #prepend>
+                    <VIcon icon="tabler-eye" />
+                  </template>
+
+                  <VListItemTitle>View</VListItemTitle>
                 </VListItem>
-                <VListItem
-                  value="delete"
-                  @click="deleteOrder(item.id)"
-                >
-                  Delete
+
+                <VListItem link>
+                  <template #prepend>
+                    <VIcon icon="tabler-pencil" />
+                  </template>
+                  <VListItemTitle>Edit</VListItemTitle>
+                </VListItem>
+
+                <VListItem @click="deleteUser(item.id)">
+                  <template #prepend>
+                    <VIcon icon="tabler-trash" />
+                  </template>
+                  <VListItemTitle>Delete</VListItemTitle>
                 </VListItem>
               </VList>
             </VMenu>
-          </IconBtn>
+          </VBtn>
         </template>
 
         <!-- pagination -->
@@ -411,22 +423,16 @@ const deleteOrder = async (id: number) => {}
           <TablePagination
             v-model:page="page"
             :items-per-page="itemsPerPage"
-            :total-items="totalOrder"
+            :total-items="totalUsers"
           />
         </template>
       </VDataTableServer>
+      <!-- SECTION -->
     </VCard>
-  </div>
+    <!-- 👉 Add New User -->
+    <AddNewUserDrawer
+      v-model:isDrawerOpen="isAddNewUserDrawerVisible"
+      @user-data="addNewUser"
+    />
+  </section>
 </template>
-
-<style lang="scss" scoped>
-.customer-title:hover {
-  color: rgba(var(--v-theme-primary)) !important;
-}
-
-.product-widget {
-  border-block-end: 1px solid
-  rgba(var(--v-theme-on-surface), var(--v-border-opacity));
-  padding-block-end: 1rem;
-}
-</style>
