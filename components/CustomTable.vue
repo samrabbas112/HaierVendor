@@ -81,7 +81,6 @@ const deleteOrder = async (id: number) => {}
           <AppTextField
             v-model="searchQuery"
             placeholder="Search Order"
-            style=" max-inline-size: 200px; min-inline-size: 200px;"
           />
           </VCol>
 
@@ -119,6 +118,10 @@ const deleteOrder = async (id: number) => {}
         @update:options="updateOptions"
       >
         <!-- Order ID -->
+        <template #item.id="{ item }">
+           {{ item.id }}
+       
+        </template>
         <template #item.order="{ item }">
           <NuxtLink>
             #{{ item.order }}

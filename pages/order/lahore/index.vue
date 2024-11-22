@@ -2,7 +2,7 @@
 
 // Data table Headers
 const headers = [
-  { title: '#', key: 'sr' },
+  { title: '#', key: 'id' },
   { title: 'Order#', key: 'order' },
   { title: 'Total Price', key: 'total_price' },
   { title: 'Customers', key: 'customers' },
