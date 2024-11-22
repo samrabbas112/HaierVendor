@@ -16,6 +16,18 @@ export default [
         title: 'Vendor Orders',
         to: { name: 'order-list' },
       },
+      {
+        title: 'My Orders',
+        to: { name: 'order-my' },
+      },
+      {
+        title: 'Private Orders',
+        to: { name: 'order-private' },
+      },
+      {
+        title: 'Lahore Orders',
+        to: { name: 'order-lahore' },
+      },
     ],
   },
   {

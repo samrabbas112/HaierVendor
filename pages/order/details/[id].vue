@@ -13,7 +13,21 @@ const { data } = await useApi<Order>(
   `/apps/ecommerce/orders/${route.params.id}`,
 );
 
-if (data.value) orderData.value = data.value;
+// if (data.value) orderData.value = data.value;
+orderData.value = {
+  id: 100,
+  order: 9042,
+  customer: "Chere Schofield",
+  email: "cschofield2r@ucsd.edu",
+  avatar: "",
+  payment: 2,
+  status: "Ready to Pickup",
+  spent: 815.77,
+  method: "mastercard",
+  date: "2/1/2023",
+  time: "4:12 PM",
+  methodNumber: 3949,
+};
 
 const isConfirmDialogVisible = ref(false);
 const isUserInfoEditDialogVisible = ref(false);
@@ -235,83 +249,6 @@ const orderDetail = [
             </div>
           </VCardText>
         </VCard>
-
-        <!-- 👉 Shipping Activity -->
-        <VCard title="Shipping Activity">
-          <VCardText>
-            <VTimeline
-              truncate-line="both"
-              line-inset="9"
-              align="start"
-              side="end"
-              line-color="primary"
-              density="compact"
-            >
-              <VTimelineItem dot-color="primary" size="x-small">
-                <div class="d-flex justify-space-between align-center">
-                  <div class="app-timeline-title">
-                    Order was placed (Order ID: #32543)
-                  </div>
-                  <div class="app-timeline-meta">Tuesday 10:20 AM</div>
-                </div>
-                <p class="app-timeline-text mb-0 mt-3">
-                  Your order has been placed successfully
-                </p>
-              </VTimelineItem>
-
-              <VTimelineItem dot-color="primary" size="x-small">
-                <div class="d-flex justify-space-between align-center">
-                  <span class="app-timeline-title">Pick-up</span>
-                  <span class="app-timeline-meta">Wednesday 11:29 AM</span>
-                </div>
-                <p class="app-timeline-text mb-0 mt-3">
-                  Pick-up scheduled with courier
-                </p>
-              </VTimelineItem>
-
-              <VTimelineItem dot-color="primary" size="x-small">
-                <div class="d-flex justify-space-between align-center">
-                  <span class="app-timeline-title">Dispatched</span>
-                  <span class="app-timeline-meta">Thursday 8:15 AM</span>
-                </div>
-                <p class="app-timeline-text mb-0 mt-3">
-                  Item has been picked up by courier.
-                </p>
-              </VTimelineItem>
-
-              <VTimelineItem dot-color="primary" size="x-small">
-                <div class="d-flex justify-space-between align-center">
-                  <span class="app-timeline-title">Package arrived</span>
-                  <span class="app-timeline-meta">Saturday 15:20 AM</span>
-                </div>
-                <p class="app-timeline-text mb-0 mt-3">
-                  Package arrived at an Amazon facility, NY
-                </p>
-              </VTimelineItem>
-
-              <VTimelineItem dot-color="primary" size="x-small">
-                <div class="d-flex justify-space-between align-center">
-                  <span class="app-timeline-title"
-                    >Dispatched for delivery</span
-                  >
-                  <span class="app-timeline-meta">Today 14:12 PM</span>
-                </div>
-                <p class="app-timeline-text mb-0 mt-3">
-                  Package has left an Amazon facility , NY
-                </p>
-              </VTimelineItem>
-
-              <VTimelineItem dot-color="secondary" size="x-small">
-                <div class="d-flex justify-space-between align-center">
-                  <span class="app-timeline-title">Delivery</span>
-                </div>
-                <p class="app-timeline-text mb-4 mt-3">
-                  Package will be delivered by tomorrow
-                </p>
-              </VTimelineItem>
-            </VTimeline>
-          </VCardText>
-        </VCard>
       </VCol>
 
       <VCol cols="12" md="4">
@@ -392,36 +329,6 @@ const orderDetail = [
               Latheronwheel <br />
               KW5 8NW, London <br />
               UK
-            </div>
-          </VCardText>
-        </VCard>
-
-        <!-- 👉 Billing Address -->
-        <VCard>
-          <VCardText>
-            <div class="d-flex align-center justify-space-between mb-2">
-              <h5 class="text-h5">Billing Address</h5>
-              <div
-                class="text-base font-weight-medium text-primary cursor-pointer"
-                @click="
-                  isEditAddressDialogVisible = !isEditAddressDialogVisible
-                "
-              >
-                Edit
-              </div>
-            </div>
-            <div>
-              45 Rocker Terrace <br />
-              Latheronwheel <br />
-              KW5 8NW, London <br />
-              UK
-            </div>
-
-            <div class="mt-6">
-              <h5 class="text-h5 mb-1">Mastercard</h5>
-              <div class="text-body-1">
-                Card Number: ******{{ orderData?.methodNumber }}
-              </div>
             </div>
           </VCardText>
         </VCard>
