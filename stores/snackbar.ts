@@ -8,7 +8,6 @@ export const useSnackbarStore = defineStore('snackbar', () => {
 
   // Show snackbar with a custom message and optional color
   function showSnackbar(newMessage: string, newColor: string = 'success') {
-    isVisible.value = false;
     message.value = newMessage;
     color.value = newColor;
     isVisible.value = true;

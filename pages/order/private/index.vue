@@ -2,13 +2,13 @@
 
 // Data table Headers
 const headers = [
-  { title: 'SN#', key: 'id' },
+  { title: 'SR#', key: 'id' },
   { title: 'Order#', key: 'order' },
-  { title: 'Total Price', key: 'total_price' },
+  { title: 'Total Price', key: 'spent' },
   { title: 'Customers', key: 'customers' },
   { title: 'Payment Method', key: 'method', sortable: false },
-  { title: 'Placed At', key: 'placed_at' },
-  { title: 'Pick Before', key: 'pick_before' },
+  { title: 'Placed At', key: 'date' },
+  { title: 'Pick Before', key: 'time' },
   { title: 'Status', key: 'status' },
   { title: 'Action', key: 'actions', sortable: false },
 ]

@@ -7,11 +7,25 @@ import product24 from "@images/ecommerce-images/product-24.png";
 
 const orderData = ref<Order>();
 
-const route = useRoute("apps-ecommerce-order-details-id");
+const route = useRoute("order-details-id");
+const loaderStore = useLoaderStore()
+const apiRequestObj = useApi();
 
 const { data } = await useApi<Order>(
   `/apps/ecommerce/orders/${route.params.id}`,
 );
+const fetchData = async () => {
+  try {
+    loaderStore.showLoader()
+    console.log("details page ",route.params.id);
+    // const response = await apiRequestObj.makeRequest('admin/dashboard/stats', 'get', '',route.params.id)
+  }
+  finally {
+    loaderStore.hideLoader()
+  }
+}
+
+fetchData();
 
 // if (data.value) orderData.value = data.value;
 orderData.value = {
@@ -35,6 +49,7 @@ const isEditAddressDialogVisible = ref(false);
 
 const headers = [
   { title: "Product", key: "productName" },
+  { title: "Variation", key: "price" },
   { title: "Price", key: "price" },
   { title: "Quantity", key: "quantity" },
   { title: "Total", key: "total" },
@@ -115,6 +130,22 @@ const orderDetail = [
     total: 578,
   },
   {
+    productName: "Wooden Chair",
+    productImage: product23,
+    subtitle: "Material: Woodem",
+    price: 289,
+    quantity: 2,
+    total: 578,
+  },
+  {
+    productName: "Nike Jorden",
+    productImage: product24,
+    subtitle: "Size: 8UK",
+    price: 299,
+    quantity: 2,
+    total: 598,
+  },
+  {
     productName: "Nike Jorden",
     productImage: product24,
     subtitle: "Size: 8UK",
@@ -135,15 +166,6 @@ const orderDetail = [
           <h5 class="text-h5">Order #{{ route.params.id }}</h5>
           <div class="d-flex gap-x-2">
             <VChip
-              v-if="orderData?.payment"
-              variant="tonal"
-              :color="resolvePaymentStatus(orderData.payment)?.color"
-              label
-              size="small"
-            >
-              {{ resolvePaymentStatus(orderData.payment)?.text }}
-            </VChip>
-            <VChip
               v-if="orderData?.status"
               v-bind="resolveStatus(orderData?.status)"
               label
@@ -154,13 +176,24 @@ const orderDetail = [
         <div class="text-body-1">Aug 17, 2020, 5:48 (ET)</div>
       </div>
 
-      <VBtn
-        variant="tonal"
-        color="error"
-        @click="isConfirmDialogVisible = !isConfirmDialogVisible"
-      >
-        Delete Order
-      </VBtn>
+      <div class="d-flex">
+        <VBtn
+          variant="tonal"
+          color="primary"
+          class="me-2"
+          @click="isConfirmDialogVisible = !isConfirmDialogVisible"
+        >
+          Pick
+        </VBtn>
+
+        <VBtn
+          variant="tonal"
+          color="error"
+          @click="isConfirmDialogVisible = !isConfirmDialogVisible"
+        >
+          Move to Public
+        </VBtn>
+      </div>
     </div>
 
     <VRow>
@@ -171,13 +204,6 @@ const orderDetail = [
             <template #title>
               <h5 class="text-h5">Order Details</h5>
             </template>
-            <template #append>
-              <div
-                class="text-base font-weight-medium text-primary cursor-pointer"
-              >
-                Edit
-              </div>
-            </template>
           </VCardItem>
 
           <VDivider />
@@ -185,7 +211,6 @@ const orderDetail = [
             :headers="headers"
             :items="orderDetail"
             item-value="productName"
-            show-select
             class="text-no-wrap"
           >
             <template #item.productName="{ item }">
@@ -280,12 +305,12 @@ const orderDetail = [
               </div>
             </div>
 
-            <div class="d-flex gap-x-3 align-center">
-              <VAvatar variant="tonal" color="success">
+            <!-- <div class="d-flex gap-x-3 align-center">
+              <VAvatar variant="outlined" color="success">
                 <VIcon icon="tabler-shopping-cart" />
               </VAvatar>
               <h6 class="text-h6">12 Orders</h6>
-            </div>
+            </div> -->
 
             <div class="d-flex flex-column gap-y-1">
               <div class="d-flex justify-space-between align-center">
@@ -296,7 +321,7 @@ const orderDetail = [
                     isUserInfoEditDialogVisible = !isUserInfoEditDialogVisible
                   "
                 >
-                  Edit
+                  <!-- Edit -->
                 </div>
               </div>
               <span>Email: {{ orderData?.email }}</span>
@@ -309,7 +334,7 @@ const orderDetail = [
         <VCard class="mb-6">
           <VCardItem>
             <VCardTitle>Shipping Address</VCardTitle>
-            <template #append>
+            <!-- <template #append>
               <div class="d-flex align-center justify-space-between">
                 <div
                   class="text-base font-weight-medium text-primary cursor-pointer"
@@ -320,7 +345,7 @@ const orderDetail = [
                   Edit
                 </div>
               </div>
-            </template>
+            </template> -->
           </VCardItem>
 
           <VCardText>

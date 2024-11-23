@@ -18,7 +18,11 @@ export default [
       },
       {
         title: 'My Orders',
-        to: { name: 'order-my'},
+        to: { name: 'order-my' },
+      },
+      {
+        title: 'Details',
+        to: { name: 'order-details-id', params: { id: '9042' } },
       },
       {
         title: 'Private Orders',

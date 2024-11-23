@@ -1,109 +1,70 @@
 <script setup lang="ts">
-import masterCardDark from '@images/icons/payments/img/master-dark.png'
-import masterCardLight from '@images/icons/payments/img/mastercard.png'
-import paypalDark from '@images/icons/payments/img/paypal-dark.png'
-import paypalLight from '@images/icons/payments/img/paypal-light.png'
+import masterCardDark from "@images/icons/payments/img/master-dark.png";
+import masterCardLight from "@images/icons/payments/img/mastercard.png";
+import paypalDark from "@images/icons/payments/img/paypal-dark.png";
+import paypalLight from "@images/icons/payments/img/paypal-light.png";
 
-
-const {headers, data } = defineProps({
+const { headers, data } = defineProps({
   headers: Array,
   data: [Array, Object],
-})
+});
 
-const mastercard = useGenerateImageVariant(masterCardLight, masterCardDark)
-const paypal = useGenerateImageVariant(paypalLight, paypalDark)
+const emit = defineEmits();
+
+const route = useRoute();
+const mastercard = useGenerateImageVariant(masterCardLight, masterCardDark);
+const paypal = useGenerateImageVariant(paypalLight, paypalDark);
 
 // Data table options
-const itemsPerPage = ref(10)
-const page = ref(1)
-const sortBy = ref()
-const orderBy = ref()
-const selectedRows = ref([])
-const searchQuery = ref('')
+const itemsPerPage = ref(10);
+const page = ref(1);
+const sortBy = ref();
+const orderBy = ref();
+const selectedRows = ref([]);
 
 // Update data table options
 const updateOptions = (options: any) => {
-  sortBy.value = options.sortBy[0]?.key
-  orderBy.value = options.sortBy[0]?.order
-}
+  sortBy.value = options.sortBy[0]?.key;
+  orderBy.value = options.sortBy[0]?.order;
+};
 
 const resolvePaymentStatus = (status: number) => {
-  if (status === 1)
-    return { text: 'Paid', color: 'success' }
-  if (status === 2)
-    return { text: 'Pending', color: 'warning' }
-  if (status === 3)
-    return { text: 'Cancelled', color: 'secondary' }
-  if (status === 4)
-    return { text: 'Failed', color: 'error' }
-}
+  if (status === 1) return { text: "Paid", color: "success" };
+  if (status === 2) return { text: "Pending", color: "warning" };
+  if (status === 3) return { text: "Cancelled", color: "secondary" };
+  if (status === 4) return { text: "Failed", color: "error" };
+};
 
 const resolveStatus = (status: string) => {
-  if (status === 'Delivered')
-    return { text: 'Delivered', color: 'success' }
-  if (status === 'Out for Delivery')
-    return { text: 'Out for Delivery', color: 'primary' }
-  if (status === 'Ready to Pickup')
-    return { text: 'Ready to Pickup', color: 'info' }
-  if (status === 'Dispatched')
-    return { text: 'Dispatched', color: 'warning' }
-}
+  if (status === "Delivered") return { text: "Delivered", color: "success" };
+  if (status === "Out for Delivery")
+    return { text: "Out for Delivery", color: "primary" };
+  if (status === "Ready to Pickup")
+    return { text: "Ready to Pickup", color: "info" };
+  if (status === "Dispatched") return { text: "Dispatched", color: "warning" };
+};
 
-const status = ref([
-  { title: 'Scheduled', value: 'Scheduled' },
-  { title: 'Publish', value: 'Published' },
-  { title: 'Inactive', value: 'Inactive' },
-])
+console.log({ data });
 
-console.log({ data })
+const updatePage = (value) => {
+  emit("update:page", value);
+};
 
-const orders = computed((): Order[] => data.orders)
-const totalOrder = computed(() => 100)
+const orders = computed((): Order[] => data.orders);
+const totalOrder = computed(() => 100);
 
 // Delete Orders
-const deleteOrder = async (id: number) => {}
+const deleteData = async (id: number) => {
+  emit("delete:record", id);
+};
 </script>
 
 <template>
   <div>
+    <SnackBar />
     <VCard>
+      <slot />
       <!-- 👉 Filters -->
-      <VCardText>
-        <VRow
-          cols="12"
-          sm="8"
-        >
-          <!-- 👉 Select Status -->
-          <VCol
-            cols="12"
-            sm="3"
-          >
-          <AppTextField
-            v-model="searchQuery"
-            placeholder="Search Order"
-          />
-          </VCol>
-
-          <VCol
-            cols="12"
-            sm="3"
-          >
-          <div class="d-flex">
-
-            <!-- <VBtn
-            class = "me-2"
-            variant="outlined"
-            color="secondary"
-            >
-            Reset
-          </VBtn> -->
-          <VBtn variant="flat">
-            Search
-          </VBtn>
-        </div>
-          </VCol>
-        </VRow>
-      </VCardText>
       <VDivider />
 
       <!-- 👉 Order Table -->
@@ -119,13 +80,10 @@ const deleteOrder = async (id: number) => {}
       >
         <!-- Order ID -->
         <template #item.id="{ item }">
-           {{ item.id }}
-       
+          {{ item.id }}
         </template>
         <template #item.order="{ item }">
-          <NuxtLink>
-            #{{ item.order }}
-          </NuxtLink>
+          <NuxtLink> #{{ item.order }} </NuxtLink>
         </template>
 
         <!-- Date -->
@@ -141,15 +99,9 @@ const deleteOrder = async (id: number) => {}
               :color="!item.avatar.length ? 'primary' : ''"
               :variant="!item.avatar.length ? 'tonal' : undefined"
             >
-              <VImg
-                v-if="item.avatar"
-                :src="item.avatar"
-              />
+              <VImg v-if="item.avatar" :src="item.avatar" />
 
-              <span
-                v-else
-                class="font-weight-medium"
-              >{{
+              <span v-else class="font-weight-medium">{{
                 avatarText(item.customer)
               }}</span>
             </VAvatar>
@@ -173,10 +125,7 @@ const deleteOrder = async (id: number) => {}
             :class="`text-${resolvePaymentStatus(item.payment)?.color}`"
             class="font-weight-medium d-flex align-center gap-x-2"
           >
-            <VIcon
-              icon="tabler-circle-filled"
-              size="10"
-            />
+            <VIcon icon="tabler-circle-filled" size="10" />
             <div style="line-height: 22px">
               {{ resolvePaymentStatus(item.payment)?.text }}
             </div>
@@ -185,11 +134,7 @@ const deleteOrder = async (id: number) => {}
 
         <!-- Status -->
         <template #item.status="{ item }">
-          <VChip
-            v-bind="resolveStatus(item.status)"
-            label
-            size="small"
-          />
+          <VChip v-bind="resolveStatus(item.status)" label size="small" />
         </template>
 
         <!-- Method -->
@@ -198,7 +143,7 @@ const deleteOrder = async (id: number) => {}
             <img
               :src="item.method === 'mastercard' ? mastercard : paypal"
               height="18"
-            >
+            />
             <div class="text-body-1">
               ...{{
                 item.method === "mastercard" ? item.methodNumber : "@gmail.com"
@@ -209,18 +154,24 @@ const deleteOrder = async (id: number) => {}
 
         <!-- Actions -->
         <template #item.actions="{ item }">
-          <IconBtn>
+          <IconBtn
+            v-if="route.path.startsWith('/order/')"
+            :to="{ name: 'order-details-id', params: { id: item.order } }"
+          >
+            <VIcon icon="tabler-eye" />
+          </IconBtn>
+          <IconBtn v-else>
             <VIcon icon="tabler-dots-vertical" />
             <VMenu activator="parent">
               <VList>
-                <VListItem value="view" :to="{ name: 'order-details-id', params: { id: item.order } }">
+                <VListItem
+                  value="view"
+                  :to="{ name: 'order-details-id', params: { id: item.order } }"
+                >
                   View
                 </VListItem>
-                <VListItem
-                  value="delete"
-                  @click="deleteOrder(item.id)"
-                >
-                  Delete
+                <VListItem value="delete" @click="deleteData(item.id)">
+                  Deleted
                 </VListItem>
               </VList>
             </VMenu>
@@ -233,6 +184,7 @@ const deleteOrder = async (id: number) => {}
             v-model:page="page"
             :items-per-page="itemsPerPage"
             :total-items="totalOrder"
+            @update:page="updatePage"
           />
         </template>
       </VDataTableServer>
