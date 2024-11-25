@@ -50,8 +50,8 @@ const updatePage = (value) => {
   emit("update:page", value);
 };
 
-const orders = computed((): Order[] => data.orders);
-const totalOrder = computed(() => 100);
+const orders = computed((): Order[] => data?.orders);
+const totalOrder = computed(() => data?.total);
 
 // Delete Orders
 const deleteData = async (id: number) => {
@@ -73,8 +73,8 @@ const deleteData = async (id: number) => {
         v-model:model-value="selectedRows"
         v-model:page="page"
         :headers="headers"
-        :items="orders"
-        :items-length="totalOrder"
+        :items="data?.orders"
+        :items-length="data?.total"
         class="text-no-wrap"
         @update:options="updateOptions"
       >
@@ -183,7 +183,7 @@ const deleteData = async (id: number) => {
           <TablePagination
             v-model:page="page"
             :items-per-page="itemsPerPage"
-            :total-items="totalOrder"
+            :total-items="data?.total"
             @update:page="updatePage"
           />
         </template>

@@ -4,6 +4,10 @@ const snackbarStore = useSnackbarStore();
 const loaderStore = useLoaderStore();
 
 const searchQuery = ref("");
+const ordersData = ref({
+  total: 0,
+  orders: [],
+});
 
 // Data table Headers
 const headers = [
@@ -12,197 +16,139 @@ const headers = [
   { title: "Customers", key: "customers" },
   { title: "Payment Method", key: "method", sortable: false },
   { title: "Placed At", key: "date" },
-  { title: "Pick Before", key: "time" },
+  { title: "Deliver Before", key: "time" },
   { title: "Status", key: "status" },
   { title: "Action", key: "actions", sortable: false },
 ];
 
-// Fetch Orders
-const ordersData = {
-  total: 100,
-  orders: [
-    {
-      id: 100,
-      order: 9042,
-      customer: "Chere Schofield",
-      email: "cschofield2r@ucsd.edu",
-      avatar: "",
-      payment: 2,
-      status: "Ready to Pickup",
-      spent: 815.77,
-      method: "mastercard",
-      date: "2/1/2023",
-      time: "4:12 PM",
-      methodNumber: 3949,
-    },
-    {
-      id: 99,
-      order: 7189,
-      customer: "Boycie Hartmann",
-      email: "bhartmann2q@addthis.com",
-      avatar: "",
-      payment: 3,
-      status: "Out for Delivery",
-      spent: 704.86,
-      method: "paypalLogo",
-      date: "1/2/2023",
-      time: "8:55 PM",
-      methodNumber: 6424,
-    },
-    {
-      id: 98,
-      order: 8114,
-      customer: "Ulysses Goodlife",
-      email: "ugoodlife2p@blogger.com",
-      avatar: "/images/avatars/avatar-2.png",
-      payment: 3,
-      status: "Ready to Pickup",
-      spent: 746.38,
-      method: "mastercard",
-      date: "4/8/2023",
-      time: "3:39 AM",
-      methodNumber: 4509,
-    },
-    {
-      id: 97,
-      order: 7064,
-      customer: "Carmon Vasiljevic",
-      email: "cvasiljevic2o@odnoklassniki.ru",
-      avatar: "/images/avatars/avatar-8.png",
-      payment: 3,
-      status: "Delivered",
-      spent: 595.25,
-      method: "paypalLogo",
-      date: "3/20/2023",
-      time: "3:11 PM",
-      methodNumber: 4892,
-    },
-    {
-      id: 96,
-      order: 5911,
-      customer: "Hilliard Merck",
-      email: "hmerck2n@printfriendly.com",
-      avatar: "",
-      payment: 4,
-      status: "Out for Delivery",
-      spent: 237.91,
-      method: "paypalLogo",
-      date: "8/14/2022",
-      time: "3:26 PM",
-      methodNumber: 3196,
-    },
-    {
-      id: 95,
-      order: 6111,
-      customer: "Chad Cock",
-      email: "ccock2m@g.co",
-      avatar: "",
-      payment: 4,
-      status: "Ready to Pickup",
-      spent: 669.45,
-      method: "mastercard",
-      date: "3/11/2023",
-      time: "10:43 AM",
-      methodNumber: 1014,
-    },
-    {
-      id: 94,
-      order: 8767,
-      customer: "Lyndsey Dorey",
-      email: "ldorey2l@barnesandnoble.com",
-      avatar: "/images/avatars/avatar-2.png",
-      payment: 3,
-      status: "Ready to Pickup",
-      spent: 738.42,
-      method: "mastercard",
-      date: "8/29/2022",
-      time: "5:24 AM",
-      methodNumber: 3432,
-    },
-    {
-      id: 93,
-      order: 7931,
-      customer: "Octavius Whitchurch",
-      email: "owhitchurch2k@google.ca",
-      avatar: "/images/avatars/avatar-7.png",
-      payment: 3,
-      status: "Dispatched",
-      spent: 383.52,
-      method: "mastercard",
-      date: "12/26/2022",
-      time: "9:49 AM",
-      methodNumber: 8585,
-    },
-    {
-      id: 92,
-      order: 7280,
-      customer: "Sibley Braithwait",
-      email: "sbraithwait2j@webmd.com",
-      avatar: "",
-      payment: 1,
-      status: "Ready to Pickup",
-      spent: 554.91,
-      method: "mastercard",
-      date: "12/6/2022",
-      time: "2:11 AM",
-      methodNumber: 8535,
-    },
-    {
-      id: 91,
-      order: 7094,
-      customer: "Damara Figgins",
-      email: "dfiggins2i@de.vu",
-      avatar: "",
-      payment: 2,
-      status: "Delivered",
-      spent: 62.62,
-      method: "mastercard",
-      date: "6/29/2022",
-      time: "6:51 AM",
-      methodNumber: 8321,
-    },
-  ],
+// const ordersData = {
+//   total: 100,
+//   orders: [
+//     {
+//       id: 100,
+//       order: 9042,
+//       customer: "Chere Schofield",
+//       email: "cschofield2r@ucsd.edu",
+//       avatar: "",
+//       payment: 2,
+//       status: "Ready to Pickup",
+//       spent: 815.77,
+//       method: "mastercard",
+//       date: "2/1/2023",
+//       time: "4:12 PM",
+//       methodNumber: 3949,
+//     },
+//     {
+//       id: 99,
+//       order: 7189,
+//       customer: "Boycie Hartmann",
+//       email: "bhartmann2q@addthis.com",
+//       avatar: "",
+//       payment: 3,
+//       status: "Out for Delivery",
+//       spent: 704.86,
+//       method: "paypalLogo",
+//       date: "1/2/2023",
+//       time: "8:55 PM",
+//       methodNumber: 6424,
+//     }
+//   ],
+// };
+
+const transformData = (apiResponse) => {
+  return apiResponse.map((item) => {
+    const payload = item.payload || {};
+    const vendor = item.vendor || {};
+    const internalMovement = item.internal_movement || {};
+
+    return {
+      id: item.id,
+      order: item.order_no,
+      customer: payload.consignee || "N/A",
+      email: vendor.email || "N/A",
+      avatar: "", // Default empty avatar
+      payment: parseFloat(item.paymentAmount) || 0,
+      status: internalMovement.name || "Unknown",
+      spent: parseFloat(item.paymentAmount) || 0, // Assuming spent = paymentAmount
+      method: payload.channel || "Unknown", // Payment method
+      date: new Date(item.created_at).toLocaleDateString(),
+      time: new Date(item.created_at).toLocaleTimeString(),
+      methodNumber: item.id, // Placeholder for method number
+    };
+  });
 };
 
-console.log({ ordersData });
+// const makeSearch = async (page) => {
+//   // return console.log("search api hit", typeof page, searchQuery.value, page);
+//   console.log("search function hit", searchQuery.value, page);
+//   if (!isEmpty(searchQuery.value)) {
+//     try {
+//       loaderStore.showLoader();
+//       const response = await apiRequestObj.makeRequest(
+//         "admin/authentication/reset-password",
+//         "get",
+//         "",
+//         searchQuery.value,
+//       );
+
+//       if (response && response.success) {
+//         snackbarStore.showSnackbar(
+//           "Password has been changed successfully",
+//           "success",
+//         );
+//         await router.push("/login");
+//       } else {
+//         snackbarStore.showSnackbar(
+//           "An error occurred. Please try again.",
+//           "error",
+//         );
+//       }
+//     } catch (error) {
+//       snackbarStore.showSnackbar(
+//         "An error occurred. Please try again.",
+//         "error",
+//       );
+//     } finally {
+//       loaderStore.hideLoader();
+//     }
+//   } else {
+//     snackbarStore.showSnackbar("Please enter valid order number", "error");
+//   }
+// };
 
 const makeSearch = async (page) => {
-  return console.log("search api hit", typeof page, searchQuery.value);
-  console.log("search function hit", searchQuery.value);
-  if (!isEmpty(searchQuery.value)) {
-    try {
-      loaderStore.showLoader();
-      const response = await apiRequestObj.makeRequest(
-        "admin/authentication/reset-password",
-        "get",
-        "",
-        searchQuery.value,
-      );
+  // return console.log("search api hit", typeof page, searchQuery.value, page);
+  console.log("search function hit", searchQuery.value, page);
 
-      if (response && response.success) {
-        snackbarStore.showSnackbar(
-          "Password has been changed successfully",
-          "success",
-        );
-        await router.push("/login");
-      } else {
-        snackbarStore.showSnackbar(
-          "An error occurred. Please try again.",
-          "error",
-        );
+  try {
+    loaderStore.showLoader();
+    const response = await apiRequestObj.makeRequest(
+      `service/search/my-orders?page=${page}&order_no=${searchQuery.value}&order_status=&payment_status=`,
+      "get",
+    );
+
+    if (response && response.success) {
+      // Transform and set the data
+      ordersData.value = {
+        total: response?.data?.total, // Set total count of orders
+        orders: transformData(response?.data?.data),
       }
-    } catch (error) {
+    } else {
       snackbarStore.showSnackbar(
         "An error occurred. Please try again.",
         "error",
       );
-    } finally {
-      loaderStore.hideLoader();
     }
-  } else {
-    snackbarStore.showSnackbar("Please enter valid order number", "error");
+  } catch (error) {
+    snackbarStore.showSnackbar("An error occurred. Please try again.", "error");
+  } finally {
+    loaderStore.hideLoader();
   }
 };
+
+onMounted(() => {
+  makeSearch(1);
+});
 </script>
 
 <template>
@@ -237,8 +183,7 @@ const makeSearch = async (page) => {
 }
 
 .product-widget {
-  border-block-end: 1px solid
-    rgba(var(--v-theme-on-surface), var(--v-border-opacity));
+  border-block-end: 1px solid rgba(var(--v-theme-on-surface), var(--v-border-opacity));
   padding-block-end: 1rem;
 }
 </style>
