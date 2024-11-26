@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import masterCardDark from "@images/icons/payments/img/master-dark.png";
-import masterCardLight from "@images/icons/payments/img/mastercard.png";
-import paypalDark from "@images/icons/payments/img/paypal-dark.png";
-import paypalLight from "@images/icons/payments/img/paypal-light.png";
 
 const { headers, data } = defineProps({
   headers: Array,
@@ -12,8 +8,6 @@ const { headers, data } = defineProps({
 const emit = defineEmits();
 
 const route = useRoute();
-const mastercard = useGenerateImageVariant(masterCardLight, masterCardDark);
-const paypal = useGenerateImageVariant(paypalLight, paypalDark);
 
 // Data table options
 const itemsPerPage = ref(10);
@@ -36,12 +30,22 @@ const resolvePaymentStatus = (status: number) => {
 };
 
 const resolveStatus = (status: string) => {
-  if (status === "Delivered") return { text: "Delivered", color: "success" };
-  if (status === "Out for Delivery")
-    return { text: "Out for Delivery", color: "primary" };
-  if (status === "Ready to Pickup")
-    return { text: "Ready to Pickup", color: "info" };
-  if (status === "Dispatched") return { text: "Dispatched", color: "warning" };
+  if (status === 'Exclusive')
+    return { text: 'Ready to Pickup', color: 'info' }
+  if (status === 'Picked')
+    return { text: 'Picked', color: 'warning' }
+  if (status === 'out for delivery')
+    return { text: 'Out for delivery', color: 'primary' }
+  if (status === 'Closed')
+    return { text: 'Closed', color: 'success' }
+
+  return { text: status, color: 'primary' }
+}
+
+const resolveMethod = (status: string) => {
+  if (status === "COD") return { text: "COD", color: "warning" };
+  if (status === "Paid")
+    return { text: "Paid", color: "success" };
 };
 
 console.log({ data });
@@ -88,7 +92,11 @@ const deleteData = async (id: number) => {
 
         <!-- Date -->
         <template #item.date="{ item }">
-          {{ new Date(item.date).toDateString() }}
+          {{ new Date(item.date).toLocaleString('en-Us', dateTimeOptions) }}
+        </template>
+        <!-- time-->
+        <template #item.time="{ item }">
+          {{ new Date(item.time).toLocaleString('en-Us', dateTimeOptions) }}
         </template>
 
         <!-- Customers  -->
@@ -139,17 +147,7 @@ const deleteData = async (id: number) => {
 
         <!-- Method -->
         <template #item.method="{ item }">
-          <div class="d-flex align-center">
-            <img
-              :src="item.method === 'mastercard' ? mastercard : paypal"
-              height="18"
-            />
-            <div class="text-body-1">
-              ...{{
-                item.method === "mastercard" ? item.methodNumber : "@gmail.com"
-              }}
-            </div>
-          </div>
+          <VChip v-bind="resolveMethod(item.method)" label size="small" />
         </template>
 
         <!-- Actions -->

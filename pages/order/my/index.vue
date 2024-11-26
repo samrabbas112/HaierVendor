@@ -21,45 +21,12 @@ const headers = [
   { title: "Action", key: "actions", sortable: false },
 ];
 
-// const ordersData = {
-//   total: 100,
-//   orders: [
-//     {
-//       id: 100,
-//       order: 9042,
-//       customer: "Chere Schofield",
-//       email: "cschofield2r@ucsd.edu",
-//       avatar: "",
-//       payment: 2,
-//       status: "Ready to Pickup",
-//       spent: 815.77,
-//       method: "mastercard",
-//       date: "2/1/2023",
-//       time: "4:12 PM",
-//       methodNumber: 3949,
-//     },
-//     {
-//       id: 99,
-//       order: 7189,
-//       customer: "Boycie Hartmann",
-//       email: "bhartmann2q@addthis.com",
-//       avatar: "",
-//       payment: 3,
-//       status: "Out for Delivery",
-//       spent: 704.86,
-//       method: "paypalLogo",
-//       date: "1/2/2023",
-//       time: "8:55 PM",
-//       methodNumber: 6424,
-//     }
-//   ],
-// };
-
 const transformData = (apiResponse) => {
   return apiResponse.map((item) => {
-    const payload = item.payload || {};
+    const payload = JSON.parse(item.payload) || {};
     const vendor = item.vendor || {};
     const internalMovement = item.internal_movement || {};
+    const pickStatus = item.pick_status || {};
 
     return {
       id: item.id,
@@ -68,62 +35,32 @@ const transformData = (apiResponse) => {
       email: vendor.email || "N/A",
       avatar: "", // Default empty avatar
       payment: parseFloat(item.paymentAmount) || 0,
-      status: internalMovement.name || "Unknown",
+      status: pickStatus.name || "Unknown",
       spent: parseFloat(item.paymentAmount) || 0, // Assuming spent = paymentAmount
       method: payload.channel || "Unknown", // Payment method
-      date: new Date(item.created_at).toLocaleDateString(),
-      time: new Date(item.created_at).toLocaleTimeString(),
+      // date: new Date(item.created_at).toLocaleString("en-US", dateTimeOptions),
+      date: item.created_at,
+      time: new Date(item.created_at).getTime() + 60 * 60 * 1000, // One hour later
       methodNumber: item.id, // Placeholder for method number
     };
   });
 };
 
-// const makeSearch = async (page) => {
-//   // return console.log("search api hit", typeof page, searchQuery.value, page);
-//   console.log("search function hit", searchQuery.value, page);
-//   if (!isEmpty(searchQuery.value)) {
-//     try {
-//       loaderStore.showLoader();
-//       const response = await apiRequestObj.makeRequest(
-//         "admin/authentication/reset-password",
-//         "get",
-//         "",
-//         searchQuery.value,
-//       );
 
-//       if (response && response.success) {
-//         snackbarStore.showSnackbar(
-//           "Password has been changed successfully",
-//           "success",
-//         );
-//         await router.push("/login");
-//       } else {
-//         snackbarStore.showSnackbar(
-//           "An error occurred. Please try again.",
-//           "error",
-//         );
-//       }
-//     } catch (error) {
-//       snackbarStore.showSnackbar(
-//         "An error occurred. Please try again.",
-//         "error",
-//       );
-//     } finally {
-//       loaderStore.hideLoader();
-//     }
-//   } else {
-//     snackbarStore.showSnackbar("Please enter valid order number", "error");
-//   }
-// };
-
+let previousSearchQuery = "";
 const makeSearch = async (page) => {
   // return console.log("search api hit", typeof page, searchQuery.value, page);
   console.log("search function hit", searchQuery.value, page);
 
+  // Check if searchQuery has changed, reset page to 1 if it has
+  if (searchQuery.value !== previousSearchQuery) {
+    page = 1; // Reset to page 1 if the search query has changed
+  }
+
   try {
     loaderStore.showLoader();
     const response = await apiRequestObj.makeRequest(
-      `service/search/my-orders?page=${page}&order_no=${searchQuery.value}&order_status=&payment_status=`,
+      `service/search/my-orders?page=${typeof page === "number" ? page : 1}&order_no=${searchQuery.value}&order_status=&payment_status=`,
       "get",
     );
 
@@ -132,7 +69,7 @@ const makeSearch = async (page) => {
       ordersData.value = {
         total: response?.data?.total, // Set total count of orders
         orders: transformData(response?.data?.data),
-      }
+      };
     } else {
       snackbarStore.showSnackbar(
         "An error occurred. Please try again.",
@@ -144,6 +81,9 @@ const makeSearch = async (page) => {
   } finally {
     loaderStore.hideLoader();
   }
+
+  // Update the previous search query to the current one
+  previousSearchQuery = searchQuery.value;
 };
 
 onMounted(() => {
@@ -162,13 +102,17 @@ onMounted(() => {
 
         <VCol cols="12" sm="3">
           <div class="d-flex">
-            <!-- <VBtn
-            class = "me-2"
-            variant="outlined"
-            color="secondary"
+            <VBtn
+              class="me-2"
+              variant="outlined"
+              color="secondary"
+              @click="() => {
+                searchQuery = '';
+                makeSearch(1)
+              }"
             >
-            Reset
-          </VBtn> -->
+              Reset
+            </VBtn>
             <VBtn variant="flat" @click="makeSearch"> Search </VBtn>
           </div>
         </VCol>
@@ -183,7 +127,8 @@ onMounted(() => {
 }
 
 .product-widget {
-  border-block-end: 1px solid rgba(var(--v-theme-on-surface), var(--v-border-opacity));
+  border-block-end: 1px solid
+    rgba(var(--v-theme-on-surface), var(--v-border-opacity));
   padding-block-end: 1rem;
 }
 </style>
