@@ -63,7 +63,8 @@ const submitForm = async () => {
   }
 
   const response = await apiRequestObj.makeRequest(
-    'admin/authentication/login',
+    // 'admin/authentication/login',
+    'login',
     'post',
     payload,
   )
