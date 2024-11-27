@@ -84,7 +84,7 @@ const fetchData = async () => {
     if (response && response.success) {
       // Transform and set the data
       const singleOrder = response?.data?.data.filter(
-        item => item.order_no === route.params.id,
+        item => item.id == route.params.id,
       )
       orderData.value = transformData(singleOrder)
     }

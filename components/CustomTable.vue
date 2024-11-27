@@ -92,11 +92,11 @@ const deleteData = async (id: number) => {
 
         <!-- Date -->
         <template #item.date="{ item }">
-          {{ new Date(item.date).toLocaleString('en-Us', dateTimeOptions) }}
+          {{ new Date(item.date).toLocaleString() }}
         </template>
         <!-- time-->
         <template #item.time="{ item }">
-          {{ new Date(item.time).toLocaleString('en-Us', dateTimeOptions) }}
+          {{ new Date(item.time).toLocaleString() }}
         </template>
 
         <!-- Customers  -->
@@ -154,7 +154,7 @@ const deleteData = async (id: number) => {
         <template #item.actions="{ item }">
           <IconBtn
             v-if="route.path.startsWith('/order/')"
-            :to="{ name: 'order-details-id', params: { id: item.order } }"
+            :to="{ name: 'order-details-id', params: { id: item.id } }"
           >
             <VIcon icon="tabler-eye" />
           </IconBtn>
@@ -164,7 +164,7 @@ const deleteData = async (id: number) => {
               <VList>
                 <VListItem
                   value="view"
-                  :to="{ name: 'order-details-id', params: { id: item.order } }"
+                  :to="{ name: 'order-details-id', params: { id: item.id } }"
                 >
                   View
                 </VListItem>
