@@ -102,18 +102,6 @@ const deleteData = async (id: number) => {
         <!-- Customers  -->
         <template #item.customers="{ item }">
           <div class="d-flex align-center gap-x-3">
-            <VAvatar
-              size="34"
-              :color="!item.avatar.length ? 'primary' : ''"
-              :variant="!item.avatar.length ? 'tonal' : undefined"
-            >
-              <VImg v-if="item.avatar" :src="item.avatar" />
-
-              <span v-else class="font-weight-medium">{{
-                avatarText(item.customer)
-              }}</span>
-            </VAvatar>
-
             <div class="d-flex flex-column">
               <div class="text-body-1 font-weight-medium">
                 <NuxtLink class="text-link">
