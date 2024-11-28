@@ -92,28 +92,16 @@ const deleteData = async (id: number) => {
 
         <!-- Date -->
         <template #item.date="{ item }">
-          {{ new Date(item.date).toLocaleString('en-Us', dateTimeOptions) }}
+          {{ new Date(item.date).toLocaleString() }}
         </template>
         <!-- time-->
         <template #item.time="{ item }">
-          {{ new Date(item.time).toLocaleString('en-Us', dateTimeOptions) }}
+          {{ new Date(item.time).toLocaleString() }}
         </template>
 
         <!-- Customers  -->
         <template #item.customers="{ item }">
           <div class="d-flex align-center gap-x-3">
-            <VAvatar
-              size="34"
-              :color="!item.avatar.length ? 'primary' : ''"
-              :variant="!item.avatar.length ? 'tonal' : undefined"
-            >
-              <VImg v-if="item.avatar" :src="item.avatar" />
-
-              <span v-else class="font-weight-medium">{{
-                avatarText(item.customer)
-              }}</span>
-            </VAvatar>
-
             <div class="d-flex flex-column">
               <div class="text-body-1 font-weight-medium">
                 <NuxtLink class="text-link">
@@ -154,7 +142,7 @@ const deleteData = async (id: number) => {
         <template #item.actions="{ item }">
           <IconBtn
             v-if="route.path.startsWith('/order/')"
-            :to="{ name: 'order-details-id', params: { id: item.order } }"
+            :to="{ name: 'order-details-id', params: { id: item.id } }"
           >
             <VIcon icon="tabler-eye" />
           </IconBtn>
@@ -164,7 +152,7 @@ const deleteData = async (id: number) => {
               <VList>
                 <VListItem
                   value="view"
-                  :to="{ name: 'order-details-id', params: { id: item.order } }"
+                  :to="{ name: 'order-details-id', params: { id: item.id } }"
                 >
                   View
                 </VListItem>

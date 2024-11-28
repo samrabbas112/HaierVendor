@@ -84,7 +84,7 @@ const fetchData = async () => {
     if (response && response.success) {
       // Transform and set the data
       const singleOrder = response?.data?.data.filter(
-        item => item.order_no === route.params.id,
+        item => item.id == route.params.id,
       )
       orderData.value = transformData(singleOrder)
     }
@@ -338,24 +338,6 @@ const resolveStatus = (status: string) => {
             </h5>
 
             <div class="d-flex align-center">
-              <VAvatar
-                v-if="orderData"
-                :variant="!orderData[0]?.avatar?.length ? 'tonal' : undefined"
-                :rounded="1"
-                class="me-3"
-              >
-                <VImg
-                  v-if="orderData[0]?.avatar"
-                  :src="orderData[0]?.avatar"
-                />
-
-                <span
-                  v-else
-                  class="font-weight-medium"
-                >{{
-                  avatarText(userData?.fullName)
-                }}</span>
-              </VAvatar>
               <div>
                 <h6 class="text-h6">
                   {{ userData?.fullName }}
