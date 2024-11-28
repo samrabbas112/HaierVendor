@@ -14,7 +14,7 @@ interface Props {
   customer: Record<string, any>;
 }
 
-const snackbarStore = useSnackbarStore();
+const snackBarStore = useSnackbarStore();
 const props = defineProps<Props>();
 const emit = defineEmits<Emit>();
 const customer = toRef(props, 'customer');
@@ -61,7 +61,7 @@ const onSubmit = async () => {
         city: city.value,
         code: code.value,
         province: province.value,
-        address: address.value,
+        address: 'New Address',
       };
 
       try {
@@ -83,6 +83,7 @@ const onSubmit = async () => {
         if (response?.success) {
           emit('customer-updated');
           emit('update:isDrawerOpen', false);
+          snackBarStore.showSnackbar("Customer Created Successfully.", 'success')
 
           nextTick(() => {
             refForm.value?.reset();

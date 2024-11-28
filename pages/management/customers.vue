@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import AddNewCustomerDrawer from '@/views/customer/AddNewCustomerDrawer.vue'
 import { ref, onMounted, watch, nextTick } from 'vue';
+const snackBarStore = useSnackbarStore();
+
 
 // State
 const searchQuery = ref('');
@@ -10,7 +12,7 @@ const isAddNewCustomerDrawerVisible = ref(false);
 const selectedRows = ref([]);
 
 // Data table options
-const itemsPerPage = ref(10); // Set a default items per page (defaulting to 10)
+const itemsPerPage = ref(10); 
 const page = ref(1);
 const apiRequestObj = useApi();
 
@@ -41,15 +43,13 @@ const headers = [
 // Fetch customers from the API
 const fetchCustomers = async () => {
   try {
-    console.log('sam');
-    console.log(page.value);
-    const response = await apiRequestObj.makeRequest('common/customer/list', 'get', {
-      params: {
+    const response = await apiRequestObj.makeRequest('common/customer/list', 'get','', 
+       {
         page: page.value,
         itemsPerPage: itemsPerPage.value,
         query: searchQuery.value,
       },
-    });
+    );
 
     if (response?.success) {
       customersData.value = {
@@ -68,6 +68,7 @@ const deleteCustomer = async (id) => {
   try {
     const response = await apiRequestObj.makeRequest(`common/customer/delete/${id}`, 'DELETE');
     if (response?.success) {
+      snackBarStore.showSnackbar("Customer Deleted Successfully.", 'success')
       fetchCustomers();
     }
   } catch (error) {
@@ -88,10 +89,12 @@ const editCustomer = (customer) => {
 };
 
 // Watch for changes in filters or pagination
-watch(page, (newPage) => {
-  console.log('Current Page:', newPage);
-  fetchCustomers();  
+watch([page, searchQuery, itemsPerPage], () => {
+  fetchCustomers();
 });
+
+
+
 const handleCustomerUpdated = () => {
   fetchCustomers(); 
 };
@@ -102,20 +105,27 @@ onMounted(fetchCustomers);
 
 <template>
   <section>
-    <!-- Customer Filters -->
+    <!-- Header Section with Add New Customer Button -->
+    <VRow justify="space-between" class="mb-6 align-center">
+      <VCol cols="12" sm="6">
+        <AppTextField v-model="searchQuery" placeholder="Search Customers" />
+      </VCol>
+      <VCol cols="12" sm="6" class="text-end">
+        <VBtn prepend-icon="tabler-plus" color="primary" @click="addNewCustomer">
+          Add New Customer
+        </VBtn>
+      </VCol>
+    </VRow>
+
+    <!-- Filters Section -->
     <VCard class="mb-6">
-      <VCardTitle>Filters</VCardTitle>
       <VCardText>
         <VRow>
-          <!-- Search Input -->
-          <VCol cols="12" sm="4">
-            <AppTextField v-model="searchQuery" placeholder="Search Customers" />
-          </VCol>
           <!-- Items Per Page -->
           <VCol cols="12" sm="4">
             <AppSelect
               v-model="itemsPerPage"
-              :items="[10, 25, 50, 100]"
+              :items="[10, 20, 50, 100]"
               label="Items Per Page"
             />
           </VCol>
@@ -169,9 +179,6 @@ onMounted(fetchCustomers);
       </template>
     </VDataTableServer>
 
-    <!-- Add Customer Button -->
-    <VBtn icon="tabler-plus" @click="addNewCustomer">Add New Customer</VBtn>
-
     <!-- Add/Edit Drawer -->
     <AddNewCustomerDrawer
       v-model:isDrawerOpen="isAddNewCustomerDrawerVisible"
@@ -180,3 +187,4 @@ onMounted(fetchCustomers);
     />
   </section>
 </template>
+
