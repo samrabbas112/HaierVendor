@@ -12,15 +12,15 @@ const ordersData = ref({
 
 // Data table Headers
 const headers = [
-  { title: 'Order#', key: 'order' },
-  { title: 'Total Price', key: 'spent' },
-  { title: 'Customers', key: 'customers' },
-  { title: 'Payment Method', key: 'method', sortable: false },
-  { title: 'Placed At', key: 'date' },
-  { title: 'Deliver Before', key: 'time' },
-  { title: 'Status', key: 'status' },
-  { title: 'Action', key: 'actions', sortable: false },
-]
+  { title: "Order#", key: "order", sortable: false },
+  { title: "Total Price", key: "spent", sortable: false },
+  { title: "Customers", key: "customers", sortable: false },
+  { title: "Payment Method", key: "method", sortable: false },
+  { title: "Placed At", key: "date", sortable: false },
+  { title: "Deliver Before", key: "time", sortable: false },
+  { title: "Status", key: "status" , sortable: false},
+  { title: "Action", key: "actions", sortable: false },
+];
 
 const transformData = apiResponse => {
   return apiResponse.map(item => {
