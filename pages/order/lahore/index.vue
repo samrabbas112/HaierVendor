@@ -100,6 +100,7 @@ onMounted(() => {
     :headers="headers"
     :data="ordersData"
     @update:page="makeSearch"
+    from="lahore"
   >
     <VCardText>
       <VRow

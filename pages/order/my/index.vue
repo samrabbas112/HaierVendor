@@ -92,7 +92,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <CustomTable :headers="headers" :data="ordersData" @update:page="makeSearch">
+  <CustomTable :headers="headers" :data="ordersData" @update:page="makeSearch"  from="my">
     <VCardText>
       <VRow cols="12" sm="8">
         <!-- 👉 Select Status -->

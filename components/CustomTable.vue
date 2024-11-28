@@ -1,8 +1,9 @@
 <script setup lang="ts">
 
-const { headers, data } = defineProps({
+const { headers, data, from } = defineProps({
   headers: Array,
   data: [Array, Object],
+  from: String
 });
 
 const emit = defineEmits();
@@ -142,7 +143,7 @@ const deleteData = async (id: number) => {
         <template #item.actions="{ item }">
           <IconBtn
             v-if="route.path.startsWith('/order/')"
-            :to="{ name: 'order-details-id', params: { id: item.id } }"
+            :to="`/order/${from}/${item.id}`"
           >
             <VIcon icon="tabler-eye" />
           </IconBtn>

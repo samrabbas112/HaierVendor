@@ -53,10 +53,14 @@ export const isNavLinkActive = (link: NavLink, router: Router) => {
 
   if (!resolveRoutedName) return false;
 
+  const name = link.to.name
+  const lastSegment = name.split('-').pop()
+  
   return matchedRoutes.some((route) => {
     return (
       route.name === resolveRoutedName ||
-      route.meta.navActiveLink === resolveRoutedName
+      route.meta.navActiveLink === resolveRoutedName ||
+      lastSegment === router.currentRoute.value.params.group
     );
   });
 };
