@@ -57,15 +57,26 @@ const makeSearch = async page => {
   if (searchQuery.value !== previousSearchQuery)
     page = 1 // Reset to page 1 if the search query has changed
 
+    const formData = {
+      order_no: searchQuery.value,
+      order_type: 'private',
+    }
+
   try {
     loaderStore.showLoader()
 
+    // const response = await apiRequestObj.makeRequest(
+    //   `service/search/my-orders?page=${typeof page === 'number' ? page : 1}&order_no=${searchQuery.value}&order_status=&payment_status=`,
+    //   'get',
+    // )
     const response = await apiRequestObj.makeRequest(
-      `service/search/my-orders?page=${typeof page === 'number' ? page : 1}&order_no=${searchQuery.value}&order_status=&payment_status=`,
-      'get',
+      `common/order/list`,
+      'post',
+      formData,
     )
 
     if (response && response.success) {
+      console.log("from lahore orders",response?.data);
       // Transform and set the data
       ordersData.value = {
         total: response?.data?.total, // Set total count of orders

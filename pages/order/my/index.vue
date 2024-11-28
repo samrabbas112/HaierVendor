@@ -4,6 +4,8 @@ const snackbarStore = useSnackbarStore();
 const loaderStore = useLoaderStore();
 
 const searchQuery = ref("");
+const selectedPaymentMethod = ref();
+const selectedOrderStatus = ref();
 const ordersData = ref({
   total: 0,
   orders: [],
@@ -20,6 +22,16 @@ const headers = [
   { title: "Status", key: "status" , sortable: false},
   { title: "Action", key: "actions", sortable: false },
 ];
+
+const paymentMethods = [
+  { title: 'COD', value: 'cod' }
+]
+const orderStatus = [
+  { title: 'Picked', value: 'picked' },
+  { title: 'Out for delivery', value: 'out_for_delivery' },
+  { title: 'Delivery Refused', value: 'delivery_refused' },
+  { title: 'Closed', value: 'closed' }
+]
 
 const transformData = (apiResponse) => {
   return apiResponse.map((item) => {
@@ -57,13 +69,23 @@ const makeSearch = async (page) => {
     page = 1; // Reset to page 1 if the search query has changed
   }
 
+  const formData = {
+      order_no: searchQuery.value,
+      order_status: selectedOrderStatus.value,
+      payment_status: selectedPaymentMethod.value,
+    }
+
   try {
     loaderStore.showLoader();
+    // const response = await apiRequestObj.makeRequest(
+    //   `service/search/my-orders?page=${typeof page === "number" ? page : 1}&order_no=${searchQuery.value}&order_status=&payment_status=`,
+    //   "get",
+    // );
     const response = await apiRequestObj.makeRequest(
-      `service/search/my-orders?page=${typeof page === "number" ? page : 1}&order_no=${searchQuery.value}&order_status=&payment_status=`,
-      "get",
-    );
-
+      `common/order/list`,
+      'post',
+      formData
+    )
     if (response && response.success) {
       // Transform and set the data
       ordersData.value = {
@@ -99,6 +121,30 @@ onMounted(() => {
         <VCol cols="12" sm="3">
           <AppTextField v-model="searchQuery" placeholder="Search Order#" />
         </VCol>
+        <VCol
+            cols="12"
+            sm="3"
+          >
+            <AppSelect
+              v-model="selectedOrderStatus"
+              placeholder="Select Order Status"
+              :items="orderStatus"
+              clearable
+              clear-icon="tabler-x"
+            />
+          </VCol>
+        <VCol
+            cols="12"
+            sm="3"
+          >
+            <AppSelect
+              v-model="selectedPaymentMethod"
+              placeholder="Select Payment Method"
+              :items="paymentMethods"
+              clearable
+              clear-icon="tabler-x"
+            />
+          </VCol>
 
         <VCol cols="12" sm="3">
           <div class="d-flex">
@@ -108,6 +154,8 @@ onMounted(() => {
               color="secondary"
               @click="() => {
                 searchQuery = '';
+                selectedOrderStatus = null;
+                selectedPatmentMethod = null
                 makeSearch(1)
               }"
             >
