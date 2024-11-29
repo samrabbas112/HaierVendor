@@ -2,7 +2,7 @@
 import AddNewCustomerDrawer from '@/views/customer/AddNewCustomerDrawer.vue'
 import { ref, onMounted, watch, nextTick } from 'vue';
 const snackBarStore = useSnackbarStore();
-
+import { useLoaderStore } from '@/stores/loader'
 
 // State
 const searchQuery = ref('');
@@ -10,6 +10,8 @@ const selectedCustomer = ref(null);
 const customersData = ref({ total: 0, customers: [] });
 const isAddNewCustomerDrawerVisible = ref(false);
 const selectedRows = ref([]);
+const loaderStore = useLoaderStore()
+
 
 // Data table options
 const itemsPerPage = ref(10); 
@@ -42,6 +44,7 @@ const headers = [
 
 // Fetch customers from the API
 const fetchCustomers = async () => {
+  loaderStore.showLoader();
   try {
     const response = await apiRequestObj.makeRequest('common/customer/list', 'get','', 
        {
@@ -60,6 +63,7 @@ const fetchCustomers = async () => {
   } catch (error) {
     console.error('Error fetching customers:', error);
   }
+  loaderStore.hideLoader();
 };
 
 
