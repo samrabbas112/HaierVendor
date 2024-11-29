@@ -1,34 +1,37 @@
 <script setup lang="ts">
-
 const { headers, data, from } = defineProps({
   headers: Array,
   data: [Array, Object],
-  from: String
-});
+  from: String,
+})
 
-const emit = defineEmits();
+const emit = defineEmits()
 
-const route = useRoute();
+const route = useRoute()
 
 // Data table options
-const itemsPerPage = ref(10);
-const page = ref(1);
-const sortBy = ref();
-const orderBy = ref();
-const selectedRows = ref([]);
+const itemsPerPage = ref(10)
+const page = ref(1)
+const sortBy = ref()
+const orderBy = ref()
+const selectedRows = ref([])
 
 // Update data table options
 const updateOptions = (options: any) => {
-  sortBy.value = options.sortBy[0]?.key;
-  orderBy.value = options.sortBy[0]?.order;
-};
+  sortBy.value = options.sortBy[0]?.key
+  orderBy.value = options.sortBy[0]?.order
+}
 
 const resolvePaymentStatus = (status: number) => {
-  if (status === 1) return { text: "Paid", color: "success" };
-  if (status === 2) return { text: "Pending", color: "warning" };
-  if (status === 3) return { text: "Cancelled", color: "secondary" };
-  if (status === 4) return { text: "Failed", color: "error" };
-};
+  if (status === 1)
+    return { text: 'Paid', color: 'success' }
+  if (status === 2)
+    return { text: 'Pending', color: 'warning' }
+  if (status === 3)
+    return { text: 'Cancelled', color: 'secondary' }
+  if (status === 4)
+    return { text: 'Failed', color: 'error' }
+}
 
 const resolveStatus = (status: string) => {
   if (status === 'Exclusive')
@@ -44,29 +47,29 @@ const resolveStatus = (status: string) => {
 }
 
 const resolveMethod = (status: string) => {
-  if (status === "COD") return { text: "COD", color: "warning" };
-  if (status === "Paid")
-    return { text: "Paid", color: "success" };
-};
+  if (status === 'COD')
+    return { text: 'COD', color: 'warning' }
+  if (status === 'Paid')
+    return { text: 'Paid', color: 'success' }
+}
 
-console.log({ data });
+console.log({ data })
 
-const updatePage = (value) => {
-  emit("update:page", value);
-};
+const updatePage = value => {
+  emit('update:page', value)
+}
 
-const orders = computed((): Order[] => data?.orders);
-const totalOrder = computed(() => data?.total);
+const orders = computed((): Order[] => data?.orders)
+const totalOrder = computed(() => data?.total)
 
 // Delete Orders
 const deleteData = async (id: number) => {
-  emit("delete:record", id);
-};
+  emit('delete:record', id)
+}
 </script>
 
 <template>
   <div>
-    <SnackBar />
     <VCard>
       <slot />
       <!-- 👉 Filters -->
@@ -74,7 +77,7 @@ const deleteData = async (id: number) => {
 
       <!-- 👉 Order Table -->
       <VDataTableServer
-        v-model:items-per-page="itemsPerPage"
+        v-model:items-per-page="data.per_page"
         v-model:model-value="selectedRows"
         v-model:page="page"
         :headers="headers"
@@ -95,13 +98,13 @@ const deleteData = async (id: number) => {
         <template #item.date="{ item }">
           {{ new Date(item.date).toLocaleString() }}
         </template>
-        <!-- time-->
+        <!-- time -->
         <template #item.time="{ item }">
           {{ new Date(item.time).toLocaleString() }}
         </template>
 
         <!-- Customers  -->
-        <template #item.customers="{ item }">
+        <template #item.customer="{ item }">
           <div class="d-flex align-center gap-x-3">
             <div class="d-flex flex-column">
               <div class="text-body-1 font-weight-medium">
@@ -110,7 +113,7 @@ const deleteData = async (id: number) => {
                 </NuxtLink>
               </div>
               <div class="text-body-2">
-                {{ item.email }}
+                {{ item.mobile }}
               </div>
             </div>
           </div>
@@ -118,25 +121,45 @@ const deleteData = async (id: number) => {
 
         <!-- Payments -->
         <template #item.payment="{ item }">
-          <div
+          <!--
+            <div
             :class="`text-${resolvePaymentStatus(item.payment)?.color}`"
             class="font-weight-medium d-flex align-center gap-x-2"
-          >
+            >
             <VIcon icon="tabler-circle-filled" size="10" />
             <div style="line-height: 22px">
-              {{ resolvePaymentStatus(item.payment)?.text }}
+            {{ resolvePaymentStatus(item.payment)?.text }}
             </div>
-          </div>
+            </div>
+          -->
+          {{ item.payment }}
         </template>
 
         <!-- Status -->
         <template #item.status="{ item }">
-          <VChip v-bind="resolveStatus(item.status)" label size="small" />
+          <VChip
+            v-bind="resolveStatus(item.status)"
+            label
+            size="small"
+          />
         </template>
 
         <!-- Method -->
         <template #item.method="{ item }">
-          <VChip v-bind="resolveMethod(item.method)" label size="small" />
+          <div
+            :class="`text-${resolveMethod(item.method)?.color}`"
+            class="font-weight-medium d-flex align-center gap-x-2"
+          >
+            <VIcon
+              icon="tabler-circle-filled"
+              size="10"
+            />
+            <VChip
+              v-bind="resolveMethod(item.method)"
+              label
+              size="small"
+            />
+          </div>
         </template>
 
         <!-- Actions -->
@@ -157,7 +180,10 @@ const deleteData = async (id: number) => {
                 >
                   View
                 </VListItem>
-                <VListItem value="delete" @click="deleteData(item.id)">
+                <VListItem
+                  value="delete"
+                  @click="deleteData(item.id)"
+                >
                   Deleted
                 </VListItem>
               </VList>
@@ -169,7 +195,7 @@ const deleteData = async (id: number) => {
         <template #bottom>
           <TablePagination
             v-model:page="page"
-            :items-per-page="itemsPerPage"
+            :items-per-page="data?.per_page"
             :total-items="data?.total"
             @update:page="updatePage"
           />

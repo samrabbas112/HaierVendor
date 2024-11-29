@@ -136,7 +136,6 @@ const verifyCode = async () => {
 </script>
 
 <template>
-  <SnackBar />
   <NuxtLink to="/">
     <div class="auth-logo d-flex align-center gap-x-3">
       <VNodeRenderer :nodes="themeConfig.app.logo" />

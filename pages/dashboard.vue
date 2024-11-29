@@ -289,7 +289,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <SnackBar />
   <VRow class="match-height">
     <VCol cols="12">
       <LogisticsCardStatistics :stats="ordersData" />

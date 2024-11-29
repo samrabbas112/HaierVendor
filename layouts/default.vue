@@ -33,6 +33,7 @@ injectSkinClasses();
     "
   >
     <Loader />
+    <SnackBar />
     <Alert />
     <slot />
   </Component>
