@@ -5,47 +5,41 @@ const loaderStore = useLoaderStore();
 
 const searchQuery = ref("");
 const ordersData = ref({
+  per_page: 10,
   total: 0,
   orders: [],
 });
 
 // Data table Headers
 const headers = [
-  { title: "Order#", key: "order" },
-  { title: "Total Price", key: "spent" },
-  { title: "Customers", key: "customers" },
-  { title: "Payment Method", key: "method", sortable: false },
-  { title: "Placed At", key: "date" },
-  { title: "Deliver Before", key: "time" },
-  { title: "Status", key: "status" },
-  { title: "Action", key: "actions", sortable: false },
-];
+  { title: 'Order#', key: 'order', sortable: false },
+  { title: 'Total Price', key: 'payment', sortable: false },
+  { title: 'Customers', key: 'customer', sortable: false },
+  { title: 'Payment Method', key: 'method', sortable: false },
+  { title: 'Placed At', key: 'date', sortable: false },
+  { title: 'Deliver Before', key: 'time', sortable: false },
+  { title: 'Status', key: 'status', sortable: false },
+  { title: 'Action', key: 'actions', sortable: false },
+]
 
-const transformData = (apiResponse) => {
-  return apiResponse.map((item) => {
-    const payload = JSON.parse(item.payload) || {};
-    const vendor = item.vendor || {};
-    const internalMovement = item.internal_movement || {};
-    const pickStatus = item.pick_status || {};
+const transformData = apiResponse => {
+  return apiResponse.map(item => {
+    const customer = item.customer
 
     return {
       id: item.id,
       order: item.order_no,
-      customer: payload.consignee || "N/A",
-      email: vendor.email || "N/A",
-      avatar: "", // Default empty avatar
-      payment: parseFloat(item.paymentAmount) || 0,
-      status: pickStatus.name || "Unknown",
-      spent: parseFloat(item.paymentAmount) || 0, // Assuming spent = paymentAmount
-      method: payload.channel || "Unknown", // Payment method
+      customer: customer.name || 'N/A',
+      mobile: customer.mobile || '03XXXXXXXXXX',
+      payment: Number.parseFloat(item.paymentAmount) || 0,
+      status: item.pick_status || 'Unknown',
+      method: item.payment_method || 'COD', // Payment method
       // date: new Date(item.created_at).toLocaleString("en-US", dateTimeOptions),
       date: item.created_at,
-      time: new Date(item.created_at).getTime() + 60 * 60 * 1000, // One hour later
-      methodNumber: item.id, // Placeholder for method number
-    };
-  });
-};
-
+      time: item.pick_before, // One hour later
+    }
+  })
+}
 
 let previousSearchQuery = "";
 const makeSearch = async (page) => {
@@ -57,19 +51,26 @@ const makeSearch = async (page) => {
     page = 1; // Reset to page 1 if the search query has changed
   }
 
+  const formData = {
+      order_no: searchQuery.value,
+      order_type: 'private',
+    }
+  
   try {
     loaderStore.showLoader();
     const response = await apiRequestObj.makeRequest(
-      `service/search/my-orders?page=${typeof page === "number" ? page : 1}&order_no=${searchQuery.value}&order_status=&payment_status=`,
-      "get",
-    );
+      `common/order/list?page=${typeof page == 'number' ? page : 1}`,
+      'post',
+      formData,
+    )
 
     if (response && response.success) {
       // Transform and set the data
       ordersData.value = {
+        per_page: response?.data?.per_page,
         total: response?.data?.total, // Set total count of orders
-        orders: transformData(response?.data?.data),
-      };
+        orders: transformData(response?.data?.orders),
+      }
     } else {
       snackbarStore.showSnackbar(
         "An error occurred. Please try again.",
@@ -92,7 +93,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <CustomTable :headers="headers" :data="ordersData" @update:page="makeSearch">
+  <CustomTable :headers="headers" :data="ordersData" from="private"  @update:page="makeSearch" >
     <VCardText>
       <VRow cols="12" sm="8">
         <!-- 👉 Select Status -->
