@@ -12,15 +12,15 @@ const ordersData = ref({
 
 // Data table Headers
 const headers = [
-  { title: 'Order#', key: 'order' },
-  { title: 'Total Price', key: 'spent' },
-  { title: 'Customers', key: 'customers' },
-  { title: 'Payment Method', key: 'method', sortable: false },
-  { title: 'Placed At', key: 'date' },
-  { title: 'Deliver Before', key: 'time' },
-  { title: 'Status', key: 'status' },
-  { title: 'Action', key: 'actions', sortable: false },
-]
+  { title: "Order#", key: "order", sortable: false },
+  { title: "Total Price", key: "spent", sortable: false },
+  { title: "Customers", key: "customers", sortable: false },
+  { title: "Payment Method", key: "method", sortable: false },
+  { title: "Placed At", key: "date", sortable: false },
+  { title: "Deliver Before", key: "time", sortable: false },
+  { title: "Status", key: "status" , sortable: false},
+  { title: "Action", key: "actions", sortable: false },
+];
 
 const transformData = apiResponse => {
   return apiResponse.map(item => {
@@ -57,15 +57,26 @@ const makeSearch = async page => {
   if (searchQuery.value !== previousSearchQuery)
     page = 1 // Reset to page 1 if the search query has changed
 
+    const formData = {
+      order_no: searchQuery.value,
+      order_type: 'private',
+    }
+
   try {
     loaderStore.showLoader()
 
+    // const response = await apiRequestObj.makeRequest(
+    //   `service/search/my-orders?page=${typeof page === 'number' ? page : 1}&order_no=${searchQuery.value}&order_status=&payment_status=`,
+    //   'get',
+    // )
     const response = await apiRequestObj.makeRequest(
-      `service/search/my-orders?page=${typeof page === 'number' ? page : 1}&order_no=${searchQuery.value}&order_status=&payment_status=`,
-      'get',
+      `common/order/list`,
+      'post',
+      formData,
     )
 
     if (response && response.success) {
+      console.log("from lahore orders",response?.data);
       // Transform and set the data
       ordersData.value = {
         total: response?.data?.total, // Set total count of orders
@@ -100,6 +111,7 @@ onMounted(() => {
     :headers="headers"
     :data="ordersData"
     @update:page="makeSearch"
+    from="lahore"
   >
     <VCardText>
       <VRow

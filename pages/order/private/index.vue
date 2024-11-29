@@ -11,13 +11,13 @@ const ordersData = ref({
 
 // Data table Headers
 const headers = [
-  { title: "Order#", key: "order" },
-  { title: "Total Price", key: "spent" },
-  { title: "Customers", key: "customers" },
+  { title: "Order#", key: "order", sortable: false },
+  { title: "Total Price", key: "spent", sortable: false },
+  { title: "Customers", key: "customers", sortable: false },
   { title: "Payment Method", key: "method", sortable: false },
-  { title: "Placed At", key: "date" },
-  { title: "Deliver Before", key: "time" },
-  { title: "Status", key: "status" },
+  { title: "Placed At", key: "date", sortable: false },
+  { title: "Deliver Before", key: "time", sortable: false },
+  { title: "Status", key: "status" , sortable: false},
   { title: "Action", key: "actions", sortable: false },
 ];
 
@@ -57,12 +57,18 @@ const makeSearch = async (page) => {
     page = 1; // Reset to page 1 if the search query has changed
   }
 
+  const formData = {
+      order_no: searchQuery.value,
+      order_type: 'private',
+    }
+  
   try {
     loaderStore.showLoader();
     const response = await apiRequestObj.makeRequest(
-      `service/search/my-orders?page=${typeof page === "number" ? page : 1}&order_no=${searchQuery.value}&order_status=&payment_status=`,
-      "get",
-    );
+      `common/order/list`,
+      'post',
+      formData
+    )
 
     if (response && response.success) {
       // Transform and set the data
@@ -92,7 +98,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <CustomTable :headers="headers" :data="ordersData" @update:page="makeSearch">
+  <CustomTable :headers="headers" :data="ordersData" from="private"  @update:page="makeSearch" >
     <VCardText>
       <VRow cols="12" sm="8">
         <!-- 👉 Select Status -->
