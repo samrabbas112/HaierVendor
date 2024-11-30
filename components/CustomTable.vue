@@ -166,7 +166,7 @@ const deleteData = async (id: number) => {
         <template #item.actions="{ item }">
           <IconBtn
             v-if="route.path.startsWith('/order/')"
-            :to="`/order/${from}/${item.id}`"
+            :to="`/order/${from}/${item.uid}`"
           >
             <VIcon icon="tabler-eye" />
           </IconBtn>
@@ -176,7 +176,7 @@ const deleteData = async (id: number) => {
               <VList>
                 <VListItem
                   value="view"
-                  :to="{ name: 'order-details-id', params: { id: item.id } }"
+                  :to="`/order/${from}/${item.uid}`"
                 >
                   View
                 </VListItem>

@@ -1,98 +1,116 @@
 <script setup lang="ts">
-import type { Order } from '@db/apps/ecommerce/types'
+const orderData = ref([])
+const isConfirmDialogVisible = ref(false)
+const isReasonDialogVisible = ref(false)
+const selectedStatus = ref('picked')
+const selectedReason = ref()
+const customeReason = ref()
+const dialogMsg = ref('Are you sure')
+const reasons = ref([])
 
-const orderData = ref<Order>()
-const userData = ref()
+const userData = ref({
+  fullName: '',
+  country: 'Pakistan',
+  province: '',
+  city: '',
+  address: '',
+  contact: '',
+  clientIp: '',
+})
+
 const orderDetail = ref([])
 const subtotal = ref(0)
-const extra = ref(0)
-const Discount = ref(0)
 const Total = ref(0)
 
-const route = useRoute('order-details-id')
+const route = useRoute()
 const loaderStore = useLoaderStore()
 const snackbarStore = useSnackbarStore()
 const apiRequestObj = useApi()
 
-const transformOrderDetail = vendorOrderInfoDto => {
-  subtotal.value = subtotal.value + (vendorOrderInfoDto.orderAmount * vendorOrderInfoDto.vendorOrderSpecInfoDtoList[0].purchaseNum) || 0
-  extra.value = extra.value + vendorOrderInfoDto.logisticAmount || 0
-  Discount.value = Discount.value + vendorOrderInfoDto.favourableAmount || 0
-  Total.value = (subtotal.value + extra.value) - Discount.value || 0
+const deliveryRefusedReasons = [
+  'Customer has not answered the phone call',
+  'Customer refused to accept',
+  'Cusotmer has already generated the canacel request',
+  'other',
+]
 
+const rejectOrderReasons = [
+  'Customer is not responding',
+  'Out of stock',
+  'Customer ask to cancel',
+  'wrong customer information',
+  'Delivery location mismatch',
+  'other',
+]
+
+const transformOrderDetail = (orderProduct, singleProductTotal) => {
   return {
-    productName: vendorOrderInfoDto.productName,
-    productImage: vendorOrderInfoDto.vendorOrderSpecInfoDtoList[0].specCoverImg,
-    productId: vendorOrderInfoDto.productId,
-    variation: vendorOrderInfoDto.vendorOrderSpecInfoDtoList[0].specName,
-
-    //     subtitle: "Storage: 128gb",
-    price: vendorOrderInfoDto.orderAmount,
-    quantity: vendorOrderInfoDto.vendorOrderSpecInfoDtoList[0].purchaseNum,
-    total: vendorOrderInfoDto.orderAmount * vendorOrderInfoDto.vendorOrderSpecInfoDtoList[0].purchaseNum,
-    logisticAmount: vendorOrderInfoDto.logisticAmount,
-    favourableAmount: vendorOrderInfoDto.favourableAmount,
+    productName: orderProduct.productName,
+    productImage: orderProduct.productCoverImg || '',
+    productId: orderProduct.productId,
+    variations: orderProduct.specInfo.map((spec: any) => ({
+      name: spec.specName,
+      quantity: spec.purchaseNum,
+    })),
+    price: orderProduct.productPrice,
+    total: singleProductTotal,
   }
 }
 
 const transformData = apiResponse => {
-  return apiResponse.map(item => {
-    const payload = JSON.parse(item.payload) || {}
-    const vendor = item.vendor || {}
+  subtotal.value = 0 // Reset subtotal before recalculating
 
-    userData.value = {
-      fullName: payload.consignee,
-      country: 'Pakistan',
-      province: payload.province,
-      city: payload.city,
-      district: payload.district,
-      address: payload.address,
-      contact: payload.mobile,
-      clientIp: payload.clientIp,
-    }
-    orderDetail.value = payload.vendorOrderInfoDtos.map(vendorOrderInfoDto => transformOrderDetail(vendorOrderInfoDto))
+  const customer = apiResponse.customer
 
-    return {
-      id: item.id,
-      order: item.order_no,
-      customer: payload.consignee || 'N/A',
-      email: vendor.email || 'N/A',
-      avatar: '', // Default empty avatar
-      payment: Number.parseFloat(item.paymentAmount) || 0,
-      status: item.pick_status.name || 'Unknown',
-      spent: Number.parseFloat(item.paymentAmount) || 0, // Assuming spent = paymentAmount
-      method: payload.channel || 'Unknown', // Payment method
-      // date: new Date(item.created_at).toLocaleString("en-US", dateTimeOptions),
-      date: item.created_at,
-      time: new Date(item.created_at).getTime() + 60 * 60 * 1000, // One hour later
-      methodNumber: item.id, // Placeholder for method number
-    }
+  // Set user data
+  userData.value = {
+    fullName: customer.name,
+    country: 'Pakistan',
+    province: customer.province,
+    city: customer.city,
+    address: customer.address,
+    contact: customer.mobile.toString(),
+    clientIp: customer.clientIp,
+  }
+
+  // Set order details
+  orderDetail.value = apiResponse.orderProduct.map(orderProduct => {
+    let singleProductTotal = 0
+    orderProduct.specInfo.forEach(spec => {
+      subtotal.value += orderProduct.productPrice * spec.purchaseNum
+      singleProductTotal += orderProduct.productPrice * spec.purchaseNum
+    })
+
+    return transformOrderDetail(orderProduct, singleProductTotal)
   })
-}
 
-const formData = {
-  status: '',
-  reason: '',
+  // Return transformed order data
+  return {
+    id: apiResponse.id,
+    uid: apiResponse.uid,
+    order: apiResponse.order_no,
+    payment: Number.parseFloat(apiResponse.paymentAmount) || 0,
+    status: apiResponse.pick_status || 'Unknown',
+    method: apiResponse.payment_method || 'COD',
+    date: apiResponse.created_at,
+    time: apiResponse.pick_before,
+  }
 }
 
 const fetchData = async () => {
   try {
     loaderStore.showLoader()
-    console.log('details page ', route.params.id)
 
     const response = await apiRequestObj.makeRequest(
-      `common/order/list/${route.params.id}`,
-      'post',
-      formData,
+      `common/order/show/${route.params.id}`,
+      'get',
     )
 
     if (response && response.success) {
-      // Transform and set the data
-      const singleOrder = response?.data?.data.filter(
-        item => item.id == route.params.id,
-      )
+      const singleOrder = response.data
 
-      orderData.value = transformData(singleOrder)
+      orderData.value = [transformData(singleOrder)]
+      Total.value = subtotal.value // Update total with the subtotal
     }
     else {
       snackbarStore.showSnackbar(
@@ -109,42 +127,66 @@ const fetchData = async () => {
   }
 }
 
+const handleClick = (status, text) => {
+  dialogMsg.value = text
+  selectedStatus.value = status
+  isConfirmDialogVisible.value = !isConfirmDialogVisible.value
+}
+
+const handleDialogClick = value => {
+  if (value) {
+    if (
+      selectedStatus.value === 'delivery_refused'
+      || selectedStatus.value === 'reject_order'
+      || true
+    ) {
+      selectedStatus.value === 'delivery_refused'
+        ? (reasons.value = deliveryRefusedReasons)
+        : (reasons.value = rejectOrderReasons)
+      isReasonDialogVisible.value = !isReasonDialogVisible.value
+    }
+    else {
+      snackbarStore.showSnackbar('Status Updated', 'primary')
+    }
+  }
+  else {
+    console.log('ahmad')
+    selectedStatus.value = null
+  }
+}
+
+const handleReasonDialogClick = () => {
+  if (selectedReason.value){
+    snackbarStore.showSnackbar('order status updated', 'primary')
+    isReasonDialogVisible.value = !isReasonDialogVisible.value
+  }
+
+  selectedReason.value = null
+  customeReason.value = null
+  
+}
+
 onMounted(async () => {
   await fetchData()
 })
 
-const isConfirmDialogVisible = ref(false)
-
 const headers = [
   { title: 'Product', key: 'productName' },
-  { title: 'Variation', key: 'variation' },
-  { title: 'Price', key: 'price' },
+  { title: 'Variation', key: 'variations' },
   { title: 'Quantity', key: 'quantity' },
+  { title: 'Price', key: 'price' },
   { title: 'Total', key: 'total' },
 ]
 
-const resolvePaymentStatus = (payment: number) => {
-  if (payment === 1)
-    return { text: 'Paid', color: 'success' }
-  if (payment === 2)
-    return { text: 'Pending', color: 'warning' }
-  if (payment === 3)
-    return { text: 'Cancelled', color: 'secondary' }
-  if (payment === 4)
-    return { text: 'Failed', color: 'error' }
-}
-
 const resolveStatus = (status: string) => {
-  if (status === 'Exclusive')
-    return { text: 'Ready to Pickup', color: 'info' }
-  if (status === 'Picked')
-    return { text: 'Picked', color: 'warning' }
-  if (status === 'out for delivery')
-    return { text: 'Out for delivery', color: 'primary' }
-  if (status === 'Closed')
-    return { text: 'Closed', color: 'success' }
+  const statusMapping = {
+    'Exclusive': { text: 'Ready to Pickup', color: 'info' },
+    'Picked': { text: 'Picked', color: 'warning' },
+    'out for delivery': { text: 'Out for delivery', color: 'primary' },
+    'Closed': { text: 'Closed', color: 'success' },
+  }
 
-  return { text: status, color: 'primary' }
+  return statusMapping[status] || { text: status, color: 'primary' }
 }
 </script>
 
@@ -154,7 +196,7 @@ const resolveStatus = (status: string) => {
       <div>
         <div class="d-flex gap-2 align-center mb-2 flex-wrap">
           <h5 class="text-h5">
-            Order #{{ route.params.id }}
+            Order #{{ orderData?.[0]?.order }}
           </h5>
           <div class="d-flex gap-x-2">
             <VChip
@@ -174,7 +216,12 @@ const resolveStatus = (status: string) => {
           v-if="orderData?.[0]?.status === 'Exclusive'"
           variant="tonal"
           color="primary"
-          @click="isConfirmDialogVisible = !isConfirmDialogVisible"
+          @click="
+            handleClick(
+              'picked',
+              'Do you confirm you want to pick up the order?',
+            )
+          "
         >
           Pick
         </VBtn>
@@ -183,7 +230,12 @@ const resolveStatus = (status: string) => {
           v-if="orderData?.[0]?.status === 'Exclusive'"
           variant="tonal"
           color="error"
-          @click="isConfirmDialogVisible = !isConfirmDialogVisible"
+          @click="
+            handleClick(
+              'move_to_public',
+              'Do you confirm you want to move the order to public?',
+            )
+          "
         >
           Move to Public
         </VBtn>
@@ -192,7 +244,12 @@ const resolveStatus = (status: string) => {
           v-if="orderData?.[0]?.status === 'Picked'"
           variant="tonal"
           color="warning"
-          @click="isConfirmDialogVisible = !isConfirmDialogVisible"
+          @click="
+            handleClick(
+              'reject_order',
+              'Do you confirm you want to Reject Order?',
+            )
+          "
         >
           Reject Order
         </VBtn>
@@ -201,16 +258,12 @@ const resolveStatus = (status: string) => {
           v-if="orderData?.[0]?.status === 'Picked'"
           variant="tonal"
           color="success"
-          @click="isConfirmDialogVisible = !isConfirmDialogVisible"
-        >
-          Delivered
-        </VBtn>
-
-        <VBtn
-          v-if="orderData?.[0]?.status === 'out for delivery'"
-          variant="tonal"
-          color="primary"
-          @click="isConfirmDialogVisible = !isConfirmDialogVisible"
+          @click="
+            handleClick(
+              'deliver_now',
+              'Do you confirm you Delivered the Order?',
+            )
+          "
         >
           Deliver Now
         </VBtn>
@@ -218,8 +271,27 @@ const resolveStatus = (status: string) => {
         <VBtn
           v-if="orderData?.[0]?.status === 'out for delivery'"
           variant="tonal"
+          color="primary"
+          @click="
+            handleClick(
+              'delivered',
+              'Do you confirm you want to deliver the order now?',
+            )
+          "
+        >
+          Delivered
+        </VBtn>
+
+        <VBtn
+          v-if="orderData?.[0]?.status === 'out for delivery'"
+          variant="tonal"
           color="error"
-          @click="isConfirmDialogVisible = !isConfirmDialogVisible"
+          @click="
+            handleClick(
+              'delivery_refused',
+              'Do you confirm you want to refuse the delivery of this order?',
+            )
+          "
         >
           Delivery Refused
         </VBtn>
@@ -270,21 +342,35 @@ const resolveStatus = (status: string) => {
 
             <template #item.price="{ item }">
               <div class="text-body-1">
-                ${{ item.price }}
+                {{ item.price }}
               </div>
             </template>
 
             <template #item.total="{ item }">
               <div class="text-body-1">
-                ${{ item.total }}
+                {{ item.total }}
               </div>
             </template>
 
-            <template #item.quantity="{ item }">
-              <div class="text-body-1">
-                {{ item.quantity }}
+            <template #item.variations="{ item }">
+              <div
+                v-for="(variation, index) in item.variations"
+                :key="index"
+                class="text-body-1"
+              >
+                {{ variation.name }}
               </div>
             </template>
+            <template #item.quantity="{ item }">
+              <div
+                v-for="(variation, index) in item.variations"
+                :key="index"
+                class="text-body-1"
+              >
+                {{ variation.quantity }}
+              </div>
+            </template>
+            <!-- </div> -->
 
             <template #bottom />
           </VDataTable>
@@ -299,27 +385,29 @@ const resolveStatus = (status: string) => {
                       Subtotal:
                     </td>
                     <td class="font-weight-medium">
-                      PKR{{ subtotal }}
+                      <span class="font-weight-light">PKR</span>{{ subtotal }}
                     </td>
                   </tr>
-                  <tr>
+                  <!--
+                    <tr>
                     <td>Extra:</td>
                     <td class="font-weight-medium">
-                      PKR{{ extra }}
+                    PKR{{ extra }}
                     </td>
-                  </tr>
-                  <tr>
+                    </tr>
+                    <tr>
                     <td>Discount:</td>
                     <td class="font-weight-medium">
-                      PKR{{ Discount }}
+                    PKR{{ Discount }}
                     </td>
-                  </tr>
+                    </tr>
+                  -->
                   <tr>
                     <td class="text-high-emphasis font-weight-medium">
                       Total:
                     </td>
                     <td class="font-weight-medium">
-                      PKR{{ Total }}
+                      <span class="font-weight-light">PKR</span>{{ Total }}
                     </td>
                   </tr>
                 </tbody>
@@ -371,7 +459,6 @@ const resolveStatus = (status: string) => {
           <VCardText>
             <div class="text-body-1">
               {{ userData?.address }} <br>
-              {{ userData?.district }} , <br>
               {{ userData?.city }} <br>
               {{ userData?.province }}
               {{ userData?.country }}
@@ -387,7 +474,52 @@ const resolveStatus = (status: string) => {
       cancel-msg="Request cancelled!!"
       cancel-title="Cancelled"
       confirm-msg="Your order status changed successfully."
-      :confirm-title="dialogConfirmTitle"
+      confirm-title="Confirmed"
+      @confirm="handleDialogClick"
     />
+    <VDialog
+      v-model="isReasonDialogVisible"
+      max-width="500"
+    >
+      <VCard>
+        <VCardText class="text-center px-10 py-6">
+          <VRow
+            cols="12"
+            sm="8"
+          >
+            <VCol cols="12">
+              <AppSelect
+                v-model="selectedReason"
+                label="Select Reason"
+                placeholder="Please Select your Reason"
+                :items="reasons"
+                clearable
+                clear-icon="tabler-x"
+                class="text-left"
+              />
+            </VCol>
+            <VCol
+              v-if="selectedReason == 'other'"
+              cols="12"
+            >
+              <AppTextarea
+                v-model="customeReason"
+                placeholder="Type Reason"
+                label="Reason:"
+                class="text-left"
+              />
+            </VCol>
+          </VRow>
+
+          <VBtn
+            color="success"
+            class="mt-5"
+            @click="handleReasonDialogClick"
+          >
+            Ok
+          </VBtn>
+        </VCardText>
+      </VCard>
+    </VDialog>
   </div>
 </template>
