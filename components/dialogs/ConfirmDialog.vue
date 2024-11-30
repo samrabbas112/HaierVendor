@@ -72,7 +72,7 @@ const onCancel = () => {
   </VDialog>
 
   <!-- Unsubscribed -->
-  <VDialog v-model="unsubscribed" max-width="500">
+  <!-- <VDialog v-model="unsubscribed" max-width="500">
     <VCard>
       <VCardText class="text-center px-10 py-6">
         <VBtn
@@ -94,10 +94,10 @@ const onCancel = () => {
         <VBtn color="success" @click="unsubscribed = false"> Ok </VBtn>
       </VCardText>
     </VCard>
-  </VDialog>
+  </VDialog> -->
 
   <!-- Cancelled -->
-  <VDialog v-model="cancelled" max-width="500">
+  <!-- <VDialog v-model="cancelled" max-width="500">
     <VCard>
       <VCardText class="text-center px-10 py-6">
         <VBtn
@@ -119,5 +119,5 @@ const onCancel = () => {
         <VBtn color="success" @click="cancelled = false"> Ok </VBtn>
       </VCardText>
     </VCard>
-  </VDialog>
+  </VDialog> -->
 </template>
