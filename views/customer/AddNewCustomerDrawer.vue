@@ -50,6 +50,13 @@ const closeNavigationDrawer = () => {
     refForm.value?.resetValidation();
   });
 };
+// Validation Rules
+const requiredValidator = (value: string) => !!value || 'This field is required';
+
+const phoneValidator = (value: string) => {
+  const phoneRegex = /^[0-9]{11}$/;
+  return phoneRegex.test(value) || 'Invalid phone number. Must be be valid phone number.';
+};
 
 const onSubmit = async () => {
   refForm.value?.validate().then(async ({ valid }) => {
@@ -146,7 +153,7 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                 <AppTextField
                   v-model="phoneNumber"
                   type="tel"
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidator,phoneValidator]"
                   label="Phone Number"
                   placeholder="+1234567890"
                 />

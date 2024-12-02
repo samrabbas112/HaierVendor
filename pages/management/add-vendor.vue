@@ -23,32 +23,43 @@ const form = ref({
   address: '',
   iban: '',
   ntn: '',
-  province: '',
-  city: '',
-  status: true,
+  province: 'Select Province',
+  city: 'Select City',
+  status: 'active',
 });
 
 // Validation Rules
 const requiredValidator = (value: string) => !!value || 'This field is required';
 const emailValidator = (value: string) =>
   /^\S+@\S+\.\S+$/.test(value) || 'Invalid email address';
+const phoneValidator = (value: string) => {
+  const phoneRegex = /^[0-9]{11}$/;
+  return phoneRegex.test(value) || 'Invalid phone number. Must be be valid phone number.';
+};
+
 
 // Dropdown Options
 const provinces = ['Sindh', 'Punjab', 'KPK', 'Balochistan', 'Islamabad'];
 const cities = ['Karachi', 'Lahore', 'Peshawar', 'Quetta', 'Islamabad'];
 const statuses = [
-  { text: 'Active', value: true },
-  { text: 'Inactive', value: false },
+  { text: 'Active', value: 'active' },
+  { text: 'Inactive', value: 'inactive' },
 ];
+
+
 // Form Submission Handler
 const submitForm = async () => {
   refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
       try {
+        const payload = {
+            ...form.value,
+            status: form.value.status === 'active', // Convert to boolean
+          };
         const response = await useApi().makeRequest(
           'haier/vendor/store',
           'post',
-          form.value
+          payload
         );
 
         if (response && response.success) {
@@ -56,6 +67,7 @@ const submitForm = async () => {
           snackBarStore.showSnackbar('Vendor created successfully!', 'success');
           router.push('/management/vendors'); // Navigate to the vendor list page
         } else {
+          console.log(response);
           snackBarStore.showSnackbar(
             response.message || 'Failed to save vendor data',
             'error'
@@ -111,7 +123,7 @@ const resetForm = () => {
 
                         <!-- Telephone -->
                         <VCol cols="12" sm="6">
-                            <AppTextField v-model="form.telephone" :rules="[requiredValidator]" label="Telephone"
+                            <AppTextField v-model="form.telephone" :rules="[requiredValidator,phoneValidator]" label="Telephone"
                                 type="tel" placeholder="03xxxxxxxxx" />
                         </VCol>
 

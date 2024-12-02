@@ -29,20 +29,28 @@ const form = ref({
   ntn: '',
   province: '',
   city: '',
-  status: true,
+  status: 'active',
 });
 
 // Validation Rules
-const requiredValidator = (value: string) => !!value || 'This field is required';
+const requiredValidator = (value: string): boolean | string => {
+  console.log(value);
+  return !!value || 'This field is required';
+};
 const emailValidator = (value: string) =>
   /^\S+@\S+\.\S+$/.test(value) || 'Invalid email address';
+
+const phoneValidator = (value: string) => {
+  const phoneRegex = /^[0-9]{11}$/;
+  return phoneRegex.test(value) || 'Invalid phone number. Must be be valid phone number.';
+};
 
 // Dropdown Options
 const provinces = ['Sindh', 'Punjab', 'KPK', 'Balochistan', 'Islamabad'];
 const cities = ['Karachi', 'Lahore', 'Peshawar', 'Quetta', 'Islamabad'];
 const statuses = [
-  { text: 'Active', value: true },
-  { text: 'Inactive', value: false },
+  { text: 'Active', value: 'active' },
+  { text: 'InActive', value: 'Inactive' },
 ];
 
 
@@ -53,7 +61,9 @@ const fetchVendor = async () => {
   try {
     const response = await useApi().makeRequest(`haier/vendor/show/${vendorId}`, 'get');
     if (response?.success) {
-      Object.assign(form.value, response.data); // Populate form with vendor data
+      Object.assign(form.value, response.data);
+      form.value.status = response.data.status ? 'active' : 'Inactive';
+
     } else {
       snackBarStore.showSnackbar('Failed to load vendor data', 'error');
     }
@@ -71,10 +81,15 @@ const submitForm = async () => {
     refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
       try {
+        const payload = {
+            ...form.value,
+            status: form.value.status === 'active', // Convert to boolean
+          };
+
         const response = await useApi().makeRequest(
           `haier/vendor/update/${vendorId}`,
           'put',
-          form.value
+          payload
         );
 
         if (response?.success) {
@@ -129,7 +144,7 @@ onMounted(() => {
             <VCol cols="12" sm="6">
               <AppTextField
                 v-model="form.telephone"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator,phoneValidator]"
                 label="Telephone"
                 :readonly="isDetailsMode"
               />
