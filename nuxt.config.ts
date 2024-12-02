@@ -38,6 +38,7 @@ export default defineNuxtConfig({
     },
   },
   css: [
+    '@/plugins/casl/index.ts',
     "@core/scss/template/index.scss",
     "@styles/styles.scss",
     "@/plugins/iconify/icons.css",
