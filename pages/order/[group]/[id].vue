@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { orderStatusCodes } from '../../../libs/order/order-status'
+
 const orderData = ref([])
 const isConfirmDialogVisible = ref(false)
 const isReasonDialogVisible = ref(false)
-const selectedStatus = ref('picked')
+const selectedStatus = ref(12)
 const selectedReason = ref()
 const customeReason = ref()
 const dialogMsg = ref('Are you sure')
@@ -167,7 +169,6 @@ const handleReasonDialogClick = async() => {
 
 const updateStatus = async () => {
   const response = apiRequestObj.makeRequest(`common/order/update/status/${orderData.value.uid}`,'post',{
-    order_no: orderData.value.order,
     status: selectedStatus.value,
     reason: selectedReason.value
   },
@@ -223,12 +224,12 @@ const resolveStatus = (status: string) => {
       </div>
       <div class="d-flex gap-x-2">
         <VBtn
-          v-if="orderData?.status === 'Exclusive'"
+          v-if="orderData?.status === 'Exclusive' || orderData?.status === 'Mutual'"
           variant="tonal"
           color="primary"
           @click="
             handleClick(
-              'picked',
+              orderStatusCodes.isPicked,
               'Do you confirm you want to pick up the order?',
             )
           "
@@ -242,7 +243,7 @@ const resolveStatus = (status: string) => {
           color="error"
           @click="
             handleClick(
-              'move_to_public',
+              orderStatusCodes.isPublic,
               'Do you confirm you want to move the order to public?',
             )
           "
@@ -256,7 +257,7 @@ const resolveStatus = (status: string) => {
           color="warning"
           @click="
             handleClick(
-              'reject_order',
+              orderStatusCodes.isRejected,
               'Do you confirm you want to Reject Order?',
             )
           "
@@ -270,7 +271,7 @@ const resolveStatus = (status: string) => {
           color="success"
           @click="
             handleClick(
-              'deliver_now',
+              orderStatusCodes.isOutForDelivery,
               'Do you confirm you Delivered the Order?',
             )
           "
@@ -284,7 +285,7 @@ const resolveStatus = (status: string) => {
           color="primary"
           @click="
             handleClick(
-              'delivered',
+              orderStatusCodes.isDelivered,
               'Do you confirm you want to deliver the order now?',
             )
           "
@@ -298,7 +299,7 @@ const resolveStatus = (status: string) => {
           color="error"
           @click="
             handleClick(
-              'delivery_refused',
+              orderStatusCodes.isDeliveryRefused,
               'Do you confirm you want to refuse the delivery of this order?',
             )
           "

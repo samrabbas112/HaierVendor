@@ -28,6 +28,7 @@ const transformData = apiResponse => {
 
     return {
       id: item.id,
+      uid: item.uid,
       order: item.order_no,
       customer: customer.name || 'N/A',
       mobile: customer.mobile || '03XXXXXXXXXX',

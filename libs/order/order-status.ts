@@ -1,0 +1,17 @@
+export const orderStatusCodes = {
+  isExclusive: '1',
+  isPublic: '2',
+  isRejected: '3',
+  isReadyToShip: '5',
+  isShipped: '6',
+  isOutForDelivery: '7',
+  isDelivered: '8',
+  isDeliveryTimeout: '9',
+  isDeliveryRefused: '10',
+  isPicked: '12',
+  isHaier: '17',
+  isClosed: '19',
+  isDirect: '15',
+  isIndirect: '16',
+  isCancelled: '20',
+}
