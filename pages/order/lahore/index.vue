@@ -1,4 +1,10 @@
 <script setup lang="ts">
+definePageMeta({
+  meta: {
+    action: 'read',
+    subject: 'AclDemo',
+  },
+});
 const apiRequestObj = useApi()
 const snackbarStore = useSnackbarStore()
 const loaderStore = useLoaderStore()
