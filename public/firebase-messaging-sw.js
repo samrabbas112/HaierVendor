@@ -35,4 +35,14 @@ messaging.onBackgroundMessage(function(payload) {
     // Show notification in the service worker
     // eslint-disable-next-line no-restricted-globals
     self.registration.showNotification(notificationTitle, notificationOptions)
+
+    // Send the notification data to the main thread
+    self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then((clients) => {
+        clients.forEach((client) => {
+            client.postMessage({
+                type: 'NEW_NOTIFICATION',
+                payload,
+            });
+        });
+    });
 })

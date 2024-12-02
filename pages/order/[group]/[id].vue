@@ -109,7 +109,7 @@ const fetchData = async () => {
     if (response && response.success) {
       const singleOrder = response.data
 
-      orderData.value = [transformData(singleOrder)]
+      orderData.value = transformData(singleOrder)
       Total.value = subtotal.value // Update total with the subtotal
     }
     else {
@@ -133,12 +133,10 @@ const handleClick = (status, text) => {
   isConfirmDialogVisible.value = !isConfirmDialogVisible.value
 }
 
-const handleDialogClick = value => {
+const handleDialogClick = async (value) => {
   if (value) {
     if (
-      selectedStatus.value === 'delivery_refused'
-      || selectedStatus.value === 'reject_order'
-      || true
+      ['delivery_refused', 'reject_order'].includes(selectedStatus.value) || true
     ) {
       selectedStatus.value === 'delivery_refused'
         ? (reasons.value = deliveryRefusedReasons)
@@ -146,24 +144,36 @@ const handleDialogClick = value => {
       isReasonDialogVisible.value = !isReasonDialogVisible.value
     }
     else {
+      await updateStatus();
       snackbarStore.showSnackbar('Status Updated', 'primary')
     }
   }
   else {
-    console.log('ahmad')
     selectedStatus.value = null
   }
 }
 
-const handleReasonDialogClick = () => {
+const handleReasonDialogClick = async() => {
   if (selectedReason.value){
     snackbarStore.showSnackbar('order status updated', 'primary')
     isReasonDialogVisible.value = !isReasonDialogVisible.value
+    await updateStatus();
   }
 
   selectedReason.value = null
   customeReason.value = null
   
+}
+
+const updateStatus = async () => {
+  const response = apiRequestObj.makeRequest(`common/order/update/status/${orderData.value.uid}`,'post',{
+    order_no: orderData.value.order,
+    status: selectedStatus.value,
+    reason: selectedReason.value
+  },
+  )
+
+  console.log("ahmad",response?.success)
 }
 
 onMounted(async () => {
@@ -196,24 +206,24 @@ const resolveStatus = (status: string) => {
       <div>
         <div class="d-flex gap-2 align-center mb-2 flex-wrap">
           <h5 class="text-h5">
-            Order #{{ orderData?.[0]?.order }}
+            Order #{{ orderData?.order }}
           </h5>
           <div class="d-flex gap-x-2">
             <VChip
-              v-if="orderData?.[0]?.status"
-              v-bind="resolveStatus(orderData?.[0]?.status)"
+              v-if="orderData?.status"
+              v-bind="resolveStatus(orderData?.status)"
               label
               size="small"
             />
           </div>
         </div>
         <div class="text-body-1">
-          {{ orderData?.[0]?.date }}
+          {{ orderData?.date }}
         </div>
       </div>
       <div class="d-flex gap-x-2">
         <VBtn
-          v-if="orderData?.[0]?.status === 'Exclusive'"
+          v-if="orderData?.status === 'Exclusive'"
           variant="tonal"
           color="primary"
           @click="
@@ -227,7 +237,7 @@ const resolveStatus = (status: string) => {
         </VBtn>
 
         <VBtn
-          v-if="orderData?.[0]?.status === 'Exclusive'"
+          v-if="orderData?.status === 'Exclusive'"
           variant="tonal"
           color="error"
           @click="
@@ -241,7 +251,7 @@ const resolveStatus = (status: string) => {
         </VBtn>
 
         <VBtn
-          v-if="orderData?.[0]?.status === 'Picked'"
+          v-if="orderData?.status === 'Picked'"
           variant="tonal"
           color="warning"
           @click="
@@ -255,7 +265,7 @@ const resolveStatus = (status: string) => {
         </VBtn>
 
         <VBtn
-          v-if="orderData?.[0]?.status === 'Picked'"
+          v-if="orderData?.status === 'Picked'"
           variant="tonal"
           color="success"
           @click="
@@ -269,7 +279,7 @@ const resolveStatus = (status: string) => {
         </VBtn>
 
         <VBtn
-          v-if="orderData?.[0]?.status === 'out for delivery'"
+          v-if="orderData?.status === 'out for delivery'"
           variant="tonal"
           color="primary"
           @click="
@@ -283,7 +293,7 @@ const resolveStatus = (status: string) => {
         </VBtn>
 
         <VBtn
-          v-if="orderData?.[0]?.status === 'out for delivery'"
+          v-if="orderData?.status === 'out for delivery'"
           variant="tonal"
           color="error"
           @click="
