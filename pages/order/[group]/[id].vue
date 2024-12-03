@@ -6,7 +6,8 @@ const isConfirmDialogVisible = ref(false)
 const isReasonDialogVisible = ref(false)
 const selectedStatus = ref(12)
 const selectedReason = ref()
-const customeReason = ref()
+const selectedPics = ref([])
+const customReason = ref()
 const dialogMsg = ref('Are you sure')
 const reasons = ref([])
 
@@ -129,52 +130,69 @@ const fetchData = async () => {
   }
 }
 
+const updateStatus = async () => {
+  try {
+    loaderStore.showLoader()
+
+    const requestData = {
+      status: selectedStatus.value,
+      reason: selectedReason.value === 'other' ? customReason.value : selectedReason.value,
+      files: selectedPics.value,
+    }
+
+    const response = await apiRequestObj.makeRequest(
+      `common/order/update/status/${orderData.value.uid}`,
+      'post',
+      requestData,
+    )
+
+    console.log('Response:', response)
+
+    if (response?.success) {
+      orderData.value.status = response?.data?.pick_status
+      snackbarStore.showSnackbar(response.message, 'primary')
+    }
+  }
+  catch (error) {
+    console.error('Error updating status:', error)
+    snackbarStore.showSnackbar('Failed to update status. Please try again.', 'error')
+  }
+  finally {
+    loaderStore.hideLoader()
+  }
+}
+
 const handleClick = (status, text) => {
   dialogMsg.value = text
   selectedStatus.value = status
   isConfirmDialogVisible.value = !isConfirmDialogVisible.value
 }
 
-const handleDialogClick = async (value) => {
+const handleConfirm = async value => {
   if (value) {
-    if (
-      ['delivery_refused', 'reject_order'].includes(selectedStatus.value) || true
-    ) {
-      selectedStatus.value === 'delivery_refused'
+    if ([orderStatusCodes.isDeliveryRefused, orderStatusCodes.isRejected].includes(selectedStatus.value)) {
+      selectedStatus.value === orderStatusCodes.isDeliveryRefused
         ? (reasons.value = deliveryRefusedReasons)
         : (reasons.value = rejectOrderReasons)
       isReasonDialogVisible.value = !isReasonDialogVisible.value
     }
+    else if (selectedStatus.value == orderStatusCodes.isDelivered) {
+      isReasonDialogVisible.value = !isReasonDialogVisible.value
+    }
     else {
-      await updateStatus();
-      snackbarStore.showSnackbar('Status Updated', 'primary')
+      await updateStatus()
     }
   }
-  else {
-    selectedStatus.value = null
-  }
 }
 
-const handleReasonDialogClick = async() => {
-  if (selectedReason.value){
-    snackbarStore.showSnackbar('order status updated', 'primary')
-    isReasonDialogVisible.value = !isReasonDialogVisible.value
-    await updateStatus();
+const handleReasonDialog = async () => {
+  if (selectedReason.value || !isEmpty(selectedPics.value)) {
+    isReasonDialogVisible.value = false
+    await updateStatus()
   }
-
   selectedReason.value = null
-  customeReason.value = null
-  
-}
-
-const updateStatus = async () => {
-  const response = apiRequestObj.makeRequest(`common/order/update/status/${orderData.value.uid}`,'post',{
-    status: selectedStatus.value,
-    reason: selectedReason.value
-  },
-  )
-
-  console.log("ahmad",response?.success)
+  customReason.value = null
+  selectedPics.value = []
 }
 
 onMounted(async () => {
@@ -272,7 +290,7 @@ const resolveStatus = (status: string) => {
           @click="
             handleClick(
               orderStatusCodes.isOutForDelivery,
-              'Do you confirm you Delivered the Order?',
+              'Do you confirm you want to deliver the order now?',
             )
           "
         >
@@ -286,7 +304,7 @@ const resolveStatus = (status: string) => {
           @click="
             handleClick(
               orderStatusCodes.isDelivered,
-              'Do you confirm you want to deliver the order now?',
+              'Do you confirm you Delivered the Order?',
             )
           "
         >
@@ -486,7 +504,7 @@ const resolveStatus = (status: string) => {
       cancel-title="Cancelled"
       confirm-msg="Your order status changed successfully."
       confirm-title="Confirmed"
-      @confirm="handleDialogClick"
+      @confirm="handleConfirm"
     />
     <VDialog
       v-model="isReasonDialogVisible"
@@ -499,7 +517,15 @@ const resolveStatus = (status: string) => {
             sm="8"
           >
             <VCol cols="12">
+              <VFileInput
+                v-if="selectedStatus == orderStatusCodes.isDelivered"
+                v-model="selectedPics"
+                show-size
+                label="POD Files"
+                multiple
+              />
               <AppSelect
+                v-else
                 v-model="selectedReason"
                 label="Select Reason"
                 placeholder="Please Select your Reason"
@@ -514,7 +540,7 @@ const resolveStatus = (status: string) => {
               cols="12"
             >
               <AppTextarea
-                v-model="customeReason"
+                v-model="customReason"
                 placeholder="Type Reason"
                 label="Reason:"
                 class="text-left"
@@ -522,13 +548,27 @@ const resolveStatus = (status: string) => {
             </VCol>
           </VRow>
 
-          <VBtn
-            color="success"
-            class="mt-5"
-            @click="handleReasonDialogClick"
-          >
-            Ok
-          </VBtn>
+          <VCardText class="d-flex align-center justify-center gap-2">
+            <VBtn
+              color="success"
+              @click="handleReasonDialog"
+            >
+              Ok
+            </VBtn>
+
+            <VBtn
+              color="secondary"
+              variant="tonal"
+              @click="() => {
+                selectedPics = []
+                selectedReason = null
+                customReason = null
+                isReasonDialogVisible = false;
+              }"
+            >
+              Cancel
+            </VBtn>
+          </VCardText>
         </VCardText>
       </VCard>
     </VDialog>
