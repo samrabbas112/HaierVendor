@@ -7,7 +7,7 @@ const isReasonDialogVisible = ref(false)
 const selectedStatus = ref(12)
 const selectedReason = ref()
 const selectedPics = ref([])
-const customReason = ref()
+const customReason = ref(null)
 const dialogMsg = ref('Are you sure')
 const reasons = ref([])
 
@@ -133,16 +133,18 @@ const fetchData = async () => {
 const updateStatus = async () => {
   try {
     loaderStore.showLoader()
+    //    const requestData = {
+    //   status: selectedStatus.value,
+    //   reason: selectedReason.value === 'other' ? customReason.value : selectedReason.value,
+    //   files: selectedPics.value,
+    // }
+    let requestData = new FormData();
+    requestData.append('status', selectedStatus.value);
+    requestData.append('reason', selectedReason.value === 'other' ? customReason.value : selectedReason.value);
+    requestData.append('files[]', selectedPics.value);
 
-    const requestData = {
-      status: selectedStatus.value,
-      reason: selectedReason.value === 'other' ? customReason.value : selectedReason.value,
-      files: selectedPics.value,
-    }
-
-    const response = await apiRequestObj.makeRequest(
+    const response = await apiRequestObj.upload(
       `common/order/update/status/${orderData.value.uid}`,
-      'post',
       requestData,
     )
 
@@ -186,6 +188,24 @@ const handleConfirm = async value => {
 }
 
 const handleReasonDialog = async () => {
+  if(selectedStatus.value == orderStatusCodes.isRejected || selectedStatus.value == orderStatusCodes.isDeliveryRefused){
+    if(selectedReason.value === 'other'){ 
+      if(customReason.value == null ){
+        snackbarStore.showSnackbar('Please Enter Reason','error')
+        return
+      }
+    }
+     if(!selectedReason.value ){
+      snackbarStore.showSnackbar('Please Enter Reason','error')
+      return
+    }
+  }
+  if(selectedStatus.value == orderStatusCodes.isDelivered){
+     if(isEmpty(selectedPics.value) || selectedPics.value.length > 5){
+      snackbarStore.showSnackbar("Please add images between 1 to 5")
+      return
+     }
+  }
   if (selectedReason.value || !isEmpty(selectedPics.value)) {
     isReasonDialogVisible.value = false
     await updateStatus()
@@ -521,18 +541,20 @@ const resolveStatus = (status: string) => {
                 v-if="selectedStatus == orderStatusCodes.isDelivered"
                 v-model="selectedPics"
                 show-size
-                label="POD Files"
+                label="POD Files:"
                 multiple
+                :rules="[maxfiveFilesRule]"
               />
               <AppSelect
                 v-else
                 v-model="selectedReason"
-                label="Select Reason"
+                label="Select Reason:"
                 placeholder="Please Select your Reason"
                 :items="reasons"
                 clearable
                 clear-icon="tabler-x"
                 class="text-left"
+                :rules="[requiredValidator]"
               />
             </VCol>
             <VCol
@@ -544,6 +566,7 @@ const resolveStatus = (status: string) => {
                 placeholder="Type Reason"
                 label="Reason:"
                 class="text-left"
+                :rules="[requiredValidator]"
               />
             </VCol>
           </VRow>

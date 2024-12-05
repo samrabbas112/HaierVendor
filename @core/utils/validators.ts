@@ -131,3 +131,11 @@ export const phoneValidator = (value: unknown) => {
 
   return true; // Return true if validation passes
 };
+
+export const maxFiveFilesRule = (value: unknown) => {
+  console.log("test",value.length);
+  if (Array.isArray(value) && value.length > 5) {
+    return "You can upload a maximum of 5 files.";
+  }
+  return true;
+};
