@@ -66,17 +66,19 @@ const fetchCustomers = async () => {
   loaderStore.hideLoader();
 };
 
-
 // Delete a customer
 const deleteCustomer = async (id) => {
+  loaderStore.showLoader();
   try {
     const response = await apiRequestObj.makeRequest(`common/customer/delete/${id}`, 'DELETE');
     if (response?.success) {
-      snackBarStore.showSnackbar("Customer Deleted Successfully.", 'success')
-      fetchCustomers();
+      await fetchCustomers();
     }
   } catch (error) {
     console.error('Error deleting customer:', error);
+  } finally {
+    snackBarStore.showSnackbar("Customer Deleted Successfully.", 'success')
+    loaderStore.hideLoader();
   }
 };
 
@@ -93,11 +95,13 @@ const editCustomer = (customer) => {
 };
 
 // Watch for changes in filters or pagination
-watch([page, searchQuery, itemsPerPage], () => {
+// watch([page, searchQuery, itemsPerPage], () => {
+//   fetchCustomers();
+// });\
+
+watch([page], () => {
   fetchCustomers();
 });
-
-
 
 const handleCustomerUpdated = () => {
   fetchCustomers(); 
@@ -112,7 +116,6 @@ onMounted(fetchCustomers);
     <!-- Header Section with Add New Customer Button -->
     <VRow justify="space-between" class="mb-6 align-center">
       <VCol cols="12" sm="6">
-        <AppTextField v-model="searchQuery" placeholder="Search Customers" />
       </VCol>
       <VCol cols="12" sm="6" class="text-end">
         <VBtn prepend-icon="tabler-plus" color="primary" @click="addNewCustomer">
@@ -126,19 +129,62 @@ onMounted(fetchCustomers);
       <VCardText>
         <VRow>
           <!-- Items Per Page -->
-          <VCol cols="12" sm="4">
+          <!-- <VCol cols="12" sm="4">
             <AppSelect
               v-model="itemsPerPage"
               :items="[10, 20, 50, 100]"
               label="Items Per Page"
             />
-          </VCol>
+          </VCol> -->
         </VRow>
+        <VRow
+        cols="12"
+        sm="8"
+      >
+        <!-- 👉 Select Status -->
+        <VCol
+          cols="12"
+          sm="3"
+        >
+          <AppTextField
+            v-model="searchQuery"
+            placeholder="Search by name or id#"
+          />
+        </VCol>
+        <VCol
+          cols="12"
+          sm="3"
+        >
+          <div class="d-flex">
+            <VBtn
+              class="me-2"
+              variant="outlined"
+              color="secondary"
+              @click="() => {
+                searchQuery = '';
+                page = 1
+                fetchCustomers();
+              }"
+            >
+              Reset
+            </VBtn>
+            <VBtn
+              variant="flat"
+              @click="()=>{
+                page = 1;
+                fetchCustomers();
+              }"
+            >
+              Search
+            </VBtn>
+          </div>
+        </VCol>
+      </VRow>
       </VCardText>
     </VCard>
 
     <!-- Customers Table -->
-    <VDataTableServer 
+    <VDataTableServer
       v-model:items-per-page="itemsPerPage" 
       v-model:model-value="selectedRows" 
       v-model:page="page"
@@ -146,13 +192,12 @@ onMounted(fetchCustomers);
       item-value="id" 
       :items-length="customersData.total" 
       :headers="headers"
-      class="text-no-wrap" 
-      show-select 
+      class="text-no-wrap"  
       @update:options="updateOptions"
     >
       <template #item.id="{ item }">
         <NuxtLink>
-          #{{ item.id }}
+          {{ item.id }}
         </NuxtLink>
       </template>
       <template #item.created_at="{ item }">

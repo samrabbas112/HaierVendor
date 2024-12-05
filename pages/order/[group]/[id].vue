@@ -141,7 +141,9 @@ const updateStatus = async () => {
     let requestData = new FormData();
     requestData.append('status', selectedStatus.value);
     requestData.append('reason', selectedReason.value === 'other' ? customReason.value : selectedReason.value);
-    requestData.append('files[]', selectedPics.value);
+    selectedPics.value.forEach((file, index) => {
+      requestData.append(`files[${index}]`, file);
+  });
 
     const response = await apiRequestObj.upload(
       `common/order/update/status/${orderData.value.uid}`,
@@ -214,6 +216,13 @@ const handleReasonDialog = async () => {
   customReason.value = null
   selectedPics.value = []
 }
+const handleFileChange = (event) => {
+  const files = event.target.files;
+  if (files) {
+    selectedPics.value = Array.from(files);
+    console.log("Selected Files:", selectedPics.value);
+  }
+};
 
 onMounted(async () => {
   await fetchData()
@@ -543,6 +552,7 @@ const resolveStatus = (status: string) => {
                 show-size
                 label="POD Files:"
                 multiple
+                 @change="handleFileChange"
                 :rules="[maxfiveFilesRule]"
               />
               <AppSelect
