@@ -155,9 +155,14 @@ const updateStatus = async () => {
         },
       })
 
-      if (status.value == 'success') {
+      if (status.value == 'success' && data?.value?.data.status == 200) {
         selectedPics.value = []
         selectedPics.value = data?.value?.data
+      }
+      else {
+        snackbarStore.showSnackbar('Error in uploading files')
+
+        return
       }
     }
 
