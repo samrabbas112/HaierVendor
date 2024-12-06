@@ -133,24 +133,44 @@ const fetchData = async () => {
 const updateStatus = async () => {
   try {
     loaderStore.showLoader()
-    //    const requestData = {
-    //   status: selectedStatus.value,
-    //   reason: selectedReason.value === 'other' ? customReason.value : selectedReason.value,
-    //   files: selectedPics.value,
-    // }
-    let requestData = new FormData();
-    requestData.append('status', selectedStatus.value);
-    requestData.append('reason', selectedReason.value === 'other' ? customReason.value : selectedReason.value);
-    selectedPics.value.forEach((file, index) => {
-      requestData.append(`files[${index}]`, file);
-  });
 
-    const response = await apiRequestObj.upload(
-      `common/order/update/status/${orderData.value.uid}`,
+    if (selectedStatus.value == orderStatusCodes.isDelivered && !isEmpty(selectedPics.value)) {
+      const formData = new FormData()
+
+      // Append selected pictures to the FormData
+      selectedPics.value.forEach((file, index) => {
+        formData.append(`files[${index}]`, file)
+      })
+
+      const token = useCookie('auth').value?.token
+
+      // Make the API request
+      const { data, status, error, refresh, clear } = await useFetch('http://haiermall.test/api/v2/common/file-upload', {
+        method: 'POST', // Specify HTTP method
+        body: formData,
+        onRequest({ request, options }) {
+          // Set the Authorization header
+          options.headers = options.headers || {}
+          options.headers.Authorization = `Bearer ${token}`
+        },
+      })
+
+      if (status.value == 'success') {
+        selectedPics.value = []
+        selectedPics.value = data?.value?.data
+      }
+    }
+
+    const requestData = {
+      status: selectedStatus.value,
+      reason: selectedReason.value === 'other' ? customReason.value : selectedReason.value,
+      files: selectedPics.value,
+    }
+
+    const response = await apiRequestObj.makeRequest(
+      `common/order/update/status/${orderData.value.uid}`, 'post',
       requestData,
     )
-
-    console.log('Response:', response)
 
     if (response?.success) {
       orderData.value.status = response?.data?.pick_status
@@ -190,23 +210,26 @@ const handleConfirm = async value => {
 }
 
 const handleReasonDialog = async () => {
-  if(selectedStatus.value == orderStatusCodes.isRejected || selectedStatus.value == orderStatusCodes.isDeliveryRefused){
-    if(selectedReason.value === 'other'){ 
-      if(customReason.value == null ){
-        snackbarStore.showSnackbar('Please Enter Reason','error')
+  if (selectedStatus.value == orderStatusCodes.isRejected || selectedStatus.value == orderStatusCodes.isDeliveryRefused) {
+    if (selectedReason.value === 'other') {
+      if (customReason.value == null) {
+        snackbarStore.showSnackbar('Please Enter Reason', 'error')
+
         return
       }
     }
-     if(!selectedReason.value ){
-      snackbarStore.showSnackbar('Please Enter Reason','error')
+    if (!selectedReason.value) {
+      snackbarStore.showSnackbar('Please Enter Reason', 'error')
+
       return
     }
   }
-  if(selectedStatus.value == orderStatusCodes.isDelivered){
-     if(isEmpty(selectedPics.value) || selectedPics.value.length > 5){
-      snackbarStore.showSnackbar("Please add images between 1 to 5")
+  if (selectedStatus.value == orderStatusCodes.isDelivered) {
+    if (isEmpty(selectedPics.value) || selectedPics.value.length > 5) {
+      snackbarStore.showSnackbar('Please add images between 1 to 5')
+
       return
-     }
+    }
   }
   if (selectedReason.value || !isEmpty(selectedPics.value)) {
     isReasonDialogVisible.value = false
@@ -216,13 +239,14 @@ const handleReasonDialog = async () => {
   customReason.value = null
   selectedPics.value = []
 }
-const handleFileChange = (event) => {
-  const files = event.target.files;
+
+const handleFileChange = event => {
+  const files = event.target.files
   if (files) {
-    selectedPics.value = Array.from(files);
-    console.log("Selected Files:", selectedPics.value);
+    selectedPics.value = Array.from(files)
+    console.log('Selected Files:', selectedPics.value)
   }
-};
+}
 
 onMounted(async () => {
   await fetchData()
@@ -552,8 +576,8 @@ const resolveStatus = (status: string) => {
                 show-size
                 label="POD Files:"
                 multiple
-                 @change="handleFileChange"
                 :rules="[maxfiveFilesRule]"
+                @change="handleFileChange"
               />
               <AppSelect
                 v-else
