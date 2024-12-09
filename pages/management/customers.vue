@@ -11,6 +11,8 @@ const customersData = ref({ total: 0, customers: [] });
 const isAddNewCustomerDrawerVisible = ref(false);
 const selectedRows = ref([]);
 const loaderStore = useLoaderStore()
+const isConfirmDialogVisible = ref(false)
+const selectedCustomerId = ref()
 
 
 // Data table options
@@ -66,19 +68,26 @@ const fetchCustomers = async () => {
   loaderStore.hideLoader();
 };
 
+const deleteCustomer = (id) =>{
+   selectedCustomerId.value  = id
+   isConfirmDialogVisible.value = !isConfirmDialogVisible.value
+}
+
 // Delete a customer
-const deleteCustomer = async (id) => {
-  loaderStore.showLoader();
-  try {
-    const response = await apiRequestObj.makeRequest(`common/customer/delete/${id}`, 'DELETE');
-    if (response?.success) {
-      await fetchCustomers();
+const handleConfirm = async (value) => {
+  if(value){
+    loaderStore.showLoader();
+    try {
+      const response = await apiRequestObj.makeRequest(`common/customer/delete/${id}`, 'DELETE');
+      if (response?.success) {
+        await fetchCustomers();
+      }
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+    } finally {
+      snackBarStore.showSnackbar("Customer Deleted Successfully.", 'success')
+      loaderStore.hideLoader();
     }
-  } catch (error) {
-    console.error('Error deleting customer:', error);
-  } finally {
-    snackBarStore.showSnackbar("Customer Deleted Successfully.", 'success')
-    loaderStore.hideLoader();
   }
 };
 
@@ -233,6 +242,15 @@ onMounted(fetchCustomers);
       v-model:isDrawerOpen="isAddNewCustomerDrawerVisible"
       :customer="selectedCustomer"
       @customer-updated="handleCustomerUpdated"
+    />
+    <ConfirmDialog
+      v-model:isDialogVisible="isConfirmDialogVisible"
+      confirmation-question="Are you sure to want to delete"
+      cancel-msg="Request cancelled!!"
+      cancel-title="Cancelled"
+      confirm-msg="Your order status changed successfully."
+      confirm-title="Confirmed"
+      @confirm="handleConfirm"
     />
   </section>
 </template>
