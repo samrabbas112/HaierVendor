@@ -29,7 +29,7 @@ const city = ref('');
 const code = ref('');
 const customerNote = ref('');
 const apiRequestObj = useApi();
-
+const isLoading = ref(false)
 watch(customer, (newCustomer) => {
   if (newCustomer) {
     name.value = newCustomer.name || '';
@@ -72,6 +72,7 @@ const onSubmit = async () => {
       };
 
       try {
+        isLoading.value = true
         let response;
         if (props.customer?.id) {
           response = await apiRequestObj.makeRequest(
@@ -101,6 +102,8 @@ const onSubmit = async () => {
         }
       } catch (error) {
         alert('Failed to save customer data. Please try again later.');
+      } finally {
+        isLoading.value = false
       }
     }
   });
@@ -216,7 +219,14 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                   type="submit"
                   class="me-3"
                 >
-                  Submit
+                  <VProgressCircular
+                    v-if="isLoading"
+                    indeterminate
+                    color="white"
+                  />
+                  <template v-else>
+                    Submit
+                  </template>
                 </VBtn>
                 <VBtn
                   type="reset"
