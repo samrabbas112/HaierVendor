@@ -70,11 +70,11 @@ const deleteData = async (id: number) => {
 
 <template>
   <div>
-    <VCard>
-      <slot />
       <!-- 👉 Filters -->
-      <VDivider />
-
+    <VCard class="mb-6">
+      <slot />
+    </VCard>
+    <VCard>
       <!-- 👉 Order Table -->
       <VDataTableServer
         v-model:items-per-page="data.per_page"
