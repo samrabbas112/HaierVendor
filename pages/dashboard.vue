@@ -71,7 +71,7 @@ const getOrderData = async () => {
     vendor_id: userId,
   }
 
-  const response = await api.makeRequest('admin/dashboard/stats', 'post', params)
+  const response = await api.makeRequest('common/dashboard/stats', 'post', params)
 
   console.log('response', response)
 
@@ -87,7 +87,7 @@ const getChartData = async () => {
 
     console.log('params', params)
 
-    const res = await api.makeRequest('admin/dashboard/orders/graphs', 'post', params)
+    const res = await api.makeRequest('common/dashboard/orders/graphs', 'post', params)
 
     salesData.labels = res.data.labels
     salesData.datasets = res.data.datasets
@@ -109,7 +109,7 @@ const getCustomerData = async () => {
 
     console.log('params', params)
 
-    const res = await api.makeRequest('admin/dashboard/customer/graphs', 'post', params)
+    const res = await api.makeRequest('common/dashboard/customer/graphs', 'post', params)
 
     customerChart.labels = res.data.labels
     customerChart.datasets = res.data.datasets
@@ -134,7 +134,7 @@ const getTopSelling = async () => {
 
     console.log('params', params)
 
-    const res = await api.makeRequest('admin/dashboard/top/items', 'post', params)
+    const res = await api.makeRequest('common/dashboard/top/items', 'post', params)
 
     topItemsSold.length = 0 // Clear the array
     topItemsSold.push(...res.data)
@@ -152,7 +152,7 @@ const getOrderSummery = async () => {
 
     console.log('params', params)
 
-    const res = await api.makeRequest('admin/dashboard/orders/summary', 'post', params)
+    const res = await api.makeRequest('common/dashboard/orders/summary', 'post', params)
 
     // Update the ref object with the response data
 
@@ -181,7 +181,7 @@ const getTableData = async () => {
   }
 
   try {
-    const res = await api.makeRequest('admin/dashboard/orders', 'post', params)
+    const res = await api.makeRequest('common/dashboard/orders', 'post', params)
 
     console.log('public/dashboard/vendor/orders =>', res)
 
