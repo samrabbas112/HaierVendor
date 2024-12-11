@@ -131,7 +131,7 @@ onMounted(() => {
   <CustomTable
     :headers="headers"
     :data="ordersData"
-    from="my"
+    from="vendor"
     @update:page="makeSearch"
   >
     <VCardText>
