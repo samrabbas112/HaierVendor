@@ -342,7 +342,7 @@ const resolveStatus = (status: string) => {
         </VBtn>
 
         <VBtn
-          v-if="orderData?.status === 'Picked'"
+          v-if="orderData?.status === 'Picked' || orderData?.status === 'Haier Operation'"
           variant="tonal"
           color="success"
           @click="

@@ -16,9 +16,6 @@ const selectedCustomerId = ref()
 
 const authUser = useCookie('auth')
 
-console.log("Ahmad",authUser)
-
-
 // Data table options
 const itemsPerPage = ref(10); 
 const page = ref(1);
