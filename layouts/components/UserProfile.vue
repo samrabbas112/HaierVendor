@@ -12,6 +12,10 @@ const logOut = () => {
   snackBarStore.showSnackbar("Goodbye! You have been successfully logged out.", 'primary')
   router.push("/login");
 };
+
+const profile = () => {
+  router.push("/profile");
+};
 </script>
 
 <template>
@@ -56,7 +60,7 @@ const logOut = () => {
           <VDivider class="my-2" />
 
           <!-- 👉 Profile -->
-          <VListItem link>
+          <VListItem link @click="profile">
             <template #prepend>
               <VIcon class="me-2" icon="tabler-user" size="22" />
             </template>
