@@ -79,7 +79,7 @@ const handleConfirm = async (value) => {
   if(value){
     loaderStore.showLoader();
     try {
-      const response = await apiRequestObj.makeRequest(`common/customer/delete/${id}`, 'DELETE');
+      const response = await apiRequestObj.makeRequest(`common/customer/delete/${selectedCustomerId.value}`, 'DELETE');
       if (response?.success) {
         await fetchCustomers();
       }
