@@ -12,6 +12,10 @@ const vendorsData = ref({ total: 0, vendors: [] });
 const selectedRows = ref([]);
 const router = useRouter();
 const loaderStore = useLoaderStore()
+const isConfirmDialogVisible = ref(false)
+const selectedVendorId = ref()
+
+
 
 
 // Data table options
@@ -62,7 +66,7 @@ const editVendor = (vendorId: string) => {
 const fetchVendors = async () => {
 
   loaderStore.showLoader();
-  
+
   try {
     const response = await apiRequestObj.makeRequest(
       'haier/vendor/list',
@@ -80,7 +84,7 @@ const fetchVendors = async () => {
         total: response.data.total,
         vendors: response.data.vendors,
       };
-      
+
     }
   } catch (error) {
     console.error('Error fetching vendors:', error);
@@ -89,37 +93,37 @@ const fetchVendors = async () => {
 
 };
 
-// Delete a vendor
-const deleteVendor = async (id: string) => {
-  vendorsData.value.vendors = vendorsData.value.vendors.filter(vendor => vendor.id !== id);
-
-  try {
-    const response = await apiRequestObj.makeRequest(
-      `haier/vendor/delete/${id}`,
-      'DELETE'
-    );
-    if (response?.success) {
-      snackBarStore.showSnackbar('Vendor Deleted Successfully.', 'success');
-      fetchVendors(); 
-    } else {
-      snackBarStore.showSnackbar('Failed to delete vendor.', 'error');
-      
-      fetchVendors();
+// Delete a customer
+const handleConfirm = async (value) => {
+  if (value) {
+    loaderStore.showLoader();
+    try {
+      const response = await apiRequestObj.makeRequest(
+        `haier/vendor/delete/${selectedVendorId}`,
+        'DELETE'
+      );
+      console.log('kk');
+      if (response?.success) {
+        await fetchVendors();
+      } else {
+        console.log('noce');
+      }
+    } catch (error) {
+      console.error('Error deleting vendor:', error);
+      snackBarStore.showSnackbar('Error deleting vendor, please try again.', 'error');
+      // Re-fetch the vendor list in case of an error
+      // fetchVendors();
     }
-  } catch (error) {
-    console.error('Error deleting vendor:', error);
-    snackBarStore.showSnackbar('Error deleting vendor, please try again.', 'error');
-    // Re-fetch the vendor list in case of an error
-    fetchVendors();
+   
   }
 };
 
+// Delete a vendor
+const deleteVendor = async (id: string) => {
+  selectedVendorId.value = id
+  isConfirmDialogVisible.value = !isConfirmDialogVisible.value
+};
 
-
-// Watch for changes in filters or pagination
-watch([page, searchQuery, itemsPerPage], () => {
-  fetchVendors();
-});
 
 const formatRelativeTime = (date: string) => {
   return moment(date).fromNow();
@@ -133,7 +137,6 @@ onMounted(fetchVendors);
     <!-- Header Section with Add New Vendor Button -->
     <VRow justify="space-between" class="mb-6 align-center">
       <VCol cols="12" sm="6">
-        <AppTextField v-model="searchQuery" placeholder="Search Vendors" />
       </VCol>
       <VCol cols="12" sm="6" class="text-end">
         <VBtn prepend-icon="tabler-plus" color="primary" @click="goToAddVendorPage">
@@ -145,88 +148,82 @@ onMounted(fetchVendors);
     <!-- Filters Section -->
     <VCard class="mb-6">
       <VCardText>
-        <VRow>
-          <!-- Items Per Page -->
-          <VCol cols="12" sm="4">
-            <AppSelect
-              v-model="itemsPerPage"
-              :items="[10, 20, 50, 100]"
-              label="Items Per Page"
-            />
+        <VRow cols="12" sm="8">
+          <!-- Search Vendors -->
+          <VCol cols="12" sm="3">
+            <AppTextField v-model="searchQuery" placeholder="Search by name or id#" />
+          </VCol>
+          <VCol cols="12" sm="3">
+            <div class="d-flex">
+              <VBtn class="me-2" variant="outlined" color="secondary" @click="() => {
+                searchQuery = '';
+                page = 1;
+                fetchVendors();
+              }">
+                Reset
+              </VBtn>
+              <VBtn variant="flat" @click="() => {
+                page = 1;
+                fetchVendors();
+              }">
+                Search
+              </VBtn>
+            </div>
           </VCol>
         </VRow>
       </VCardText>
     </VCard>
 
     <!-- Vendors Table -->
-    <VDataTableServer
-      v-model:items-per-page="itemsPerPage"
-      v-model:model-value="selectedRows"
-      v-model:page="page"
-      :items="vendorsData.vendors"
-      item-value="id"
-      :items-length="vendorsData.total"
-      :headers="headers"
-      class="text-no-wrap"
-      show-select
-    >
+    <VDataTableServer v-model:items-per-page="itemsPerPage" v-model:model-value="selectedRows" v-model:page="page"
+      :items="vendorsData.vendors" item-value="id" :items-length="vendorsData.total" :headers="headers"
+      class="text-no-wrap" @update:options="updateOptions">
       <template #item.id="{ item }">
         <NuxtLink>
-          #{{ item.id }}
+          {{ item.id }}
         </NuxtLink>
       </template>
       <template #item.created_at="{ item }">
-        {{ formatRelativeTime(item.created_at) }}
-      </template>
-      <template #item.vendor="{ item }">
-        <div>
-          <small>{{ item.name }}</small><br />
-          <small>{{ item.city }}</small><br />
-          <small class="address-text-multiline">{{ item.address }}</small>
-        </div>
+        {{ new Date(item.created_at).toDateString() }}
       </template>
 
-      <template #item.contact="{ item }">
-        <div>
-          <small>{{ item.telephone }}</small><br />
-          <small>{{ item.email }}</small>
-        </div>
+      <!-- Status -->
+      <template #item.confirmed="{ item }">
+        <VChip :color="resolveUserStatusVariant(item.confirmed)" size="small" label class="text-capitalize">
+          {{ item.confirmed == 1 ? 'Active' : 'Inactive' }}
+        </VChip>
       </template>
 
       <!-- Actions -->
       <template #item.actions="{ item }">
-
-        <IconBtn @click="detailsVendor(item.uid)">
-          <VIcon icon="tabler-eye" />
-        </IconBtn>
-
         <IconBtn @click="deleteVendor(item.uid)">
           <VIcon icon="tabler-trash" />
         </IconBtn>
-
-        <IconBtn @click="editVendor(item.uid)">
+        <IconBtn @click="editVendor(item)">
           <VIcon icon="tabler-pencil" />
         </IconBtn>
       </template>
 
       <!-- Pagination -->
       <template #bottom>
-        <TablePagination
-          v-model:page="page"
-          :items-per-page="itemsPerPage"
-          :total-items="vendorsData.total"
-        />
+        <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="vendorsData.total" />
       </template>
     </VDataTableServer>
+
+    <ConfirmDialog v-model:isDialogVisible="isConfirmDialogVisible"
+      confirmation-question="Are you sure to want to delete" cancel-msg="Request cancelled!!" cancel-title="Cancelled"
+      confirm-msg="Your order status changed successfully." confirm-title="Confirmed" @confirm="handleConfirm" />
   </section>
 </template>
 <style scoped>
 .address-text-multiline {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;     /* Limit to 2 lines */
+  -webkit-line-clamp: 2;
+  /* Limit to 2 lines */
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 250px;          /* Limit the maximum width, adjust as needed */
+  max-width: 250px;
+  /* Limit the maximum width, adjust as needed */
 }
 </style>
