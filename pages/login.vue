@@ -10,6 +10,7 @@ import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
 import { useSnackbarStore } from '@/stores/snackbar'
+import DemoDialogFullscreen from '@/components/dialogs/DemoDialogFullscreen.vue'
 
 definePageMeta({
   layout: 'blank',
@@ -26,6 +27,7 @@ const form = ref({
 const toast = useToastStore()
 const loader = useLoaderStore()
 const snackbarStore = useSnackbarStore()
+const termsStore = useTermsStore();
 const isPasswordVisible = ref(false)
 const authStore = useAuthStore()
 const router = useRouter()
@@ -210,6 +212,7 @@ onMounted(() => {
                 <span>By signing up, you agree to the </span><a
                   class="text-primary ms-1 d-inline-block text-body-1"
                   href="javascript:void(0)"
+                  @click="termsStore.showTerms()"
                 >Haier terms of service
                 </a>
               </VCol>
@@ -245,6 +248,7 @@ onMounted(() => {
       </VCard>
     </VCol>
   </VRow>
+  <DemoDialogFullscreen/>
 </template>
 
 <style lang="scss">

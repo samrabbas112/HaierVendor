@@ -10,8 +10,6 @@ const emit = defineEmits()
 const route = useRoute()
 
 // Data table options
-const itemsPerPage = ref(10)
-const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
@@ -59,9 +57,6 @@ const updatePage = value => {
   emit('update:page', value)
 }
 
-const orders = computed((): Order[] => data?.orders)
-const totalOrder = computed(() => data?.total)
-
 // Delete Orders
 const deleteData = async (id: number) => {
   emit('delete:record', id)
@@ -79,7 +74,7 @@ const deleteData = async (id: number) => {
       <VDataTableServer
         v-model:items-per-page="data.per_page"
         v-model:model-value="selectedRows"
-        v-model:page="page"
+        v-model:page="data.current_page"
         :headers="headers"
         :items="data?.orders"
         :items-length="data?.total"
@@ -114,6 +109,21 @@ const deleteData = async (id: number) => {
               </div>
               <div class="text-body-2">
                 {{ item.mobile }}
+              </div>
+            </div>
+          </div>
+        </template>
+        <!-- Vendors  -->
+        <template #item.vendors="{ item }">
+          <div class="d-flex align-center gap-x-3">
+            <div class="d-flex flex-column">
+              <div class="text-body-1 font-weight-medium">
+                <NuxtLink class="text-link">
+                  {{ item.vendor_name }}
+                </NuxtLink>
+              </div>
+              <div class="text-body-2">
+                {{ item.vendor_email }}
               </div>
             </div>
           </div>
@@ -194,7 +204,7 @@ const deleteData = async (id: number) => {
         <!-- pagination -->
         <template #bottom>
           <TablePagination
-            v-model:page="page"
+            v-model:page="data.current_page"
             :items-per-page="data?.per_page"
             :total-items="data?.total"
             @update:page="updatePage"

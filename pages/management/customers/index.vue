@@ -14,6 +14,10 @@ const loaderStore = useLoaderStore()
 const isConfirmDialogVisible = ref(false)
 const selectedCustomerId = ref()
 
+const authUser = useCookie('auth')
+
+console.log("Ahmad",authUser)
+
 
 // Data table options
 const itemsPerPage = ref(10); 
@@ -48,7 +52,7 @@ const headers = [
 const fetchCustomers = async () => {
   loaderStore.showLoader();
   try {
-    const response = await apiRequestObj.makeRequest('common/customer/list', 'get','', 
+    const response = await apiRequestObj.makeRequest(`common/customer/list/${authUser.value.user.uid}`, 'get','', 
        {
         page: page.value,
         itemsPerPage: itemsPerPage.value,

@@ -29,14 +29,16 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = loginData.token
     console.log(user, login)
     console.log('=====================================================')
+
     const authUser = useCookie('auth') // useCookie new hook in nuxt 3
 
     authUser.value = {
       user: loginData.user,
       token: loginData.token,
     }
+
     const userAbilityRules = useCookie<Rule[]>('userAbilityRules')
-    if(loginData.user.user_type == 'vendor'){
+    if (loginData.user.user_type == 'vendor') {
       userAbilityRules.value = [
         { action: 'read', subject: 'Vendor' },
         { action: 'read', subject: 'Customer' },
@@ -44,13 +46,15 @@ export const useAuthStore = defineStore('auth', () => {
         { action: 'read', subject: 'Order' },
         { action: 'read', subject: 'Dashboard' },
       ]
-    }else if(loginData.user.user_type == 'haier'){
+    }
+    else if (loginData.user.user_type == 'haier') {
       userAbilityRules.value = [
         { action: 'read', subject: 'Customer' },
         { action: 'read', subject: 'Management' },
-        { action: 'read', subject: 'Order' },
         { action: 'read', subject: 'Dashboard' },
         { action: 'read', subject: 'Admin' },
+        { action: 'read', subject: 'Order' },
+
       ]
     }
   }
@@ -65,6 +69,10 @@ export const useAuthStore = defineStore('auth', () => {
     const authUser = useCookie('auth')
 
     authUser.value = null
+
+    const userAbilityRules = useCookie('userAbilityRules')
+
+    userAbilityRules.value = null
   }
 
   /**

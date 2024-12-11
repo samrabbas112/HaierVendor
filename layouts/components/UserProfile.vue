@@ -3,6 +3,9 @@ import avatar1 from "@images/avatars/avatar-1.png";
 const authStore = useAuthStore();
 const router = useRouter();
 const snackBarStore = useSnackbarStore()
+const termsStore = useTermsStore()
+
+const authUser =  useCookie('auth');
 
 const logOut = () => {
   authStore.logout();
@@ -45,9 +48,9 @@ const logOut = () => {
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              John Doe
+              {{ authUser.user.name }}
             </VListItemTitle>
-            <VListItemSubtitle>Admin</VListItemSubtitle>
+            <VListItemSubtitle>{{ authUser.user.user_type }}</VListItemSubtitle>
           </VListItem>
 
           <VDivider class="my-2" />
@@ -63,7 +66,7 @@ const logOut = () => {
 
 
           <!-- 👉 FAQ -->
-          <VListItem link>
+          <VListItem link @click="termsStore.showTerms()">
             <template #prepend>
               <VIcon class="me-2" icon="tabler-help" size="22" />
             </template>

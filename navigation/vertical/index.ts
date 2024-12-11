@@ -14,13 +14,13 @@ export default [
     children: [
       {
         title: 'Haier Orders',
-        to: { name: 'order-list-haier' },
+        to: { name: 'order-admin-haier' },
         action: 'read',
         subject: 'Admin',
       },
       {
         title: 'Vendor Orders',
-        to: { name: 'order-list' },
+        to: { name: 'order-admin-vendor' },
         action: 'read',
         subject: 'Admin',
       },
@@ -28,19 +28,19 @@ export default [
         title: 'My Orders',
         to: { name: 'order-my' },
         action: 'read',
-        subject: 'Order',
+        subject: 'Vendor',
       },
       {
         title: 'Private Orders',
         to: { name: 'order-private' },
         action: 'read',
-        subject: 'Order',
+        subject: 'Vendor',
       },
       {
         title: 'Public Orders',
         to: { name: 'order-lahore' },
         action: 'read',
-        subject: 'Order',
+        subject: 'Vendor',
       },
     ],
   },

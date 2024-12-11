@@ -3,18 +3,17 @@ const apiRequestObj = useApi()
 const snackbarStore = useSnackbarStore()
 const loaderStore = useLoaderStore()
 
-const authUser = useCookie('auth')
-
 const searchQuery = ref('')
 const selectedPaymentMethod = ref()
 const selectedOrderStatus = ref()
 
 const ordersData = ref({
   per_page: 10,
-  current_page: 1,
   total: 0,
   orders: [],
 })
+
+const authUser = useCookie('auth')
 
 // Data table Headers
 const headers = [
@@ -23,7 +22,7 @@ const headers = [
   { title: 'Customers', key: 'customer', sortable: false },
   { title: 'Payment Method', key: 'method', sortable: false },
   { title: 'Placed At', key: 'date', sortable: false },
-  { title: 'Deliver Before', key: 'time', sortable: false },
+  { title: 'City', key: 'city', sortable: false },
   { title: 'Status', key: 'status', sortable: false },
   { title: 'Action', key: 'actions', sortable: false },
 ]
@@ -55,6 +54,7 @@ const transformData = apiResponse => {
       // date: new Date(item.created_at).toLocaleString("en-US", dateTimeOptions),
       date: item.created_at,
       time: item.pick_before,
+      city: item.city,
     }
   })
 }
@@ -90,7 +90,6 @@ const makeSearch = async page => {
       // Transform and set the data
       ordersData.value = {
         per_page: response?.data?.per_page,
-        current_page: response?.data?.currentPage,
         total: response?.data?.total, // Set total count of orders
         orders: transformData(response?.data?.orders),
       }
@@ -177,7 +176,7 @@ onMounted(() => {
               @click="() => {
                 searchQuery = '';
                 selectedOrderStatus = null;
-                selectedPatmentMethod = null
+                selectedPaymentMethod = null
                 makeSearch(1)
               }"
             >

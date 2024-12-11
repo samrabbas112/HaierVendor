@@ -4,7 +4,9 @@ const snackbarStore = useSnackbarStore()
 const loaderStore = useLoaderStore()
 
 const searchQuery = ref('')
+const vendorQuery = ref('')
 const selectedPaymentMethod = ref()
+const selectedOrderType = ref()
 const selectedOrderStatus = ref()
 
 const ordersData = ref({
@@ -20,13 +22,18 @@ const headers = [
   { title: 'Customers', key: 'customer', sortable: false },
   { title: 'Payment Method', key: 'method', sortable: false },
   { title: 'Placed At', key: 'date', sortable: false },
-  { title: 'Deliver Before', key: 'time', sortable: false },
+  { title: 'Assigned To', key: 'vendors', sortable: false },
   { title: 'Status', key: 'status', sortable: false },
   { title: 'Action', key: 'actions', sortable: false },
 ]
 
 const paymentMethods = [
   { title: 'COD', value: 'COD' },
+]
+
+const orderTypes = [
+  { title: 'Private', value: 'privte' },
+  { title: 'Public', value: 'public' },
 ]
 
 const orderStatus = [
@@ -52,6 +59,8 @@ const transformData = apiResponse => {
       // date: new Date(item.created_at).toLocaleString("en-US", dateTimeOptions),
       date: item.created_at,
       time: item.pick_before,
+      vendor_name: item.vendor_name,
+      vendor_email: item.vendor_email,
     }
   })
 }
@@ -70,6 +79,8 @@ const makeSearch = async page => {
     order_no: searchQuery.value,
     order_status: selectedOrderStatus.value,
     payment_status: selectedPaymentMethod.value,
+    order_type: selectedOrderType.value,
+    vendor_name: vendorQuery.value,
   }
 
   try {
@@ -142,6 +153,15 @@ onMounted(() => {
           cols="12"
           sm="3"
         >
+          <AppTextField
+            v-model="vendorQuery"
+            placeholder="Search Vendor"
+          />
+        </VCol>
+        <VCol
+          cols="12"
+          sm="3"
+        >
           <AppSelect
             v-model="selectedOrderStatus"
             placeholder="Select Order Status"
@@ -162,6 +182,18 @@ onMounted(() => {
             clear-icon="tabler-x"
           />
         </VCol>
+        <VCol
+          cols="12"
+          sm="3"
+        >
+          <AppSelect
+            v-model="selectedOrderType"
+            placeholder="Select order type"
+            :items="orderTypes"
+            clearable
+            clear-icon="tabler-x"
+          />
+        </VCol>
 
         <VCol
           cols="12"
@@ -174,8 +206,10 @@ onMounted(() => {
               color="secondary"
               @click="() => {
                 searchQuery = '';
+                vendorQuery = '';
                 selectedOrderStatus = null;
-                selectedPatmentMethod = null
+                selectedPaymentMethod = null
+                selectedOrderType = null
                 makeSearch(1)
               }"
             >
