@@ -9,6 +9,8 @@ const apiRequestObj = useApi()
 const snackbarStore = useSnackbarStore()
 const loaderStore = useLoaderStore()
 
+const authUser = useCookie('auth')
+
 const searchQuery = ref('')
 
 const ordersData = ref({
@@ -62,6 +64,7 @@ const makeSearch = async page => {
   const formData = {
     order_no: searchQuery.value,
     order_type: 'public',
+    vendor_id: authUser.value.user.user_id,
   }
 
   try {

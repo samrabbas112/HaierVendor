@@ -4,23 +4,23 @@ export default [
     to: { name: 'dashboard' },
     icon: { icon: 'tabler-smart-home' },
     action: 'read',
-    subject: 'Vendor',
+    subject: 'Dashboard',
   },
   {
     title: 'Orders',
     icon: { icon: 'tabler-shopping-cart' },
     action: 'read',
-    subject: 'Vendor',
+    subject: 'Order',
     children: [
       {
         title: 'Haier Orders',
-        to: { name: 'order-list-haier' },
+        to: { name: 'order-admin-haier' },
         action: 'read',
         subject: 'Admin',
       },
       {
         title: 'Vendor Orders',
-        to: { name: 'order-list' },
+        to: { name: 'order-admin-vendor' },
         action: 'read',
         subject: 'Admin',
       },
@@ -37,7 +37,7 @@ export default [
         subject: 'Vendor',
       },
       {
-        title: 'Lahore Orders',
+        title: 'Public Orders',
         to: { name: 'order-lahore' },
         action: 'read',
         subject: 'Vendor',
@@ -48,7 +48,7 @@ export default [
     title: 'Management',
     icon: { icon: 'tabler-device-imac-cog' },
     action: 'read',
-    subject: 'Vendor',
+    subject: 'Management',
     children: [
       {
         title: 'Vendors',
@@ -60,7 +60,7 @@ export default [
         title: 'Customers',
         to: { name: 'management-customers' },
         action: 'read',
-        subject: 'Vendor',
+        subject: 'Customer',
       },
       {
         title: 'Queries',
