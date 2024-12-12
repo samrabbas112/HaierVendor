@@ -211,9 +211,28 @@ onMounted(fetchVendors);
         <IconBtn @click="deleteVendor(item.uid)">
           <VIcon icon="tabler-trash" />
         </IconBtn>
-        <IconBtn @click="editVendor(item)">
+        <IconBtn @click="editVendor(item.uid)">
           <VIcon icon="tabler-pencil" />
         </IconBtn>
+        <IconBtn >
+            <VIcon icon="tabler-dots-vertical" />
+            <VMenu activator="parent">
+              <VList>
+                <VListItem
+                  value="order"
+                  :to="`/order/admin/vendor?user=${item.user.uid}`"
+                >
+                  Orders
+                </VListItem>
+                <VListItem
+                  value="customer"
+                  :to="`/management/customers?vendor=${item.uid}`"
+                >
+                  Customers
+                </VListItem>
+              </VList>
+            </VMenu>
+          </IconBtn>
       </template>
 
       <!-- Pagination -->

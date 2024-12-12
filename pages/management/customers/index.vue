@@ -11,6 +11,7 @@ const customersData = ref({ total: 0, customers: [] });
 const isAddNewCustomerDrawerVisible = ref(false);
 const selectedRows = ref([]);
 const loaderStore = useLoaderStore()
+const route = useRoute()
 const isConfirmDialogVisible = ref(false)
 const selectedCustomerId = ref()
 
@@ -49,7 +50,7 @@ const headers = [
 const fetchCustomers = async () => {
   loaderStore.showLoader();
   try {
-    const response = await apiRequestObj.makeRequest(`common/customer/list/${authUser.value.user.uid}`, 'get','', 
+    const response = await apiRequestObj.makeRequest(`common/customer/list/${route.query.vendor || authUser.value.user.uid}`, 'get','', 
        {
         page: page.value,
         itemsPerPage: itemsPerPage.value,

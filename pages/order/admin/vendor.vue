@@ -2,12 +2,16 @@
 const apiRequestObj = useApi()
 const snackbarStore = useSnackbarStore()
 const loaderStore = useLoaderStore()
+const route = useRoute()
+const router = useRouter()
 
 const searchQuery = ref('')
 const vendorQuery = ref('')
+const selectedVendor = ref()
 const selectedPaymentMethod = ref()
 const selectedOrderType = ref()
 const selectedOrderStatus = ref()
+const vendors = ref([])
 
 const ordersData = ref({
   per_page: 10,
@@ -80,16 +84,12 @@ const makeSearch = async page => {
     order_status: selectedOrderStatus.value,
     payment_status: selectedPaymentMethod.value,
     order_type: selectedOrderType.value,
-    vendor_name: vendorQuery.value,
+    vendor_id: selectedVendor.value || route.query.user,
   }
 
   try {
     loaderStore.showLoader()
 
-    // const response = await apiRequestObj.makeRequest(
-    //   `service/search/my-orders?page=${typeof page === "number" ? page : 1}&order_no=${searchQuery.value}&order_status=&payment_status=`,
-    //   "get",
-    // );
     const response = await apiRequestObj.makeRequest(
       `common/order/list?page=${typeof page == 'number' ? page : 1}`,
       'post',
@@ -102,6 +102,10 @@ const makeSearch = async page => {
         per_page: response?.data?.per_page,
         total: response?.data?.total, // Set total count of orders
         orders: transformData(response?.data?.orders),
+      }
+      if (route.query.user && response?.data?.total > 0) {
+        selectedVendor.value = route.query.user
+        router.replace({ path: route.path, query: {} })
       }
     }
     else {
@@ -122,8 +126,42 @@ const makeSearch = async page => {
   previousSearchQuery = searchQuery.value
 }
 
+const fetchVendors = async () => {
+  try {
+    const response = await apiRequestObj.makeRequest(
+      'haier/vendor/order', 'get',
+    )
+
+    if (response && response.success) {
+      vendors.value = response?.data
+    }
+    else {
+      snackbarStore.showSnackbar(
+        'An error occurred. Please try again.',
+        'error',
+      )
+    }
+  }
+  catch (error) {
+    snackbarStore.showSnackbar('An error occurred. Please try again.', 'error')
+  }
+}
+
+const fetchData = async () => {
+  try {
+    loaderStore.showLoader()
+    await Promise.all([
+      fetchVendors(),
+      makeSearch(1),
+    ])
+  }
+  finally {
+    loaderStore.hideLoader()
+  }
+}
+
 onMounted(() => {
-  makeSearch(1)
+  fetchData()
 })
 </script>
 
@@ -153,9 +191,12 @@ onMounted(() => {
           cols="12"
           sm="3"
         >
-          <AppTextField
-            v-model="vendorQuery"
-            placeholder="Search Vendor"
+          <AppSelect
+            v-model="selectedVendor"
+            placeholder="Select Vendor"
+            :items="vendors"
+            clearable
+            clear-icon="tabler-x"
           />
         </VCol>
         <VCol
