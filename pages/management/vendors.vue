@@ -99,7 +99,7 @@ const handleConfirm = async (value) => {
     loaderStore.showLoader();
     try {
       const response = await apiRequestObj.makeRequest(
-        `haier/vendor/delete/${selectedVendorId}`,
+        `haier/vendor/delete/${selectedVendorId.value}`,
         'DELETE'
       );
       console.log('kk');
@@ -183,6 +183,18 @@ onMounted(fetchVendors);
           {{ item.id }}
         </NuxtLink>
       </template>
+      <template #item.vendor="{ item }">
+        <small>{{ item.city}}</small><br>
+        <small>{{ item.address}}</small>
+  
+      </template>
+
+      <template #item.contact="{ item }">
+        <small>{{ item.telephone}}</small><br>
+        <small>{{ item.email}}</small>
+  
+      </template>
+      
       <template #item.created_at="{ item }">
         {{ new Date(item.created_at).toDateString() }}
       </template>
