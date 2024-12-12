@@ -30,20 +30,21 @@ const handleServiceWorkerMessage = (e: MessageEvent) => {
 // Listen for messages from the service worker
 onMounted(() => {
   if (navigator.serviceWorker) {
+    console.log('Listening for service worker messages', navigator.serviceWorker)
     navigator.serviceWorker.addEventListener(
       'message',
       handleServiceWorkerMessage,
     )
   }
 })
-onUnmounted(() => {
-  if (navigator.serviceWorker) {
-    navigator.serviceWorker.removeEventListener(
-      'message',
-      handleServiceWorkerMessage,
-    )
-  }
-})
+// onUnmounted(() => {
+//   if (navigator.serviceWorker) {
+//     navigator.serviceWorker.removeEventListener(
+//       'message',
+//       handleServiceWorkerMessage,
+//     )
+//   }
+// })
 
 const removeNotification = (notificationId: number) => {
   notifications.value.forEach((item, index) => {

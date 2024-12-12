@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref,nextTick } from 'vue'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
@@ -11,6 +11,7 @@ import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
 import { useSnackbarStore } from '@/stores/snackbar'
 import DemoDialogFullscreen from '@/components/dialogs/DemoDialogFullscreen.vue'
+import {ability} from "@/plugins/casl/ability";
 
 definePageMeta({
   layout: 'blank',
@@ -20,7 +21,7 @@ definePageMeta({
 
 const form = ref({
   email: 'lahore@haier.com',
-  password: 'Password@123',
+  password: 'Haier@123',
   remember: false,
 })
 
@@ -66,29 +67,59 @@ const submitForm = async () => {
 
   const response = await apiRequestObj.makeRequest(
     'admin/authentication/login',
-    // 'login',
     'post',
     payload,
   )
 
   if (response && response.success) {
-    console.log('response:', response)
+    console.log('response success', response.data);
     authStore.login({ user: response.data, token: response.data.authToken })
-    await router.push('/dashboard')
+    const userAbilityRules = useCookie('userAbilityRules');
+    if (response.data.user_type == 'vendor') {
+      ability.update([
+        { action: 'read', subject: 'Vendor' },
+        { action: 'read', subject: 'Customer' },
+        { action: 'read', subject: 'Management' },
+        { action: 'read', subject: 'Order' },
+        { action: 'read', subject: 'Dashboard' },
+      ]);
+      userAbilityRules.value = JSON.stringify([
+        { action: 'read', subject: 'Vendor' },
+        { action: 'read', subject: 'Customer' },
+        { action: 'read', subject: 'Management' },
+        { action: 'read', subject: 'Order' },
+        { action: 'read', subject: 'Dashboard' },
+      ]);
+      console.log('Vendor cookie set:', userAbilityRules.value);
+    } else if (response.data.user_type == 'haier') {
+    userAbilityRules.value= JSON.stringify([
+        { action: 'read', subject: 'Customer' },
+        { action: 'read', subject: 'Management' },
+        { action: 'read', subject: 'Dashboard' },
+        { action: 'read', subject: 'Admin' },
+        { action: 'read', subject: 'Order' },
+      ]);
+      ability.update([
+        { action: 'read', subject: 'Customer' },
+        { action: 'read', subject: 'Management' },
+        { action: 'read', subject: 'Dashboard' },
+        { action: 'read', subject: 'Admin' },
+        { action: 'read', subject: 'Order' },
+      ]);
+      console.log('Vendor cookie set:', userAbilityRules.value);
+    }
     snackbarStore.showSnackbar('Logged in successfully', 'success')
+    await nextTick(() => {
+      // window.location.href = '/dashboard';
+      router.push('/dashboard');
+    })
   }
   else {
     snackbarStore.showSnackbar('Incorrect Email or Password', 'error')
     console.error('Login failed')
   }
-  console.log('respose', response)
   isLoading.value = false
 }
-
-onMounted(() => {
-  // toast.showToast('Component mounted successfully!', 'error')
-  // loader.showLoader();
-})
 </script>
 
 <template>

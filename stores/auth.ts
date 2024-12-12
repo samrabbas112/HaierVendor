@@ -36,27 +36,6 @@ export const useAuthStore = defineStore('auth', () => {
       user: loginData.user,
       token: loginData.token,
     }
-
-    const userAbilityRules = useCookie<Rule[]>('userAbilityRules')
-    if (loginData.user.user_type == 'vendor') {
-      userAbilityRules.value = [
-        { action: 'read', subject: 'Vendor' },
-        { action: 'read', subject: 'Customer' },
-        { action: 'read', subject: 'Management' },
-        { action: 'read', subject: 'Order' },
-        { action: 'read', subject: 'Dashboard' },
-      ]
-    }
-    else if (loginData.user.user_type == 'haier') {
-      userAbilityRules.value = [
-        { action: 'read', subject: 'Customer' },
-        { action: 'read', subject: 'Management' },
-        { action: 'read', subject: 'Dashboard' },
-        { action: 'read', subject: 'Admin' },
-        { action: 'read', subject: 'Order' },
-
-      ]
-    }
   }
 
   /**
@@ -67,11 +46,8 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
 
     const authUser = useCookie('auth')
-
     authUser.value = null
-
     const userAbilityRules = useCookie('userAbilityRules')
-
     userAbilityRules.value = null
   }
 

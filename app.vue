@@ -14,7 +14,6 @@ initCore();
 initConfigStore();
 
 const configStore = useConfigStore();
-const authStore = useAuthStore();
 const { isMobile } = useDevice();
 if (isMobile) configStore.appContentLayoutNav = "vertical";
 
