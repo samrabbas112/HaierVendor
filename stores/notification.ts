@@ -3,24 +3,43 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useNotificationStore = defineStore('notification', () => {
-  // Reactive state for notifications
+  const cookieKey = 'notifications'
+  const notificationCookie = useCookie(cookieKey)
+
+  // Reactive notifications array
   const notifications = ref([])
 
-  // Initialize state from local storage
-  const loadFromLocalStorage = () => {
-    const storedData = localStorage.getItem('notifications')
-    if (storedData)
-      notifications.value = JSON.parse(storedData)
+  // Load initial notifications from cookies
+  const getNotification = () => {
+    const cookieValue = notificationCookie.value
+    if (cookieValue)
+      notifications.value = JSON.parse(cookieValue)
   }
 
-  // Save current state to local storage
-  const saveToLocalStorage = () => {
-    localStorage.setItem('notifications', JSON.stringify(notifications.value))
+  // Save current notifications to cookies
+  const saveNotification = () => {
+    notificationCookie.value = JSON.stringify(notifications.value)
   }
+
+  // Remove a specific notification
+  const removeNotification = id => {
+    notifications.value = notifications.value.filter(n => n.id !== id)
+    saveNotification()
+  }
+
+  // Clear all notifications
+  const clearNotifications = () => {
+    notifications.value = []
+    notificationCookie.value = null // Clear the cookie
+  }
+
+  // Load initial notifications when the store initializes
+  getNotification()
 
   return {
     notifications,
-    saveToLocalStorage,
-    loadFromLocalStorage,
+    saveNotification,
+    removeNotification,
+    clearNotifications,
   }
 })
