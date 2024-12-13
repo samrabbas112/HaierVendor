@@ -12,14 +12,16 @@ export const useNotificationStore = defineStore('notification', () => {
   // Load initial notifications from cookies
   const getNotification = () => {
     const cookieValue = notificationCookie.value
-    if (cookieValue)
-      notifications.value = JSON.parse(cookieValue)
+    // if (cookieValue)
+    //   notifications.value = JSON.parse(cookieValue)
   }
 
   // Save current notifications to cookies
-  const saveNotification = () => {
-    notificationCookie.value = JSON.stringify(notifications.value)
-  }
+  const saveNotification = (newNotification) => {
+    notifications.value.push(newNotification); // Update the reactive notifications array
+    notificationCookie.value = JSON.stringify(notifications.value); // Store updated notifications as a string
+  };
+
 
   // Remove a specific notification
   const removeNotification = id => {

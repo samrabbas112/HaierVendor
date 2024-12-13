@@ -25,26 +25,26 @@ const messaging = firebase.messaging()
 messaging.onBackgroundMessage(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload)
     console.log('notification on [firebase-messaging-sw.js]')
-    // Customize the notification here
-    const notificationTitle = payload.notification.title
-    const notificationOptions = {
-        body: payload.notification.body,
-    }
 
-    const channel = new BroadcastChannel('fcmNotificationChannel');
-    channel.postMessage({ type: 'notification', data: notificationOptions });
+
+    const notificationTitle = {
+        body : payload.notification.title,
+    }
+    const notificationOptions = {
+        body: payload.notification,
+        icon: '/firebase-logo.png', // Example icon, replace with your own
+    }
 
     // Show notification in the service worker
     // eslint-disable-next-line no-restricted-globals
-  //   self.registration.showNotification(notificationTitle, notificationOptions)
-  //
-  //   // Send the notification data to the main thread
-  // self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then((clients) => {
-  //       clients.forEach((client) => {
-  //           client.postMessage({
-  //               type: 'NEW_NOTIFICATION',
-  //               payload,
-  //           });
-  //       });
-  //   });
+    self.registration.showNotification(notificationTitle, notificationOptions)
+
+    self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then((clients) => {
+        clients.forEach((client) => {
+            client.postMessage({
+                type: 'NEW_NOTIFICATION',
+                payload,
+            });
+        });
+    });
 })

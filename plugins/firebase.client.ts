@@ -5,22 +5,23 @@ import {
   getToken,
   onMessage,
 } from 'firebase/messaging'
+import {useNotificationStore} from "@/stores/notification";
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
   //
-  // const firebaseConfig = config.public.firebaseConfig;
-  // const vapidKey = config.public.vapidKey;
+  const firebaseConfig = config.public.firebaseConfig;
+  const vapidKey = config.public.vapidKey;
 
-  const firebaseConfig = {
-    apiKey: 'AIzaSyBaQu5PVEUspegu6HsBDzzQIb1-wpwZ95g',
-    authDomain: 'test-project-notificatio-6f653.firebaseapp.com',
-    projectId: 'test-project-notificatio-6f653',
-    storageBucket: 'test-project-notificatio-6f653.firebasestorage.app',
-    messagingSenderId: '1007601362942',
-    appId: '1:1007601362942:web:f5acbdba677993287bc2af',
-  }
-  const vapidKey = 'BBLHtz_6F-NFDdkLRU7yulpeNBGf8Xv5aC_suiUeyvmG2ybOGEyhnZTOlhpSJIy84EiRKkVkbNuAYU92ZEjTG-E'
+  // const firebaseConfig = {
+  //   apiKey: 'AIzaSyBaQu5PVEUspegu6HsBDzzQIb1-wpwZ95g',
+  //   authDomain: 'test-project-notificatio-6f653.firebaseapp.com',
+  //   projectId: 'test-project-notificatio-6f653',
+  //   storageBucket: 'test-project-notificatio-6f653.firebasestorage.app',
+  //   messagingSenderId: '1007601362942',
+  //   appId: '1:1007601362942:web:f5acbdba677993287bc2af',
+  // }
+  // const vapidKey = 'BBLHtz_6F-NFDdkLRU7yulpeNBGf8Xv5aC_suiUeyvmG2ybOGEyhnZTOlhpSJIy84EiRKkVkbNuAYU92ZEjTG-E'
   const firebaseApp = initializeApp(firebaseConfig)
   const messaging: Messaging = getMessaging(firebaseApp)
 
@@ -34,15 +35,16 @@ export default defineNuxtPlugin(() => {
         const channel = new BroadcastChannel('fcmNotificationChannel')
 
         channel.addEventListener('message', event => {
-          console.log('event.data.type  =================>', event.data.type)
+          console.log('event.data.type  =================>', event.data)
           if (event.data.type === 'notification') {
             const notificationData = event.data.data
-
+            console.log('event.data.', event)
             console.log(
               'Notification received in the main page from sw:',
               notificationData,
             )
             localStorage.setItem('newNotify', 'true')
+            useNotificationStore().saveNotification(notificationData)
           }
         })
       })
