@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSnackbarStore } from "@/stores/snackbar";
 import { useGenerateImageVariant } from "@core/composable/useGenerateImageVariant";
 import authV2ForgotPasswordIllustrationDark from "@images/pages/auth-v2-forgot-password-illustration-dark.png";
 import authV2ForgotPasswordIllustrationLight from "@images/pages/auth-v2-forgot-password-illustration-light.png";
@@ -6,7 +7,6 @@ import authV2MaskDark from "@images/pages/misc-mask-dark.png";
 import authV2MaskLight from "@images/pages/misc-mask-light.png";
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
-import { useSnackbarStore } from "@/stores/snackbar";
 
 definePageMeta({
   layout: "blank",
@@ -57,10 +57,10 @@ const onSubmit = async () => {
   console.log("payload", form?.value);
   let validated = await formRef.value.validate()
   isLoading.value = true;
-  if (validated.valid === true) {
+  if (validated.valid === true) { 
     try {
       const response = await apiRequestObj.makeRequest(
-        "admin/authentication/reset-password",
+        "common/authentication/password/forget",
         "post",
         form?.value
       );
@@ -71,7 +71,7 @@ const onSubmit = async () => {
           "success"
         );
         await router.push("/login");
-      }else{
+      } else {
         snackbarStore.showSnackbar("An error occurred. Please try again.", "error");
       }
     } catch (error) {
@@ -100,35 +100,51 @@ const startCountdown = () => {
 };
 
 const getCode = async () => {
-  isLoading.value = true
-  console.log('get code function hit')
-  if (phoneValidator(form.value.telephone) === true) {
-    // const response = await apiRequestObj.makeRequest('admin/authentication/reset-passsword', 'post', form?.value)
-    // if (response && response.success) {
-    //  }
-    isCodeSent.value = true
-    snackbarStore.showSnackbar(
-      'Code has been sent to the given mobile number',
-      'success',
-    )
-    startCountdown()
+  try {
+    isLoading.value = true;
+    console.log('getCode function invoked');
+
+    if (phoneValidator(form?.value?.telephone)) {
+      const response = await apiRequestObj.makeRequest(
+        'common/authentication/get-code',
+        'post',
+        form?.value
+      );
+      if (response?.success) {
+        isCodeSent.value = true;
+        snackbarStore.showSnackbar(
+          'Code has been sent to the given mobile number',
+          'success'
+        );
+        startCountdown();
+      } else {
+        snackbarStore.showSnackbar(
+          response?.message || 'Failed to get OTP',
+          'error'
+        );
+      }
+    } else {
+      snackbarStore.showSnackbar('Please enter a valid phone number', 'error');
+    }
+  } catch (error) {
+    console.error('Error in getCode function:', error);
+    snackbarStore.showSnackbar('An error occurred. Please try again.', 'error');
+  } finally {
+    isLoading.value = false;
   }
-  else {
-    snackbarStore.showSnackbar('Please Enter valid Phone number', 'error')
-  }
-  isLoading.value = false
-}
+};
 
 const verifyCode = async () => {
   console.log("verify code api hit");
   isLoading.value = true;
-  if(form.value.code.length === 6){
-     // const response = await apiRequestObj.makeRequest('admin/authentication/reset-passsword', 'post', form?.value)
-    // if (response && response.success) {
-    //  }
-    form.value.is_otp_verified = true;
-    snackbarStore.showSnackbar("Code verified", "success");
-  }else{
+  if (form.value.code.length === 6) {
+    const response = await apiRequestObj.makeRequest('common/authentication/verify-code', 'post', form?.value)
+    if (response && response.success) {
+      form.value.is_otp_verified = true;
+      snackbarStore.showSnackbar("Code verified", "success");
+    }
+
+  } else {
     snackbarStore.showSnackbar("Invalid/Expired Code", "error");
   }
   isLoading.value = false;
@@ -136,6 +152,7 @@ const verifyCode = async () => {
 </script>
 
 <template>
+  <SnackBar/>
   <NuxtLink to="/">
     <div class="auth-logo d-flex align-center gap-x-3">
       <VNodeRenderer :nodes="themeConfig.app.logo" />
@@ -148,32 +165,16 @@ const verifyCode = async () => {
   <VRow class="auth-wrapper bg-surface" no-gutters>
     <VCol md="8" class="d-none d-md-flex">
       <div class="position-relative bg-background w-100 me-0">
-        <div
-          class="d-flex align-center justify-center w-100 h-100"
-          style="padding-inline: 150px"
-        >
-          <VImg
-            max-width="468"
-            :src="authThemeImg"
-            class="auth-illustration mt-16 mb-2 flip-in-rtl"
-          />
+        <div class="d-flex align-center justify-center w-100 h-100" style="padding-inline: 150px">
+          <VImg max-width="468" :src="authThemeImg" class="auth-illustration mt-16 mb-2 flip-in-rtl" />
         </div>
 
-        <img
-          class="auth-footer-mask flip-in-rtl"
-          :src="authThemeMask"
-          alt="auth-footer-mask"
-          height="280"
-          width="100"
-        />
+        <img class="auth-footer-mask flip-in-rtl" :src="authThemeMask" alt="auth-footer-mask" height="280"
+          width="100" />
       </div>
     </VCol>
 
-    <VCol
-      cols="12"
-      md="4"
-      class="auth-card-v2 d-flex align-center justify-center"
-    >
+    <VCol cols="12" md="4" class="auth-card-v2 d-flex align-center justify-center">
       <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-6">
         <VCardText>
           <h4 class="text-h4 mb-1">Forgot Password? 🔒</h4>
@@ -188,107 +189,62 @@ const verifyCode = async () => {
             <VRow>
               <!-- phone number -->
               <VCol cols="12">
-                <AppTextField
-                  v-model="form.telephone"
-                  :rules="[phoneValidator, requiredValidator]"
-                  label="Phone Number*"
-                  placeholder="03XXXXXXXXX"
-                  required
-                  type="text"
-                  :disabled="form.is_otp_verified"
-                />
+                <AppTextField v-model="form.telephone" :rules="[phoneValidator, requiredValidator]"
+                  label="Phone Number*" placeholder="03XXXXXXXXX" required type="text"
+                  :disabled="form.is_otp_verified" />
               </VCol>
               <!-- otp -->
               <VCol v-if="isCodeSent" cols="12">
-                <div
-                  class="d-flex align-center flex-wrap justify-space-between"
-                >
+                <div class="d-flex align-center flex-wrap justify-space-between">
                   <h6 class="text-body-1">Type your 6 digit security code</h6>
-                  <h6
-                    v-if="!form.is_otp_verified"
-                    :class="{
-                      'text-body-1 fw-lighter cursor-wait': isCountdownActive,
-                      'text-body-1 text-decoration-underline text-primary cursor-pointer':
-                        !isCountdownActive,
-                    }"
-                    @click="!isCountdownActive && getCode()"
-                  >
+                  <h6 v-if="!form.is_otp_verified" :class="{
+                    'text-body-1 fw-lighter cursor-wait': isCountdownActive,
+                    'text-body-1 text-decoration-underline text-primary cursor-pointer':
+                      !isCountdownActive,
+                  }" @click="!isCountdownActive && getCode()">
                     Resend Code
-                    <VProgressCircular
-                      v-if="isCountdownActive"
-                      :rotate="-90"
-                      :size="35"
-                      :width="4"
-                      :model-value="progressValue"
-                      color="primary"
-                    >
+                    <VProgressCircular v-if="isCountdownActive" :rotate="-90" :size="35" :width="4"
+                      :model-value="progressValue" color="primary">
                       {{ secondsRemaining }}
                     </VProgressCircular>
                   </h6>
                 </div>
-                <VOtpInput
-                  v-model="form.code"
-                  :disabled="form.is_otp_verified"
-                  type="number"
-                  class="pa-0"
-                />
+                <VOtpInput v-model="form.code" :disabled="form.is_otp_verified" type="number" class="pa-0" />
                 <!-- @finish="onFinish" -->
               </VCol>
               <!-- new password -->
               <VCol v-if="form?.is_otp_verified" cols="12">
-                <AppTextField
-                  v-model="form.password"
-                  label="Password"
-                  placeholder="············"
-                  :type="isPasswordVisible ? 'text' : 'password'"
-                  :append-inner-icon="
-                    isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
-                  "
-                  :rules="[requiredValidator, passwordValidator]"
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                />
+                <AppTextField v-model="form.password" label="Password" placeholder="············"
+                  :type="isPasswordVisible ? 'text' : 'password'" :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
+                    " :rules="[requiredValidator, passwordValidator]"
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible" />
               </VCol>
               <!-- confirm password -->
               <VCol v-if="form?.is_otp_verified" cols="12">
-                <AppTextField
-                  v-model="form.password_confirmation"
-                  label="Confirm Password"
-                  :type="isConfirmPasswordVisible ? 'text' : 'password'"
-                  placeholder="Confirm Password"
-                  :append-inner-icon="
-                    isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
-                  "
-                  :rules="[
+                <AppTextField v-model="form.password_confirmation" label="Confirm Password"
+                  :type="isConfirmPasswordVisible ? 'text' : 'password'" placeholder="Confirm Password"
+                  :append-inner-icon="isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
+                    " :rules="[
                     requiredValidator,
                     confirmedValidator(
                       form.password_confirmation,
                       form.password,
                     ),
-                  ]"
-                  autocomplete="on"
-                  @click:append-inner="
+                  ]" autocomplete="on" @click:append-inner="
                     isConfirmPasswordVisible = !isConfirmPasswordVisible
-                  "
-                />
+                    " />
               </VCol>
 
               <!-- Reset link -->
               <VCol cols="12">
-                <VBtn
-                  block
-                  @click="
-                    isCodeSent
-                      ? form.is_otp_verified
-                        ? onSubmit()
-                        : verifyCode()
-                      : getCode()
-                  "
-                >
-                  <VProgressCircular
-                    v-if="isLoading"
-                    indeterminate
-                    color="white"
-                  />
+                <VBtn block @click="
+                  isCodeSent
+                    ? form.is_otp_verified
+                      ? onSubmit()
+                      : verifyCode()
+                    : getCode()
+                  ">
+                  <VProgressCircular v-if="isLoading" indeterminate color="white" />
                   <template v-else>
                     {{
                       isCodeSent
@@ -296,22 +252,14 @@ const verifyCode = async () => {
                           ? "Reset Password"
                           : "Verify Code"
                         : "Get Code"
-                    }}</template
-                  >
+                    }}</template>
                 </VBtn>
               </VCol>
 
               <!-- back to login -->
               <VCol cols="12">
-                <NuxtLink
-                  class="d-flex align-center justify-center"
-                  :to="{ name: 'login' }"
-                >
-                  <VIcon
-                    icon="tabler-chevron-left"
-                    size="20"
-                    class="me-1 flip-in-rtl"
-                  />
+                <NuxtLink class="d-flex align-center justify-center" :to="{ name: 'login' }">
+                  <VIcon icon="tabler-chevron-left" size="20" class="me-1 flip-in-rtl" />
                   <span>Back to login</span>
                 </NuxtLink>
               </VCol>
