@@ -9,6 +9,7 @@ const selectedOrderStatus = ref()
 
 const ordersData = ref({
   per_page: 10,
+  current_page: 1,
   total: 0,
   orders: [],
 })
@@ -90,6 +91,7 @@ const makeSearch = async page => {
       // Transform and set the data
       ordersData.value = {
         per_page: response?.data?.per_page,
+        current_page: response?.data?.currentPage,
         total: response?.data?.total, // Set total count of orders
         orders: transformData(response?.data?.orders),
       }
