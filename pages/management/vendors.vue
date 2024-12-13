@@ -39,6 +39,7 @@ const headers = [
   { title: 'Vendor', key: 'vendor' },
   { title: 'Contact', key: 'contact' },
   { title: 'Create Time', key: 'created_at' },
+  { title: 'Status', key: 'status' },
   { title: 'Actions', key: 'actions', sortable: false },
 ];
 
@@ -118,6 +119,12 @@ const handleConfirm = async (value) => {
   }
 };
 
+const capitalizedLabel = (label: boolean) => {
+  const convertLabelText = label.toString()
+
+  return convertLabelText.charAt(0).toUpperCase() + convertLabelText.slice(1)
+}
+
 // Delete a vendor
 const deleteVendor = async (id: string) => {
   selectedVendorId.value = id
@@ -128,6 +135,14 @@ const deleteVendor = async (id: string) => {
 const formatRelativeTime = (date: string) => {
   return moment(date).fromNow();
 };
+
+const handleStatusToggle = async(item) =>{
+   loaderStore.showLoader()
+   const response = await apiRequestObj.makeRequest(`haier/vendor/update-status/${item.uid}`,'get');
+   snackBarStore.showSnackbar(response.message || 'Something went wrong');
+   loaderStore.hideLoader();
+}
+
 
 onMounted(fetchVendors);
 </script>
@@ -204,6 +219,14 @@ onMounted(fetchVendors);
         <VChip :color="resolveUserStatusVariant(item.confirmed)" size="small" label class="text-capitalize">
           {{ item.confirmed == 1 ? 'Active' : 'Inactive' }}
         </VChip>
+      </template>
+
+      <template #item.status="{ item }">
+        <VSwitch
+         v-model="item.status"
+         :label="capitalizedLabel(item.status?'Enabled' : 'Disabled')"
+         @change="handleStatusToggle(item)"
+        />
       </template>
 
       <!-- Actions -->
