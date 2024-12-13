@@ -1,19 +1,28 @@
-// notificationStore.ts
+// src/stores/notification.ts
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
-class NotificationStore {
-  private localStorageKey = 'notifications'
+export const useNotificationStore = defineStore('notification', () => {
+  // Reactive state for notifications
+  const notifications = ref([])
 
-  // Get value from local storage
-  public getValue(): string | null {
-    return localStorage.getItem(this.localStorageKey)
+  // Initialize state from local storage
+  const loadFromLocalStorage = () => {
+    const storedData = localStorage.getItem('notifications')
+    if (storedData)
+      notifications.value = JSON.parse(storedData)
   }
 
-  // Set value in local storage
-  public setValue(value: string): void {
-    localStorage.setItem(this.localStorageKey, value)
+  // Save current state to local storage
+  const saveToLocalStorage = () => {
+    localStorage.setItem('notifications', JSON.stringify(notifications.value))
   }
-}
 
-// Export a singleton instance for use across the app
-const notificationStore = new NotificationStore()
-export default notificationStore
+  // Load initial data from local storage on store initialization
+  loadFromLocalStorage()
+
+  return {
+    notifications,
+    saveToLocalStorage,
+  }
+})
