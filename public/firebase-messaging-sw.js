@@ -24,7 +24,7 @@ const messaging = firebase.messaging()
 // Handle background messages received while the web app is not in the foreground
 messaging.onBackgroundMessage(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload)
-
+    console.log('notification on [firebase-messaging-sw.js]')
     // Customize the notification here
     const notificationTitle = payload.notification.title
     const notificationOptions = {
