@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { useSnackbarStore } from '@/stores/snackbar';
+import { useSnackbarStore } from "@/stores/snackbar";
 import type { VForm } from 'vuetify/components/VForm';
-
+const loaderStore = useLoaderStore();
 const snackbarStore = useSnackbarStore();
 const requiredValidator = (value: string) => !!value || 'This field is required';
 
@@ -11,10 +11,9 @@ const passwordConfirmationRule = (value: string) => (v: string) => {
   if (v !== value) return 'Password must match';
   return true;
 };
-const showCurrentPassword = ref(false);
-const showNewPassword = ref(false);
-const showConfirmPassword = ref(false);
-
+const isCurrentPasswordVisible = ref(false);
+const isNewPasswordVisible = ref(false);
+const isConfirmPasswordVisible = ref(false);
 
 const refForm = ref<VForm>();
 const form = ref({
@@ -38,17 +37,15 @@ const updatePassword = async () => {
 
 
     try {
+      loaderStore.showLoader()
         const payload = { ...form.value };
         console.log(payload);
         const response = await useApi().makeRequest(
-            'common/password/update',
+            'common/password/reset',
             'post',
             payload
         );
-
         if (response?.success) {
-            console.log('samra');
-            console.log(response);
             snackbarStore.showSnackbar("Password updated successfully.", 'success');
             formRef.reset();
             formRef.resetValidation();
@@ -60,12 +57,13 @@ const updatePassword = async () => {
         console.error("Error updating password:", error);
         snackbarStore.showSnackbar("Failed to update password. Please try again later.", 'error');
     } finally {
-        // Reset loading state
-    }
+    loaderStore.hideLoader()
+  }
 };
 
 </script>
 <template>
+  <SnackBar/>
     <section>
       <VCard>
         <VCardTitle>
@@ -74,7 +72,7 @@ const updatePassword = async () => {
         <VCardText>
           <!-- Form -->
           <VForm ref="refForm" v-model="isFormValid" @submit.prevent="updatePassword">
-            <VRow>
+            <VCol>
               <!-- Current Password -->
               <VCol cols="12" sm="6">
                 <AppTextField 
@@ -83,13 +81,11 @@ const updatePassword = async () => {
                   label="Current Password" 
                   placeholder="Enter your current password" 
                   maxlength="50" 
-                  type="password"
+                  :type="isCurrentPasswordVisible ? 'text' : 'password'"
+                  :append-inner-icon="isCurrentPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  autocomplete="on" @click:append-inner="
+                  isCurrentPasswordVisible = !isCurrentPasswordVisible"
                 />
-                <VIcon 
-                :name="showCurrentPassword ? 'mdi-eye' : 'mdi-eye-off'" 
-                @click="showCurrentPassword = !showCurrentPassword" 
-                class="password-eye-icon"
-              />
               </VCol>
   
               <!-- New Password -->
@@ -99,13 +95,12 @@ const updatePassword = async () => {
                   :rules="[requiredValidator]" 
                   label="New Password" 
                   placeholder="Enter your new password" 
-                  type="password"
+                  :type="isNewPasswordVisible ? 'text' : 'password'"
+                  :append-inner-icon="isNewPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  autocomplete="on" @click:append-inner="
+                  isNewPasswordVisible = !isNewPasswordVisible"
                 />
-                <VIcon 
-                :name="showNewPassword ? 'mdi-eye' : 'mdi-eye-off'" 
-                @click="showNewPassword = !showNewPassword" 
-                class="password-eye-icon"
-              />
+                
                
               </VCol>
   
@@ -115,16 +110,15 @@ const updatePassword = async () => {
                   v-model="form.confirm_new_password" 
                   :rules="[requiredValidator, passwordConfirmationRule(form.new_password)]"
                   label="Confirm New Password" 
-                  type="password" 
                   placeholder="Confirm your new password" 
+                  :type="isConfirmPasswordVisible ? 'text' : 'password'"
+                  :append-inner-icon="isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  autocomplete="on" @click:append-inner="
+                  isConfirmPasswordVisible = !isConfirmPasswordVisible"
                 />
-                <VIcon 
-                :name="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'" 
-                @click="showConfirmPassword = !showConfirmPassword" 
-                class="password-eye-icon"
-              />
+                
               </VCol>
-            </VRow>
+            </VCol>
   
             <!-- Actions -->
             <VRow justify="end" class="mt-6">
