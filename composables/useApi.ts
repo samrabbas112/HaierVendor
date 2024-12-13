@@ -72,6 +72,8 @@ export const useApi = () => {
   }
 
   const upload = async (url: string, formData: FormData, config: any = {}) => {
+    console.log('url:', url)
+    console.log('formData:', formData)
     log('->', { method: 'upload', url, data: formData })
 
     try {
@@ -80,13 +82,12 @@ export const useApi = () => {
         body: formData,
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${localStorage.getItem('mst')}`,
+          Authorization: `Bearer ${localStorage.getItem('mst')}`,
           ...config.headers,
         },
       })
-    }
-    catch (error) {
-      handleError(error)
+    } catch (error) {
+      return handleError(error)
     }
   }
 
