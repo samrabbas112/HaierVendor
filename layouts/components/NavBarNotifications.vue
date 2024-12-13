@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { Notification } from '@layouts/types'
-import notification from '@/stores/notification'
+import { useNotificationStore } from '@/stores/notification'
+
+const notificationStore = useNotificationStore()
 
 import avatar3 from '@images/avatars/avatar-3.png'
 import avatar4 from '@images/avatars/avatar-4.png'
@@ -30,10 +32,6 @@ const handleServiceWorkerMessage = (e: MessageEvent) => {
 
 // Listen for messages from the service worker
 onMounted(() => {
-  const storedNotifications = notification.getValue()
-  if (storedNotifications) {
-    notifications.value = JSON.parse(storedNotifications)
-  }
   if (navigator.serviceWorker) {
     navigator.serviceWorker.addEventListener(
       'message',
@@ -41,9 +39,6 @@ onMounted(() => {
     )
   }
 })
-watch(notifications, (newNotifications) => {
-  notification.setValue(JSON.stringify(newNotifications))
-}, { deep: true })
 
 onUnmounted(() => {
   if (navigator.serviceWorker) {
