@@ -18,11 +18,9 @@ export const useNotificationStore = defineStore('notification', () => {
     localStorage.setItem('notifications', JSON.stringify(notifications.value))
   }
 
-  // Load initial data from local storage on store initialization
-  loadFromLocalStorage()
-
   return {
     notifications,
     saveToLocalStorage,
+    loadFromLocalStorage,
   }
 })
