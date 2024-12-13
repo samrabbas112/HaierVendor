@@ -87,7 +87,6 @@ const onSubmit = async () => {
             formData
           );
         }
-
         if (response?.success) {
           emit('customer-updated');
           emit('update:isDrawerOpen', false);
@@ -98,10 +97,10 @@ const onSubmit = async () => {
             refForm.value?.resetValidation();
           });
         } else {
-          alert(`Error: ${response?.message || 'Unknown error'}`);
+          snackBarStore.showSnackbar(response?.data?.message || 'Phone already taken', 'error')
         }
       } catch (error) {
-        alert('Failed to save customer data. Please try again later.');
+        snackBarStore.showSnackbar('Something went wrong', 'error')
       } finally {
         isLoading.value = false
       }
