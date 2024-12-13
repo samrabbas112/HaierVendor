@@ -34,7 +34,7 @@ const resolveUserStatusVariant = (stat: string) => {
 
 // Headers for the data table
 const headers = [
-  { title: 'ID', key: 'id' },
+  { title: 'SN', key: 'id' },
   { title: 'Vendor ID', key: 'uid' },
   { title: 'Vendor', key: 'vendor' },
   { title: 'Contact', key: 'contact' },
@@ -166,7 +166,7 @@ onMounted(fetchVendors);
         <VRow cols="12" sm="8">
           <!-- Search Vendors -->
           <VCol cols="12" sm="3">
-            <AppTextField v-model="searchQuery" placeholder="Search by name or id#" />
+            <AppTextField v-model="searchQuery" placeholder="Search by name" />
           </VCol>
           <VCol cols="12" sm="3">
             <div class="d-flex">
@@ -193,9 +193,10 @@ onMounted(fetchVendors);
     <VDataTableServer v-model:items-per-page="itemsPerPage" v-model:model-value="selectedRows" v-model:page="page"
       :items="vendorsData.vendors" item-value="id" :items-length="vendorsData.total" :headers="headers"
       class="text-no-wrap" @update:options="updateOptions">
-      <template #item.id="{ item }">
+      <template #item.id="{ index }">
         <NuxtLink>
-          {{ item.id }}
+          <!-- {{ item.id }} -->
+          {{ (page - 1) * itemsPerPage + index + 1 }}
         </NuxtLink>
       </template>
       <template #item.vendor="{ item }">
