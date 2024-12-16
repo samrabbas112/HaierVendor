@@ -15,8 +15,9 @@ const props = defineProps<{
     :block="props.block"
     :class="props.class"
     :variant="props.variant || 'flat'"
-    :color="props.color || 'secondary'"
+    :color="props.color || 'primary'"
     @click="props.clickFunction"
+    :type="props.type || button"
   >
     <VProgressCircular
       v-if="props.isLoading"
