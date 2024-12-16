@@ -5,10 +5,11 @@ import {
   getToken,
   onMessage,
 } from 'firebase/messaging'
+import {useNotificationStore} from "@/stores/notification";
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
-
+  //
   // const firebaseConfig = config.public.firebaseConfig;
   // const vapidKey = config.public.vapidKey;
 
@@ -20,8 +21,7 @@ export default defineNuxtPlugin(() => {
     messagingSenderId: '1007601362942',
     appId: '1:1007601362942:web:f5acbdba677993287bc2af',
   }
-
-  const vapidKey = 'BLsZZXVCKKMPSkrHVr2UUWRE8ioL9H2exfrSVHMKXvWqtLYaC4C8Le9V33hhKieu1DBjBBEZVEZ9gGYO6yK9WVs'
+  const vapidKey = 'BBLHtz_6F-NFDdkLRU7yulpeNBGf8Xv5aC_suiUeyvmG2ybOGEyhnZTOlhpSJIy84EiRKkVkbNuAYU92ZEjTG-E'
   const firebaseApp = initializeApp(firebaseConfig)
   const messaging: Messaging = getMessaging(firebaseApp)
 
@@ -35,15 +35,20 @@ export default defineNuxtPlugin(() => {
         const channel = new BroadcastChannel('fcmNotificationChannel')
 
         channel.addEventListener('message', event => {
-          console.log('event.data.type  =================>', event.data.type)
+          console.log('event.data.type  =================>', event.data)
           if (event.data.type === 'notification') {
             const notificationData = event.data.data
-
+            console.log('event.data.', event)
             console.log(
               'Notification received in the main page from sw:',
               notificationData,
             )
+            console.log('notificationData',notificationData);
             localStorage.setItem('newNotify', 'true')
+            useNotificationStore().saveNotification({
+              title: notificationData.body.title,
+              body: notificationData.body.body,
+            })
           }
         })
       })
@@ -84,6 +89,7 @@ export default defineNuxtPlugin(() => {
 
   const displayNotification = (message: { title: string; body: string }) => {
     if (Notification.permission === 'granted') {
+      useNotificationStore().saveNotification(message)
       navigator.serviceWorker.getRegistration().then(reg => {
         if (reg) {
           reg.showNotification(message.title, {
@@ -99,6 +105,7 @@ export default defineNuxtPlugin(() => {
 
   onMessage(messaging, payload => {
     if (payload.notification) {
+      console.log('notification on firebase client ts');
       displayNotification(
         payload.notification as { title: string; body: string },
       )

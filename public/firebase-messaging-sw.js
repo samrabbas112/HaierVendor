@@ -24,11 +24,13 @@ const messaging = firebase.messaging()
 // Handle background messages received while the web app is not in the foreground
 messaging.onBackgroundMessage(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload)
+    console.log('notification on [firebase-messaging-sw.js]')
 
-    // Customize the notification here
-    const notificationTitle = payload.notification.title
+
+    const notificationTitle = payload.notification.title;
     const notificationOptions = {
-        body: payload.notification.body,
+        body: payload.notification,
+        icon: '/firebase-logo.png', // Example icon, replace with your own
     }
 
     const channel = new BroadcastChannel('fcmNotificationChannel');
@@ -36,15 +38,14 @@ messaging.onBackgroundMessage(function(payload) {
 
     // Show notification in the service worker
     // eslint-disable-next-line no-restricted-globals
-  //   self.registration.showNotification(notificationTitle, notificationOptions)
-  //
-  //   // Send the notification data to the main thread
-  // self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then((clients) => {
-  //       clients.forEach((client) => {
-  //           client.postMessage({
-  //               type: 'NEW_NOTIFICATION',
-  //               payload,
-  //           });
-  //       });
-  //   });
+    // self.registration.showNotification(notificationTitle, notificationOptions)
+    //
+    // self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then((clients) => {
+    //     clients.forEach((client) => {
+    //         client.postMessage({
+    //             type: 'NEW_NOTIFICATION',
+    //             payload,
+    //         });
+    //     });
+    // });
 })

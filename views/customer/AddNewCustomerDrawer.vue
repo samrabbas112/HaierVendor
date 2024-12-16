@@ -97,8 +97,19 @@ const onSubmit = async () => {
             refForm.value?.resetValidation();
           });
         } else {
-          snackBarStore.showSnackbar(response?.data?.message || 'Phone already taken', 'error')
-        }
+          const messages = response?.message;
+          let allErrors = [];
+
+          // Check if the message array exists
+          if (Array.isArray(messages)) {
+              allErrors = messages.map(msg => msg?.errors).filter(error => error); // Extract 'errors' field
+          }
+
+          // Join all errors into a single string
+          const errorMessage = allErrors.length > 0 ? allErrors.join('\n') : 'Unknown Error';
+
+          // Show snackbar with all errors
+          snackBarStore.showSnackbar(errorMessage, 'error');        }
       } catch (error) {
         snackBarStore.showSnackbar('Something went wrong', 'error')
       } finally {
