@@ -4,6 +4,8 @@ import { useSnackbarStore } from "@/stores/snackbar";
 import type { VForm } from 'vuetify/components/VForm';
 const loaderStore = useLoaderStore();
 const snackbarStore = useSnackbarStore();
+const authStore = useAuthStore();
+const router = useRouter()
 const requiredValidator = (value: string) => !!value || 'This field is required';
 
 const passwordConfirmationRule = (value: string) => (v: string) => {
@@ -39,7 +41,6 @@ const updatePassword = async () => {
     try {
       loaderStore.showLoader()
         const payload = { ...form.value };
-        console.log(payload);
         const response = await useApi().makeRequest(
             'common/password/reset',
             'post',
@@ -49,6 +50,8 @@ const updatePassword = async () => {
             snackbarStore.showSnackbar("Password updated successfully.", 'success');
             formRef.reset();
             formRef.resetValidation();
+            authStore.logout();
+            router.push("/login");
         } else {
             snackbarStore.showSnackbar(response?.message || "An unknown error occurred.", 'error');
         }
@@ -92,7 +95,7 @@ const updatePassword = async () => {
               <VCol cols="12" sm="6">
                 <AppTextField 
                   v-model="form.new_password" 
-                  :rules="[requiredValidator]" 
+                  :rules="[requiredValidator, passwordValidator]" 
                   label="New Password" 
                   placeholder="Enter your new password" 
                   :type="isNewPasswordVisible ? 'text' : 'password'"
