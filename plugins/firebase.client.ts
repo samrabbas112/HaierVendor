@@ -10,18 +10,18 @@ import {useNotificationStore} from "@/stores/notification";
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
   //
-  const firebaseConfig = config.public.firebaseConfig;
-  const vapidKey = config.public.vapidKey;
+  // const firebaseConfig = config.public.firebaseConfig;
+  // const vapidKey = config.public.vapidKey;
 
-  // const firebaseConfig = {
-  //   apiKey: 'AIzaSyBaQu5PVEUspegu6HsBDzzQIb1-wpwZ95g',
-  //   authDomain: 'test-project-notificatio-6f653.firebaseapp.com',
-  //   projectId: 'test-project-notificatio-6f653',
-  //   storageBucket: 'test-project-notificatio-6f653.firebasestorage.app',
-  //   messagingSenderId: '1007601362942',
-  //   appId: '1:1007601362942:web:f5acbdba677993287bc2af',
-  // }
-  // const vapidKey = 'BBLHtz_6F-NFDdkLRU7yulpeNBGf8Xv5aC_suiUeyvmG2ybOGEyhnZTOlhpSJIy84EiRKkVkbNuAYU92ZEjTG-E'
+  const firebaseConfig = {
+    apiKey: 'AIzaSyBaQu5PVEUspegu6HsBDzzQIb1-wpwZ95g',
+    authDomain: 'test-project-notificatio-6f653.firebaseapp.com',
+    projectId: 'test-project-notificatio-6f653',
+    storageBucket: 'test-project-notificatio-6f653.firebasestorage.app',
+    messagingSenderId: '1007601362942',
+    appId: '1:1007601362942:web:f5acbdba677993287bc2af',
+  }
+  const vapidKey = 'BBLHtz_6F-NFDdkLRU7yulpeNBGf8Xv5aC_suiUeyvmG2ybOGEyhnZTOlhpSJIy84EiRKkVkbNuAYU92ZEjTG-E'
   const firebaseApp = initializeApp(firebaseConfig)
   const messaging: Messaging = getMessaging(firebaseApp)
 
@@ -43,8 +43,12 @@ export default defineNuxtPlugin(() => {
               'Notification received in the main page from sw:',
               notificationData,
             )
+            console.log('notificationData',notificationData);
             localStorage.setItem('newNotify', 'true')
-            useNotificationStore().saveNotification(notificationData)
+            useNotificationStore().saveNotification({
+              title: notificationData.body.title,
+              body: notificationData.body.body,
+            })
           }
         })
       })
@@ -85,6 +89,7 @@ export default defineNuxtPlugin(() => {
 
   const displayNotification = (message: { title: string; body: string }) => {
     if (Notification.permission === 'granted') {
+      useNotificationStore().saveNotification(message)
       navigator.serviceWorker.getRegistration().then(reg => {
         if (reg) {
           reg.showNotification(message.title, {

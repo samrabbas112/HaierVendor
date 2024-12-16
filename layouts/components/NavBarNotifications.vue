@@ -7,46 +7,29 @@ const notificationStore = useNotificationStore()
 const notifications = ref<Notification[]>([])
 
 const handleServiceWorkerMessage = (e: MessageEvent) => {
-  if (e.data && e.data.type === 'NEW_NOTIFICATION') {
-    const payload = e.data.payload
-
-    console.log('Received notification from service worker: ', payload)
-
-    const newNotification: Notification = {
-      id: Date.now(), // Generate unique ID
-      title: payload.notification.title || 'No Title',
-      subtitle: payload.notification.body || 'No Body',
-      time: new Date().toLocaleTimeString(),
-      isSeen: false,
-      img: '/firebase-logo.png', // Use the notification icon if available
-    }
-
-    notifications.value.push(newNotification)
-  }
+  // if (e.data && e.data.type === 'NEW_NOTIFICATION') {
+  //   const payload = e.data.payload
+  //
+  //   console.log('Received notification from service worker: ', payload)
+  //
+  //   const newNotification: Notification = {
+  //     id: Date.now(), // Generate unique ID
+  //     title: payload.notification.title || 'No Title',
+  //     subtitle: payload.notification.body || 'No Body',
+  //     time: new Date().toLocaleTimeString(),
+  //     isSeen: false,
+  //     img: '/firebase-logo.png', // Use the notification icon if available
+  //   }
+  //
+  //   notifications.value.push(newNotification)
+  // }
 }
 
 // Listen for messages from the service worker
 onMounted(() => {
-  if (navigator.serviceWorker) {
-    navigator.serviceWorker.addEventListener(
-      'message',
-      handleServiceWorkerMessage,
-    )
-  }
   notifications.value = notificationStore.notifications
-  console.log('================');
-  console.log(notifications.value);
-  console.log('================');
 })
 
-onUnmounted(() => {
-  if (navigator.serviceWorker) {
-    navigator.serviceWorker.removeEventListener(
-      'message',
-      handleServiceWorkerMessage,
-    )
-  }
-})
 
 const removeNotification = (notificationId: number) => {
   notifications.value.forEach((item, index) => {

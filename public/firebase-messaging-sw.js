@@ -27,24 +27,25 @@ messaging.onBackgroundMessage(function(payload) {
     console.log('notification on [firebase-messaging-sw.js]')
 
 
-    const notificationTitle = {
-        body : payload.notification.title,
-    }
+    const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification,
         icon: '/firebase-logo.png', // Example icon, replace with your own
     }
 
+    const channel = new BroadcastChannel('fcmNotificationChannel');
+    channel.postMessage({ type: 'notification', data: notificationOptions });
+
     // Show notification in the service worker
     // eslint-disable-next-line no-restricted-globals
-    self.registration.showNotification(notificationTitle, notificationOptions)
-
-    self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then((clients) => {
-        clients.forEach((client) => {
-            client.postMessage({
-                type: 'NEW_NOTIFICATION',
-                payload,
-            });
-        });
-    });
+    // self.registration.showNotification(notificationTitle, notificationOptions)
+    //
+    // self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then((clients) => {
+    //     clients.forEach((client) => {
+    //         client.postMessage({
+    //             type: 'NEW_NOTIFICATION',
+    //             payload,
+    //         });
+    //     });
+    // });
 })
