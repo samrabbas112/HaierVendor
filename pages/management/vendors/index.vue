@@ -45,19 +45,19 @@ const headers = [
 
 // Navigate to Add New Vendor page
 const goToAddVendorPage = () => {
-  router.push('/management/add-vendor'); // Navigates to /add-vendor
+  router.push('/management/vendors/add-vendor'); // Navigates to /add-vendor
 };
 
 const detailsVendor = (vendorId: string) => {
   router.push({
-    path: `/management/${vendorId}`,
+    path: `/management/vendors/${vendorId}`,
     query: { mode: 'details' },
   });
 };
 
 const editVendor = (vendorId: string) => {
   router.push({
-    path: `/management/${vendorId}`,
+    path: `/management/vendors/${vendorId}`,
     query: { mode: 'edit' },
   });
 };
