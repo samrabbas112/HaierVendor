@@ -120,14 +120,21 @@ const getCode = async () => {
       )
 
       if (response?.success) {
-        if (response?.data?.original?.status == 'success')
+        if (response?.data?.status !== 'error') {
           isCodeSent.value = true
 
-        snackbarStore.showSnackbar(
-          response?.data?.original?.message,
-          response?.data?.original?.status,
-        )
-        startCountdown()
+          snackbarStore.showSnackbar(
+            response?.message,
+            'success',
+          )
+          startCountdown()
+        }
+        else if (response?.data?.status == 'error') {
+          snackbarStore.showSnackbar(
+            response?.data?.message,
+            'error',
+          )
+        }
       }
       else {
         snackbarStore.showSnackbar(
@@ -149,7 +156,6 @@ const getCode = async () => {
 }
 
 const verifyCode = async () => {
-  console.log('verify code api hit')
   isLoading.value = true
   if (form.value.code.length === 6) {
     const response = await apiRequestObj.makeRequest('common/authentication/verify-code', 'post', form?.value)
