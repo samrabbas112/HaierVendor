@@ -110,8 +110,7 @@ const submitForm = async () => {
     }
     snackbarStore.showSnackbar('Logged in successfully', 'success')
     await nextTick(() => {
-      // window.location.href = '/dashboard';
-      router.push('/dashboard');
+      window.location.href = '/dashboard';
     })
   }
   else {
