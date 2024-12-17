@@ -64,9 +64,10 @@ const makeSearch = async page => {
   const formData = {
     order_no: searchQuery.value,
     order_type: 'public',
-    vendor_id: authUser.value.user.user_id,
+    vendor_id: authUser.value.user.uid,
   }
 
+  console.log("formData", formData);
   try {
     loaderStore.showLoader()
 

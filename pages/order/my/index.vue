@@ -70,10 +70,13 @@ const makeSearch = async page => {
     order_no: searchQuery.value,
     order_status: selectedOrderStatus.value,
     payment_status: selectedPaymentMethod.value,
-    vendor_id: authUser.value.user.user_id,
+    vendor_id: authUser.value.user.uid,
     order_type: 'my_orders',
   }
 
+  console.log({
+    formData
+  })
   try {
     loaderStore.showLoader()
 
