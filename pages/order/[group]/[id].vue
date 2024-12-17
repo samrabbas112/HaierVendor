@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { orderStatusCodes } from '../../../libs/order/order-status'
+import { orderCodeStatus, orderStatusCodes } from '../../../libs/order/order-status'
 
 const orderData = ref([])
 const isConfirmDialogVisible = ref(false)
@@ -29,6 +29,9 @@ const route = useRoute()
 const loaderStore = useLoaderStore()
 const snackbarStore = useSnackbarStore()
 const apiRequestObj = useApi()
+const authCookie = useCookie('auth')
+
+const authUser = authCookie?.value?.user
 
 const deliveryRefusedReasons = [
   'Customer has not answered the phone call',
@@ -299,50 +302,50 @@ const resolveStatus = (status: string) => {
         </div>
       </div>
       <div class="d-flex gap-x-2">
-        <VBtn
-          v-if="orderData?.status === 'Exclusive' || orderData?.status === 'Mutual'"
-          variant="tonal"
-          color="primary"
-          @click="
-            handleClick(
-              orderStatusCodes.isPicked,
-              'Do you confirm you want to pick up the order?',
-            )
-          "
-        >
-          Pick
-        </VBtn>
+        <div v-if="authUser.user_type == 'vendor'">
+          <VBtn
+            v-if="orderData?.status === orderStatusCodes.isExclusive || orderData?.status === orderStatusCodes.isPublic"
+            variant="tonal"
+            color="primary"
+            @click="
+              handleClick(
+                orderStatusCodes.isPicked,
+                'Do you confirm you want to pick up the order?',
+              )
+            "
+          >
+            Pick
+          </VBtn>
 
+          <VBtn
+            v-if="orderData?.status === orderStatusCodes.isExclusive"
+            variant="tonal"
+            color="error"
+            @click="
+              handleClick(
+                orderStatusCodes.isPublic,
+                'Do you confirm you want to move the order to public?',
+              )
+            "
+          >
+            Move to Public
+          </VBtn>
+          <VBtn
+            v-if="orderData?.status === orderStatusCodes.isPicked"
+            variant="tonal"
+            color="warning"
+            @click="
+              handleClick(
+                orderStatusCodes.isRejected,
+                'Do you confirm you want to Reject Order?',
+              )
+            "
+          >
+            Reject Order
+          </VBtn>
+        </div>
         <VBtn
-          v-if="orderData?.status === 'Exclusive'"
-          variant="tonal"
-          color="error"
-          @click="
-            handleClick(
-              orderStatusCodes.isPublic,
-              'Do you confirm you want to move the order to public?',
-            )
-          "
-        >
-          Move to Public
-        </VBtn>
-
-        <VBtn
-          v-if="orderData?.status === 'Picked'"
-          variant="tonal"
-          color="warning"
-          @click="
-            handleClick(
-              orderStatusCodes.isRejected,
-              'Do you confirm you want to Reject Order?',
-            )
-          "
-        >
-          Reject Order
-        </VBtn>
-
-        <VBtn
-          v-if="orderData?.status === 'Picked' || orderData?.status === 'Haier Operation'"
+          v-if="orderData?.status === orderStatusCodes.isPicked"
           variant="tonal"
           color="success"
           @click="
@@ -354,6 +357,19 @@ const resolveStatus = (status: string) => {
         >
           Deliver Now
         </VBtn>
+        <VBtn
+          v-if="orderData?.status === orderStatusCodes.isHaier"
+          variant="tonal"
+          color="success"
+          @click="
+            handleClick(
+              orderStatusCodes.isReadyToShip,
+              'Do you confirm that the order is ready to ship now?',
+            )
+          "
+        >
+          Ready To Ship
+        </VBtn>
 
         <VBtn
           v-if="orderData?.status === 'out for delivery'"
@@ -361,7 +377,7 @@ const resolveStatus = (status: string) => {
           color="primary"
           @click="
             handleClick(
-              orderStatusCodes.isDelivered,
+              orderStatusCodes.isClosed,
               'Do you confirm you Delivered the Order?',
             )
           "

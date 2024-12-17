@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { orderStatusCodes } from '@/libs/order/order-status';
+
 const apiRequestObj = useApi()
 const snackbarStore = useSnackbarStore()
 const loaderStore = useLoaderStore()
@@ -28,15 +30,11 @@ const headers = [
   { title: 'Action', key: 'actions', sortable: false },
 ]
 
-const paymentMethods = [
-  { title: 'COD', value: 'COD' },
-]
-
 const orderStatus = [
-  { title: 'Picked', value: 'picked' },
-  { title: 'Out for delivery', value: 'out_for_delivery' },
-  { title: 'Delivery Refused', value: 'delivery_refused' },
-  { title: 'Closed', value: 'closed' },
+  { title: 'Picked', value: orderStatusCodes.isPicked },
+  { title: 'Out for delivery', value: orderStatusCodes.isOutForDelivery },
+  { title: 'Delivery Refused', value: orderStatusCodes.isDeliveryRefused },
+  { title: 'Closed', value: orderStatusCodes.isClosed },
 ]
 
 const transformData = apiResponse => {
@@ -52,7 +50,6 @@ const transformData = apiResponse => {
       payment: Number.parseFloat(item.paymentAmount) || 0,
       status: item.pick_status || 'Unknown',
       method: item.payment_method || 'COD', // Payment method
-      // date: new Date(item.created_at).toLocaleString("en-US", dateTimeOptions),
       date: item.created_at,
       time: item.pick_before,
     }
@@ -152,18 +149,6 @@ onMounted(() => {
             clear-icon="tabler-x"
           />
         </VCol>
-        <VCol
-          cols="12"
-          sm="3"
-        >
-          <AppSelect
-            v-model="selectedPaymentMethod"
-            placeholder="Select Payment Method"
-            :items="paymentMethods"
-            clearable
-            clear-icon="tabler-x"
-          />
-        </VCol>
 
         <VCol
           cols="12"
@@ -177,7 +162,7 @@ onMounted(() => {
               @click="() => {
                 searchQuery = '';
                 selectedOrderStatus = null;
-                selectedPatmentMethod = null
+                selectedPaymentMethod = null
                 makeSearch(1)
               }"
             >

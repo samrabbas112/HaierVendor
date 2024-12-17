@@ -15,3 +15,38 @@ export const orderStatusCodes = {
   isIndirect: '16',
   isCancelled: '20',
 }
+export const orderCodeStatus = {
+  1: { text: 'Exclusive', color: 'info' },
+  2: { text: 'mutual', color: 'info' },
+  3: { text: 'Rejected', color: 'error' },
+  5: { text: 'Ready To Ship', color: 'primary' },
+  6: { text: 'Shipped', color: 'info' },
+  7: { text: 'Out For Delivery', color: 'warning' },
+  8: { text: 'Delivered', color: 'success' },
+  9: { text: 'Delivery Time out', color: 'error' },
+  10: { text: 'Delivery Refused', color: 'error' },
+  12: { text: 'Picked', color: 'primary' },
+  17: { text: 'Haier Operations', color: 'warning' },
+  19: { text: 'Closed', color: 'success' },
+  15: { text: 'Direct', color: 'info' },
+  16: { text: 'In Direct', color: 'primary' },
+  20: { text: 'Cancelled', color: 'error' },
+}
+
+// export const orderCodeStatus = {
+//   1: { text: 'Exclusive', color: 'info' },
+//   2: { text: 'mutual', color: 'info' },
+//   3: 'Rejected',
+//   5: 'Ready To Ship',
+//   6: 'Shipped',
+//   7: 'Out For Delivery',
+//   8: 'Delivered',
+//   9: 'Delivery Time out',
+//   10: 'Delivery Refused',
+//   12: 'Picked',
+//   17: 'Haier Operations',
+//   19: 'Closed',
+//   15: 'Direct',
+//   16: 'In Direct',
+//   20: 'Cancelled',
+// }
