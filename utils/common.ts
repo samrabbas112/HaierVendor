@@ -1,3 +1,5 @@
+import { orderCodeStatus } from "@/libs/order/order-status";
+
 export const dateTimeOptions = {
   weekday: "short", // 'Sun'
   year: "numeric", // '2024'
@@ -8,3 +10,7 @@ export const dateTimeOptions = {
   second: "2-digit", // '27'
   hour12: true, // Use AM/PM format
 };
+
+export const resolveOrderStatus = (status: string) => {
+  return orderCodeStatus[status] || { text: status, color: 'primary' }
+}

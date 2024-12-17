@@ -45,7 +45,6 @@ const transformData = apiResponse => {
       payment: Number.parseFloat(item.paymentAmount) || 0,
       status: item.pick_status || 'Unknown',
       method: item.payment_method || 'COD', // Payment method
-      // date: new Date(item.created_at).toLocaleString("en-US", dateTimeOptions),
       date: item.created_at,
       time: item.pick_before,
     }
