@@ -2,6 +2,9 @@
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import type { Notification } from "@layouts/types";
 
+const apiRequestObj = useApi();
+const snackBar = useSnackbarStore();
+
 interface Props {
   notifications: Notification[];
   badgeProps?: object;
@@ -26,10 +29,7 @@ const isAllMarkRead = computed(() => {
 });
 
 const markAllReadOrUnread = () => {
-  const allNotificationsIds = props.notifications.map((item) => item.id);
-
-  if (!isAllMarkRead.value) emit("unread", allNotificationsIds);
-  else emit("read", allNotificationsIds);
+  emit('remove',1)
 };
 
 const totalUnseenNotifications = computed(() => {
@@ -40,17 +40,24 @@ const toggleReadUnread = (isSeen: boolean, Id: number) => {
   if (isSeen) emit("unread", [Id]);
   else emit("read", [Id]);
 };
+const markAsRead = () => {
+  emit("read", [1]);
+}
+
 </script>
 
 <template>
-  <IconBtn id="notification-btn">
+  <IconBtn id="notification-btn" class="notificationBadge">
     <VBadge
       v-bind="props.badgeProps"
+      @click="markAsRead"
       :model-value="props.notifications.some((n) => !n.isSeen)"
       color="error"
-      dot
+      :content="totalUnseenNotifications"
       offset-x="2"
       offset-y="3"
+      style="bottom: calc(100% - 10px);
+      left: calc(100% - 14px);"
     >
       <VIcon icon="tabler-bell" />
     </VBadge>
@@ -68,14 +75,6 @@ const toggleReadUnread = (isSeen: boolean, Id: number) => {
           <VCardTitle class="text-h6"> Notifications </VCardTitle>
 
           <template #append>
-            <VChip
-              v-show="props.notifications.some((n) => !n.isSeen)"
-              size="small"
-              color="primary"
-              class="me-2"
-            >
-              {{ totalUnseenNotifications }} New
-            </VChip>
             <IconBtn
               v-show="props.notifications.length"
               size="34"
@@ -84,11 +83,11 @@ const toggleReadUnread = (isSeen: boolean, Id: number) => {
               <VIcon
                 size="20"
                 color="high-emphasis"
-                :icon="!isAllMarkRead ? 'tabler-mail' : 'tabler-mail-opened'"
+                icon="tabler-x"
               />
 
               <VTooltip activator="parent" location="start">
-                {{ !isAllMarkRead ? "Mark all as unread" : "Mark all as read" }}
+                Clear Notifications
               </VTooltip>
             </IconBtn>
           </template>
@@ -117,20 +116,20 @@ const toggleReadUnread = (isSeen: boolean, Id: number) => {
                 <!-- Slot: Prepend -->
                 <!-- Handles Avatar: Image, Icon, Text -->
                 <div class="d-flex align-start gap-3">
-                  <VAvatar
-                    :color="
-                      notification.color && !notification.img
-                        ? notification.color
-                        : undefined
-                    "
-                    :variant="notification.img ? undefined : 'tonal'"
-                  >
-                    <span v-if="notification.text">{{
-                      avatarText(notification.text)
-                    }}</span>
-                    <VImg v-if="notification.img" :src="notification.img" />
-                    <VIcon v-if="notification.icon" :icon="notification.icon" />
-                  </VAvatar>
+<!--                  <VAvatar-->
+<!--                    :color="-->
+<!--                      notification.color && !notification.img-->
+<!--                        ? notification.color-->
+<!--                        : undefined-->
+<!--                    "-->
+<!--                    :variant="notification.img ? undefined : 'tonal'"-->
+<!--                  >-->
+<!--                    <span v-if="notification.text">{{-->
+<!--                      avatarText(notification.text)-->
+<!--                    }}</span>-->
+<!--                    <VImg v-if="notification.img" :src="notification.img" />-->
+<!--                    <VIcon v-if="notification.icon" :icon="notification.icon" />-->
+<!--                  </VAvatar>-->
 
                   <div>
                     <p class="text-sm font-weight-medium mb-1">
@@ -169,12 +168,12 @@ const toggleReadUnread = (isSeen: boolean, Id: number) => {
                       "
                     />
 
-                    <VIcon
-                      size="20"
-                      icon="tabler-x"
-                      class="visible-in-hover"
-                      @click="$emit('remove', notification.id)"
-                    />
+<!--                    <VIcon-->
+<!--                      size="20"-->
+<!--                      icon="tabler-x"-->
+<!--                      class="visible-in-hover"-->
+<!--                      @click="$emit('remove', notification.id)"-->
+<!--                    />-->
                   </div>
                 </div>
               </VListItem>
@@ -236,4 +235,18 @@ const toggleReadUnread = (isSeen: boolean, Id: number) => {
     block-size: 18px;
   }
 }
+.notificationBadge {
+  .v-badge {
+    .v-badge__wrapper {
+      .v-badge__badge {
+        height: 1.2rem;
+        width: auto;
+        font-size: 12px;
+        bottom: calc(100% - 10px) !important;
+        left: calc(100% - 16px) !important;
+      }
+    }
+  }
+}
+
 </style>
