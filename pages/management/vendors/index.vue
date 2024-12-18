@@ -14,6 +14,7 @@ const router = useRouter();
 const loaderStore = useLoaderStore()
 const isConfirmDialogVisible = ref(false)
 const selectedVendorId = ref()
+const selectedVendorStatus = ref()
 
 
 
@@ -42,6 +43,12 @@ const headers = [
   { title: 'Status', key: 'status' },
   { title: 'Actions', key: 'actions', sortable: false },
 ];
+
+const vendorStatus = [
+  { title: 'Active', value: 1 },
+  { title: 'inActive', value: 0 },
+
+]
 
 // Navigate to Add New Vendor page
 const goToAddVendorPage = () => {
@@ -77,6 +84,7 @@ const fetchVendors = async () => {
         page: page.value,
         itemsPerPage: itemsPerPage.value,
         query: searchQuery.value,
+        status: selectedVendorStatus.value,
       }
     );
 
@@ -169,6 +177,15 @@ onMounted(fetchVendors);
             <AppTextField v-model="searchQuery" placeholder="Search by name" />
           </VCol>
           <VCol cols="12" sm="3">
+            <AppSelect
+            v-model="selectedVendorStatus"
+            placeholder="Select Vendor Status"
+            :items="vendorStatus"
+            clearable
+            clear-icon="tabler-x"
+          />
+          </VCol>
+          <VCol cols="12" sm="3">
             <div class="d-flex">
               <VBtn class="me-2" variant="outlined" color="secondary" @click="() => {
                 searchQuery = '';
@@ -192,7 +209,7 @@ onMounted(fetchVendors);
     <!-- Vendors Table -->
     <VDataTableServer v-model:items-per-page="itemsPerPage" v-model:model-value="selectedRows" v-model:page="page"
       :items="vendorsData.vendors" item-value="id" :items-length="vendorsData.total" :headers="headers"
-      class="text-no-wrap" @update:options="updateOptions">
+      class="text-no-wrap" @update:options="">
       <template #item.id="{ index }">
         <NuxtLink>
           <!-- {{ item.id }} -->
@@ -225,7 +242,7 @@ onMounted(fetchVendors);
       <template #item.status="{ item }">
         <VSwitch
          v-model="item.status"
-         :label="capitalizedLabel(item.status?'Enabled' : 'Disabled')"
+         :label="capitalizedLabel(item.status?'Active' : 'inActive')"
          @change="handleStatusToggle(item)"
         />
       </template>
