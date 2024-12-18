@@ -60,6 +60,8 @@ export const useAuthStore = defineStore('auth', () => {
     return token.value !== null
   }
 
+  initialize();
+
   // Return state and functions that should be accessible
   return { user, token, initialize, login, logout, isAuthenticated }
 })

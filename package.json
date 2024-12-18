@@ -52,6 +52,8 @@
     "pinia": "2.2.0",
     "prettier": "^3.3.3",
     "prismjs": "1.29.0",
+    "qrcode": "^1.5.4",
+    "qrcode.vue": "^3.6.0",
     "query-string": "^9.1.1",
     "roboto-fontface": "0.10.0",
     "shepherd.js": "13.0.1",
