@@ -3,6 +3,12 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 import type { VForm } from 'vuetify/components/VForm'
 import { useSnackbarStore } from '@/stores/snackbar'
+import {
+  requiredValidator,
+  minLengthValidator,
+  numberValidator,
+  phoneValidator
+} from "@/utils/validators";
 
 
 interface Emit {
@@ -26,8 +32,6 @@ const phoneNumber = ref('');
 const address = ref('');
 const province = ref('');
 const city = ref('');
-const code = ref('');
-const customerNote = ref('');
 const apiRequestObj = useApi();
 const isLoading = ref(false)
 watch(customer, (newCustomer) => {
@@ -35,10 +39,8 @@ watch(customer, (newCustomer) => {
     name.value = newCustomer.name || '';
     phoneNumber.value = newCustomer.phone_number || '';
     address.value = newCustomer.address || '';
-    customerNote.value = newCustomer.customer_note || '';
     province.value = newCustomer.province || '';
     city.value = newCustomer.city || '';
-    code.value = newCustomer.code || '';
   }
 }, { immediate: true, deep: true });
 
@@ -50,13 +52,7 @@ const closeNavigationDrawer = () => {
     refForm.value?.resetValidation();
   });
 };
-// Validation Rules
-const requiredValidator = (value: string) => !!value || 'This field is required';
 
-const phoneValidator = (value: string) => {
-  const phoneRegex = /^[0-9]{11}$/;
-  return phoneRegex.test(value) || 'Invalid phone number. Must be be valid phone number.';
-};
 
 const onSubmit = async () => {
   refForm.value?.validate().then(async ({ valid }) => {
@@ -64,9 +60,7 @@ const onSubmit = async () => {
       const formData = {
         name: name.value,
         phone_number: phoneNumber.value,
-        customer_note: customerNote.value,
         city: city.value,
-        code: code.value,
         province: province.value,
         address: 'New Address',
       };
@@ -155,7 +149,7 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
               <VCol cols="12">
                 <AppTextField
                   v-model="name"
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidator,minLengthValidator(3)]"
                   label="Name"
                   placeholder="Enter name"
                 />
@@ -166,7 +160,7 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                 <AppTextField
                   v-model="phoneNumber"
                   type="tel"
-                  :rules="[requiredValidator,phoneValidator]"
+                  :rules="[requiredValidator,phoneValidator, minLengthValidator(10), numberValidator]"
                   label="Phone Number"
                   placeholder="+1234567890"
                 />
@@ -176,7 +170,7 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
               <VCol cols="12">
                 <AppTextField
                   v-model="address"
-                  :rules="[requiredValidator]"
+                  :rules="[requiredValidator,minLengthValidator(10)]"
                   label="Address"
                   placeholder="Enter address"
                 />
@@ -199,27 +193,6 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                   :rules="[requiredValidator]"
                   label="City"
                   placeholder="Enter city"
-                />
-              </VCol>
-
-              <!-- 👉 Code -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="code"
-                  type="text"
-                  :rules="[requiredValidator]"
-                  label="Code"
-                  placeholder="Enter code"
-                />
-              </VCol>
-
-              <!-- 👉 Customer Note -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="customerNote"
-                  label="Customer Note"
-                  placeholder="Enter note"
-                  multiline
                 />
               </VCol>
 

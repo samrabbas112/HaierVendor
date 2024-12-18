@@ -4,7 +4,15 @@ import { useRoute, useRouter } from 'vue-router'
 import type { VForm } from 'vuetify/components/VForm'
 import { useSnackbarStore } from '@/stores/snackbar'
 import { useLoaderStore } from '@/stores/loader'
-
+import {
+  requiredValidator,
+  minLengthValidator,
+  alphabetValidator,
+  numberValidator,
+  exactLengthValidator,
+  emailValidator,
+  phoneValidator
+} from "@/utils/validators";
 const loaderStore = useLoaderStore()
 const router = useRouter()
 const snackBarStore = useSnackbarStore()
@@ -32,22 +40,6 @@ const form = ref({
   city: '',
   status: 'active',
 })
-
-// Validation Rules
-const requiredValidator = (value: string): boolean | string => {
-  console.log(value)
-
-  return !!value || 'This field is required'
-}
-
-const emailValidator = (value: string) =>
-  /^\S[^\s@]*@\S[^\s.]*\.\S+$/.test(value) || 'Invalid email address'
-
-const phoneValidator = (value: string) => {
-  const phoneRegex = /^\d{11}$/
-
-  return phoneRegex.test(value) || 'Invalid phone number. Must be be valid phone number.'
-}
 
 // Dropdown Options
 const provinces = ['Sindh', 'Punjab', 'KPK', 'Balochistan', 'Islamabad']
@@ -141,7 +133,7 @@ onMounted(() => {
             >
               <AppTextField
                 v-model="form.name"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, minLengthValidator(3),alphabetValidator]"
                 label="Name"
                 :readonly="isDetailsMode"
               />
@@ -167,7 +159,7 @@ onMounted(() => {
             >
               <AppTextField
                 v-model="form.telephone"
-                :rules="[requiredValidator, phoneValidator]"
+                :rules="[requiredValidator,phoneValidator]"
                 label="Telephone"
                 :readonly="isDetailsMode"
               />
@@ -180,7 +172,7 @@ onMounted(() => {
             >
               <AppTextField
                 v-model="form.cnic"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, exactLengthValidator(13),numberValidator]"
                 label="CNIC"
                 :readonly="isDetailsMode"
               />
@@ -193,7 +185,7 @@ onMounted(() => {
             >
               <AppTextField
                 v-model="form.address"
-                :rules="[requiredValidator]"
+                :rules="[requiredValidator, minLengthValidator(10)]"
                 label="Address"
                 :readonly="isDetailsMode"
               />
@@ -289,7 +281,7 @@ onMounted(() => {
                 :is-loading="isLoading"
               />
               <VBtn
-                class="ml-2"
+                class="ml-1"
                 variant="tonal"
                 color="error"
                 @click="router.push('/management/vendors')"

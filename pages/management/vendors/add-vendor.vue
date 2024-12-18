@@ -3,7 +3,19 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSnackbarStore } from '@/stores/snackbar';
 import type { VForm } from 'vuetify/components/VForm';
-import { useLoaderStore } from '@/stores/loader'
+import { useLoaderStore } from '@/stores/loader';
+import { inject, reactive } from "vue";
+
+import {
+  requiredValidator,
+  minLengthValidator,
+  alphabetValidator,
+  numberValidator,
+  exactLengthValidator,
+  emailValidator,
+  phoneValidator
+} from "@/utils/validators";
+
 
 const loaderStore = useLoaderStore()
 const router = useRouter();
@@ -28,14 +40,7 @@ const form = ref({
   status: 'active',
 });
 
-// Validation Rules
-const requiredValidator = (value: string) => !!value || 'This field is required';
-const emailValidator = (value: string) =>
-  /^\S+@\S+\.\S+$/.test(value) || 'Invalid email address';
-const phoneValidator = (value: string) => {
-  const phoneRegex = /^[0-9]{11}$/;
-  return phoneRegex.test(value) || 'Invalid phone number. Must be be valid phone number.';
-};
+
 
 
 // Dropdown Options
@@ -99,7 +104,8 @@ const resetForm = () => {
                     <VRow>
                         <!-- Name -->
                         <VCol cols="12" sm="6">
-                            <AppTextField v-model="form.name" :rules="[requiredValidator]" label="Name"
+                            <AppTextField v-model="form.name"   :rules="[requiredValidator, minLengthValidator(3),alphabetValidator]"
+                            label="Name"
                                 placeholder="Enter Vendor Name" maxlength="50" />
                         </VCol>
 
@@ -111,10 +117,10 @@ const resetForm = () => {
 
                         <!-- Password -->
                         <VCol cols="12" sm="6">
-                            <AppTextField v-model="form.password" :rules="[requiredValidator]" label="Password"
+                            <AppTextField v-model="form.password" :rules="[requiredValidator,minLengthValidator(8)]" label="Password"
                                 type="password" placeholder="Enter Password" />
                         </VCol>
-
+                        
                         <!-- Province -->
                         <VCol cols="12" sm="6">
                             <AppSelect v-model="form.province" :items="provinces" :rules="[requiredValidator]"
@@ -135,24 +141,24 @@ const resetForm = () => {
 
                         <!-- CNIC -->
                         <VCol cols="12" sm="6">
-                            <AppTextField v-model="form.cnic" :rules="[requiredValidator]" label="CNIC"
+                            <AppTextField v-model="form.cnic" :rules="[requiredValidator, exactLengthValidator(13),numberValidator]" label="CNIC"
                                 placeholder="Enter CNIC (e.g., 12345-1234567-1)" />
                         </VCol>
 
                         <!-- Address -->
                         <VCol cols="12" sm="6">
-                            <AppTextField v-model="form.address" :rules="[requiredValidator]" label="Address"
+                            <AppTextField v-model="form.address" :rules="[requiredValidator, minLengthValidator(10)]" label="Address"
                                 placeholder="Enter Address" maxlength="200" />
                         </VCol>
 
                         <!-- IBAN (Optional) -->
                         <VCol cols="12" sm="6">
-                            <AppTextField v-model="form.iban" label="IBAN" placeholder="Enter IBAN (Optional)" />
+                            <AppTextField v-model="form.iban" label="IBAN" placeholder="Enter IBAN (e.g., CountryCode + CheckDigits + BasicBankAccountNumber)" />
                         </VCol>
 
                         <!-- NTN (Optional) -->
                         <VCol cols="12" sm="6">
-                            <AppTextField v-model="form.ntn" label="NTN" placeholder="Enter NTN (Optional)" />
+                            <AppTextField v-model="form.ntn" label="NTN" placeholder="Enter NTN (e.g., 1234567-8)" />
                         </VCol>
 
                         <!-- Status -->
