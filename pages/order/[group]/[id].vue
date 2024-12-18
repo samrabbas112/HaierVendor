@@ -29,8 +29,7 @@ const route = useRoute()
 const loaderStore = useLoaderStore()
 const snackbarStore = useSnackbarStore()
 const apiRequestObj = useApi()
-const authStore = useAuthStore();
-
+const authStore = useAuthStore()
 const authUser = authStore.user
 
 const deliveryRefusedReasons = [
@@ -137,7 +136,7 @@ const updateStatus = async () => {
   try {
     loaderStore.showLoader()
 
-    if (selectedStatus.value == orderStatusCodes.isDelivered && !isEmpty(selectedPics.value)) {
+    if (selectedStatus.value == orderStatusCodes.isClosed && !isEmpty(selectedPics.value)) {
       const formData = new FormData()
 
       // Append selected pictures to the FormData
@@ -181,7 +180,7 @@ const updateStatus = async () => {
     )
 
     if (response?.success) {
-      orderData.value.status = response?.data?.pick_status
+      orderData.value.status = response?.data?.pick_status?.id
       snackbarStore.showSnackbar(response.message, 'primary')
     }
   }
@@ -208,7 +207,7 @@ const handleConfirm = async value => {
         : (reasons.value = rejectOrderReasons)
       isReasonDialogVisible.value = !isReasonDialogVisible.value
     }
-    else if (selectedStatus.value == orderStatusCodes.isDelivered) {
+    else if (selectedStatus.value == orderStatusCodes.isClosed) {
       isReasonDialogVisible.value = !isReasonDialogVisible.value
     }
     else {
@@ -232,9 +231,9 @@ const handleReasonDialog = async () => {
       return
     }
   }
-  if (selectedStatus.value == orderStatusCodes.isDelivered) {
-    if (isEmpty(selectedPics.value) || selectedPics.value.length > 5) {
-      snackbarStore.showSnackbar('Please add images between 1 to 5')
+  if (selectedStatus.value == orderStatusCodes.isClosed) {
+    if (isEmpty(selectedPics.value) || selectedPics.value.length > 5 || max6mbValidator(selectedPics.value)) {
+      snackbarStore.showSnackbar('Please add between 1 to 5 images, and each must not be more than 6MB.','error')
 
       return
     }
@@ -291,10 +290,10 @@ const headers = [
           {{ orderData?.date }}
         </div>
       </div>
-      <div v-if="authUser.user_type == 'vendor' && route.params.group == 'vendor' || authUser.user_type == 'haier' && route.params.group == 'haier'" class="d-flex gap-x-2">
-        <div v-if="authUser.user_type == 'vendor'">
+      <div v-if="authUser.user_type !== 'haier' && route.params.group !== 'vendor'"  class="d-flex gap-x-2">
+        <div v-if="authUser.user_type == 'vendor'" class="d-flex gap-x-2">
           <VBtn
-            v-if="orderData?.status === orderStatusCodes.isExclusive || orderData?.status === orderStatusCodes.isPublic"
+            v-if="orderData?.status == orderStatusCodes.isExclusive || orderData?.status == orderStatusCodes.isPublic"
             variant="tonal"
             color="primary"
             @click="
@@ -308,7 +307,7 @@ const headers = [
           </VBtn>
 
           <VBtn
-            v-if="orderData?.status === orderStatusCodes.isExclusive"
+            v-if="orderData?.status == orderStatusCodes.isExclusive"
             variant="tonal"
             color="error"
             @click="
@@ -321,7 +320,7 @@ const headers = [
             Move to Public
           </VBtn>
           <VBtn
-            v-if="orderData?.status === orderStatusCodes.isPicked"
+            v-if="orderData?.status == orderStatusCodes.isPicked"
             variant="tonal"
             color="warning"
             @click="
@@ -335,7 +334,7 @@ const headers = [
           </VBtn>
         </div>
         <VBtn
-          v-if="orderData?.status === orderStatusCodes.isPicked"
+          v-if="orderData?.status == orderStatusCodes.isPicked"
           variant="tonal"
           color="success"
           @click="
@@ -348,7 +347,7 @@ const headers = [
           Deliver Now
         </VBtn>
         <VBtn
-          v-if="orderData?.status === orderStatusCodes.isHaier"
+          v-if="orderData?.status == orderStatusCodes.isHaier"
           variant="tonal"
           color="success"
           @click="
@@ -582,12 +581,12 @@ const headers = [
           >
             <VCol cols="12">
               <VFileInput
-                v-if="selectedStatus == orderStatusCodes.isDelivered"
+                v-if="selectedStatus == orderStatusCodes.isClosed"
                 v-model="selectedPics"
                 show-size
                 label="POD Files:"
                 multiple
-                :rules="[maxfiveFilesRule]"
+                :rules="[maxFiveFilesValidator, max6mbValidator]"
                 @change="handleFileChange"
               />
               <AppSelect
