@@ -29,9 +29,9 @@ const route = useRoute()
 const loaderStore = useLoaderStore()
 const snackbarStore = useSnackbarStore()
 const apiRequestObj = useApi()
-const authCookie = useCookie('auth')
+const authStore = useAuthStore();
 
-const authUser = authCookie?.value?.user
+const authUser = authStore.user
 
 const deliveryRefusedReasons = [
   'Customer has not answered the phone call',
@@ -96,7 +96,7 @@ const transformData = apiResponse => {
     uid: apiResponse.uid,
     order: apiResponse.order_no,
     payment: Number.parseFloat(apiResponse.paymentAmount) || 0,
-    status: apiResponse.pick_status || 'Unknown',
+    status: apiResponse.pick_status.id || 1,
     method: apiResponse.payment_method || 'COD',
     date: apiResponse.created_at,
     time: apiResponse.pick_before,
@@ -268,16 +268,6 @@ const headers = [
   { title: 'Total', key: 'total' },
 ]
 
-const resolveStatus = (status: string) => {
-  const statusMapping = {
-    'Exclusive': { text: 'Ready to Pickup', color: 'info' },
-    'Picked': { text: 'Picked', color: 'warning' },
-    'out for delivery': { text: 'Out for delivery', color: 'primary' },
-    'Closed': { text: 'Closed', color: 'success' },
-  }
-
-  return statusMapping[status] || { text: status, color: 'primary' }
-}
 </script>
 
 <template>
@@ -291,7 +281,7 @@ const resolveStatus = (status: string) => {
           <div class="d-flex gap-x-2">
             <VChip
               v-if="orderData?.status"
-              v-bind="resolveStatus(orderData?.status)"
+              v-bind="resolveOrderStatus(orderData?.status)"
               label
               size="small"
             />
@@ -301,7 +291,7 @@ const resolveStatus = (status: string) => {
           {{ orderData?.date }}
         </div>
       </div>
-      <div class="d-flex gap-x-2">
+      <div v-if="authUser.user_type == 'vendor' && route.params.group == 'vendor' || authUser.user_type == 'haier' && route.params.group == 'haier'" class="d-flex gap-x-2">
         <div v-if="authUser.user_type == 'vendor'">
           <VBtn
             v-if="orderData?.status === orderStatusCodes.isExclusive || orderData?.status === orderStatusCodes.isPublic"
@@ -372,7 +362,7 @@ const resolveStatus = (status: string) => {
         </VBtn>
 
         <VBtn
-          v-if="orderData?.status === 'out for delivery'"
+          v-if="orderData?.status == orderStatusCodes.isOutForDelivery"
           variant="tonal"
           color="primary"
           @click="
@@ -386,7 +376,7 @@ const resolveStatus = (status: string) => {
         </VBtn>
 
         <VBtn
-          v-if="orderData?.status === 'out for delivery'"
+          v-if="orderData?.status == orderStatusCodes.isOutForDelivery"
           variant="tonal"
           color="error"
           @click="

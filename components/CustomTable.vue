@@ -21,19 +21,6 @@ const updateOptions = (options: any) => {
 }
 
 
-const resolveStatus = (status: string) => {
-  if (status === 'Exclusive')
-    return { text: 'Ready to Pickup', color: 'info' }
-  if (status === 'Picked')
-    return { text: 'Picked', color: 'warning' }
-  if (status === 'out for delivery')
-    return { text: 'Out for delivery', color: 'primary' }
-  if (status === 'Closed')
-    return { text: 'Closed', color: 'success' }
-
-  return { text: status, color: 'primary' }
-}
-
 const resolveMethod = (status: string) => {
   if (status === 'COD')
     return { text: 'COD', color: 'warning' }
@@ -138,7 +125,7 @@ const deleteData = async (id: number) => {
         <!-- Status -->
         <template #item.status="{ item }">
           <VChip
-            v-bind="resolveStatus(item.status)"
+            v-bind="resolveOrderStatus(item.status)"
             label
             size="small"
           />
