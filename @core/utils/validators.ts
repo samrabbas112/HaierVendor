@@ -132,10 +132,20 @@ export const phoneValidator = (value: unknown) => {
   return true; // Return true if validation passes
 };
 
-export const maxFiveFilesRule = (value: unknown) => {
-  console.log("test",value.length);
-  if (Array.isArray(value) && value.length > 5) {
+export const maxFiveFilesValidator = (value: unknown) => {
+ if (Array.isArray(value) && value.length > 5) {
     return "You can upload a maximum of 5 files.";
   }
+  return true;
+};
+
+export const max6mbValidator = (value: unknown) => {
+  const maxFileSize = 6 * 1024 * 1024; // 6MB in bytes
+  for (const file of value) {
+    if (file instanceof File && file.size >= maxFileSize) {
+      return `Each file size must not be greater than 6MB.`;
+    }
+  }
+
   return true;
 };
