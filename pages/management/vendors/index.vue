@@ -84,7 +84,7 @@ const fetchVendors = async () => {
         page: page.value,
         itemsPerPage: itemsPerPage.value,
         query: searchQuery.value,
-        status: selectedVendorStatus.value,
+        ...((selectedVendorStatus.value == 0 || selectedVendorStatus.value == 1) && { status: selectedVendorStatus.value }),
       }
     );
 
@@ -111,7 +111,7 @@ const handleConfirm = async (value) => {
         `haier/vendor/delete/${selectedVendorId.value}`,
         'DELETE'
       );
-      console.log('kk');
+
       if (response?.success) {
         await fetchVendors();
       } else {
