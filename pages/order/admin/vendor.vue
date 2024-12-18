@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { orderStatusCodes } from '../../../libs/order/order-status'
+
 const apiRequestObj = useApi()
 const snackbarStore = useSnackbarStore()
 const loaderStore = useLoaderStore()
@@ -34,6 +36,9 @@ const headers = [
 
 const paymentMethods = [
   { title: 'COD', value: 'COD' },
+  { title: 'Card', value: 'Card' },
+  { title: 'EasyPaisa', value: 'EasyPaisa' },
+  { title: 'jazzCash', value: 'jazzCash' },
 ]
 
 const orderTypes = [
@@ -42,10 +47,15 @@ const orderTypes = [
 ]
 
 const orderStatus = [
-  { title: 'Picked', value: 'picked' },
-  { title: 'Out for delivery', value: 'out_for_delivery' },
-  { title: 'Delivery Refused', value: 'delivery_refused' },
-  { title: 'Closed', value: 'closed' },
+  { title: 'Picked', value: orderStatusCodes.isPicked },
+  { title: 'Out for delivery', value: orderStatusCodes.isOutForDelivery },
+  { title: 'Delivery Refused', value: orderStatusCodes.isDeliveryRefused },
+  { title: 'Closed', value: orderStatusCodes.isClosed },
+  { title: 'Ready to ship', value: orderStatusCodes.isReadyToShip },
+  { title: 'haier operations', value: orderStatusCodes.isHaier },
+  { title: 'Delivery timeout', value: orderStatusCodes.isDeliveryTimeout },
+  { title: 'Rejected', value: orderStatusCodes.isRejected },
+  { title: 'Cancelled', value: orderStatusCodes.isCancelled },
 ]
 
 const transformData = apiResponse => {
@@ -61,7 +71,6 @@ const transformData = apiResponse => {
       payment: Number.parseFloat(item.paymentAmount) || 0,
       status: item.pick_status || 'Unknown',
       method: item.payment_method || 'COD', // Payment method
-      // date: new Date(item.created_at).toLocaleString("en-US", dateTimeOptions),
       date: item.created_at,
       time: item.pick_before,
       vendor_name: item.vendor_name,

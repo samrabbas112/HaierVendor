@@ -20,16 +20,6 @@ const updateOptions = (options: any) => {
   orderBy.value = options.sortBy[0]?.order
 }
 
-const resolvePaymentStatus = (status: number) => {
-  if (status === 1)
-    return { text: 'Paid', color: 'success' }
-  if (status === 2)
-    return { text: 'Pending', color: 'warning' }
-  if (status === 3)
-    return { text: 'Cancelled', color: 'secondary' }
-  if (status === 4)
-    return { text: 'Failed', color: 'error' }
-}
 
 const resolveStatus = (status: string) => {
   if (status === 'Exclusive')
