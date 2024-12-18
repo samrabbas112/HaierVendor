@@ -40,9 +40,14 @@ const address = ref('')
 const province = ref('')
 const city = ref('')
 const code = ref('')
+const provinces = ref([]);
+const cities = ref([]);
+const selectedProvinceId = ref(null);
+const selectedCityId = ref(null);
+
 
 // Watch the customer object
-watch(customer, newCustomer => {
+watch([customer, selectedProvinceId], ([newCustomer, newProvinceId]) => {
   if (newCustomer) {
     name.value = newCustomer.name || ''
     phoneNumber.value = newCustomer.phone_number || ''
@@ -50,6 +55,11 @@ watch(customer, newCustomer => {
     province.value = newCustomer.province || ''
     city.value = newCustomer.city || ''
     code.value = newCustomer.code || ''
+  }
+  console.log('new province',newProvinceId);
+  // Fetch cities when a new province is selected
+  if (newProvinceId) {
+    fetchCities(newProvinceId);
   }
 }, { immediate: true, deep: true })
 
@@ -71,6 +81,44 @@ const getCode = async () => {
     isLoading.value = false
   }
 }
+
+const fetchProvinces = async () => {
+  try {
+    const response = await apiRequestObj.makeRequest('common/provinces', 'get');
+    console.log('samra');
+    console.log(response.data);
+    // provinces.value = response.data || [];
+    provinces.value = response.data.map(province => ({
+      value: province.id,
+      title: province.name,
+    }));
+
+    if (provinces.value.length > 0) {
+      selectedProvinceId.value = provinces.value[0]?.id; // Set default province
+      fetchCities(selectedProvinceId.value); // Fetch cities for the default province
+    }
+  } catch (error) {
+    snackBarStore.showSnackbar('Failed to load provinces', 'error');
+  } 
+};
+
+const fetchCities = async (provinceId: number) => {
+  try {
+    const response = await apiRequestObj.makeRequest(`common/cities/${provinceId}`, 'get');
+    cities.value = response.data.map(city => ({
+      value: city.id,
+      title: city.name,
+    }));
+  } catch (error) {
+    snackBarStore.showSnackbar('Failed to load cities', 'error');
+  } 
+};
+
+// Fetch provinces on component mount
+onMounted(() => {
+  fetchProvinces();
+});
+
 
 // API to verify OTP
 const verifyCode = async () => {
@@ -168,12 +216,30 @@ const onSubmit = async () => {
 
               <!-- Province -->
               <VCol cols="12">
-                <AppTextField v-model="province" :rules="[requiredValidator]" label="Province" placeholder="Enter province" />
+                <VSelect
+                  v-model="selectedProvinceId"
+                  :items="provinces"
+                  item-text="title"
+                  item-value="value"
+                  label="Province"
+                  placeholder="Select Province"
+                  :rules="[requiredValidator]"
+                  
+                />
               </VCol>
 
               <!-- City -->
               <VCol cols="12">
-                <AppTextField v-model="city" :rules="[requiredValidator]" label="City" placeholder="Enter city" />
+                <VSelect
+                  v-model="selectedCityId"
+                  :items="cities"
+                  item-text="title"
+                  item-value="value"
+                  label="City"
+                  placeholder="Select City"
+                  :rules="[requiredValidator]"
+                  :disabled="!selectedProvinceId"
+                />
               </VCol>
 
               <!-- Phone Number -->

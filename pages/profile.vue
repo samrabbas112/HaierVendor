@@ -8,7 +8,7 @@ const snackbarStore = useSnackbarStore();
 const authStore = useAuthStore();
 import { useRuntimeConfig } from '#app';
 const userId = authStore.user?.uid || 'default';
-const qrCodeUrl = `management/customers/${userId}`;
+const qrCodeUrl = `/management/customers/${userId}`;
 
 const router = useRouter()
 const requiredValidator = (value: string) => !!value || 'This field is required';
