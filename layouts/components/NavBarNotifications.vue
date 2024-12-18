@@ -40,7 +40,7 @@ const handleNotificationClick = (notification: Notification) => {
       }
       else{
         console.log('response',response);
-        router.push(`/order/notificationy/${response.data.uid}`);
+        router.push(`/order/notification/${response.data.uid}`);
       }
     })
 

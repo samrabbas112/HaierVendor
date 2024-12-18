@@ -12,7 +12,8 @@ const props = defineProps<{
 const page = ref(1);
 const sortBy = ref();
 const orderBy = ref();
-
+const authStore = useAuthStore();
+const path  = authStore.user?.user_type === 'vendor' ? 'order/my' : 'order/admin/haier';
 
 // const vehiclesData = {
 //   totalVehicles: 25,
@@ -99,7 +100,9 @@ const formattedDate = unFormattedDate => {
 <template>
   <VCard>
     <VCardItem title="My Orders">
-      <template #append> </template>
+      <template #append>
+      <nuxt-link :to="path">  View All</nuxt-link>
+      </template>
     </VCardItem>
     <VDivider />
     <VDataTableServer

@@ -36,7 +36,7 @@ const resolveUserStatusVariant = (stat: string) => {
 // Headers for the data table
 const headers = [
   { title: 'SN', key: 'id' },
-  { title: 'Vendor ID', key: 'uid' },
+  { title: 'Vendor ID', key: 'vendor_no' },
   { title: 'Vendor', key: 'vendor' },
   { title: 'Contact', key: 'contact' },
   { title: 'Create Time', key: 'created_at' },
@@ -219,13 +219,11 @@ onMounted(fetchVendors);
       <template #item.vendor="{ item }">
         <small>{{ item.city}}</small><br>
         <small>{{ item.address}}</small>
-  
       </template>
 
       <template #item.contact="{ item }">
         <small>{{ item.telephone}}</small><br>
         <small>{{ item.email}}</small>
-  
       </template>
       
       <template #item.created_at="{ item }">

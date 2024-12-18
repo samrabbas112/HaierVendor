@@ -162,7 +162,10 @@ const getOrderSummery = async () => {
       orderSummaryLabels.length = 0
 
       Object.keys(res?.data).forEach(key => {
-        orderSummaryLabels.push(replaceUnderscoreWithSpace(key))
+        console.log(key,'keyin');
+        console.log(res?.data?.[key],'res?.data?.[key]');
+        let label = replaceUnderscoreWithSpace(key) + ' ' + res?.data?.[key] || 0
+        orderSummaryLabels.push(label)
         orderSummary.push(res?.data?.[key] || 0)
         // orderSummary.push(0)
       })
@@ -286,12 +289,35 @@ const fetchData = async () => {
 onMounted(() => {
   fetchData()
 })
+
+const exportData = () => {
+  const response = api.makeRequest('common/dashboard/export', 'get', { vendor_id: userId })
+  console.log({response});
+}
 </script>
 
 <template>
   <VRow class="match-height">
     <VCol cols="12">
-      <LogisticsCardStatistics :stats="ordersData" />
+      <VCard>
+        <VCardItem title="Dashboard">
+          <template #append>
+            <button class="btn btn-primary" @click="exportData">Export </button>
+            <div class="date-picker-wrapper" style="width: 240px;">
+              <AppDateTimePicker @update:modelValue="(val, isCalendarOpen) => handleDateChange(val,isCalendarOpen.value, 'top-item-sold')"
+                @click:clear="handleNext"
+                model-value="" prepend-inner-icon="tabler-calendar"
+                placeholder="Select Date" :config="$vuetify.display.smAndDown
+                  ? { position: 'auto center' }
+                  : { position: 'auto right' }
+                  " />
+            </div>
+          </template>
+        </VCardItem>
+      </VCard>
+    </VCol>
+    <VCol cols="12">
+      <LogisticsCardStatistics  :stats="ordersData" />
     </VCol>
 
     <VCol cols="12" md="6">
