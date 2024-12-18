@@ -59,7 +59,7 @@ const transformData = apiResponse => {
       customer: customer.name || 'N/A',
       mobile: customer.mobile || '03XXXXXXXXXX',
       payment: Number.parseFloat(item.paymentAmount) || 0,
-      status: item.pick_status || 'Unknown',
+      status: item.pick_status.id || 1,
       method: item.payment_method || 'COD', // Payment method
       date: item.created_at,
       time: item.pick_before,

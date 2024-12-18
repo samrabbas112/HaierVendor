@@ -1,70 +1,55 @@
 <script lang="ts" setup>
 import type { Notification } from '@layouts/types'
 import { useNotificationStore } from '@/stores/notification'
-
+const apiRequestObj = useApi();
+const snackBar = useSnackbarStore();
 const notificationStore = useNotificationStore()
-
-const notifications = ref<Notification[]>([])
-
-const handleServiceWorkerMessage = (e: MessageEvent) => {
-  // if (e.data && e.data.type === 'NEW_NOTIFICATION') {
-  //   const payload = e.data.payload
-  //
-  //   console.log('Received notification from service worker: ', payload)
-  //
-  //   const newNotification: Notification = {
-  //     id: Date.now(), // Generate unique ID
-  //     title: payload.notification.title || 'No Title',
-  //     subtitle: payload.notification.body || 'No Body',
-  //     time: new Date().toLocaleTimeString(),
-  //     isSeen: false,
-  //     img: '/firebase-logo.png', // Use the notification icon if available
-  //   }
-  //
-  //   notifications.value.push(newNotification)
-  // }
-}
-
-// Listen for messages from the service worker
-onMounted(() => {
-  notifications.value = notificationStore.notifications
-})
+const notificationsObj = computed(() => notificationStore.notifications)
+const router = useRouter();
 
 
 const removeNotification = (notificationId: number) => {
-  notifications.value.forEach((item, index) => {
-    if (notificationId === item.id)
-      notifications.value.splice(index, 1)
-  })
+  apiRequestObj.makeRequest("common/notifications/delete-all", "delete").then((response) => {
+    if(response.success === true){
+      snackBar.showSnackbar("Successfully cleared all notifications" );
+      notificationStore.saveNotification([]);
+    }else{
+      snackBar.showSnackbar("Failed to mark all as read", "error");
+    }
+  });
 }
 
 const markRead = (notificationId: number[]) => {
-  notifications.value.forEach(item => {
-    notificationId.forEach(id => {
-      if (id === item.id)
-        item.isSeen = true
-    })
-  })
+  apiRequestObj.makeRequest(`common/notifications/mark-read`, 'get').then(response => {
+    if(response.success === true){
+      notificationStore.saveNotification([]);
+    }
+  });
 }
 
+
 const markUnRead = (notificationId: number[]) => {
-  notifications.value.forEach(item => {
-    notificationId.forEach(id => {
-      if (id === item.id)
-        item.isSeen = false
-    })
-  })
+
 }
 
 const handleNotificationClick = (notification: Notification) => {
-  if (!notification.isSeen)
-    markRead([notification.id])
+  apiRequestObj.makeRequest(`common/dashboard/verify/order/${notification.link}`, 'get')
+    .then(response => {
+      if(response.code == 404){
+        snackBar.showSnackbar('This order is not available to view', 'error')
+      }
+      else{
+        console.log('response',response);
+        router.push(`/order/notification/${response.data.uid}`);
+      }
+    })
+
 }
 </script>
 
 <template>
   <Notifications
-    :notifications="notifications"
+    :notifications="notificationsObj"
     @remove="removeNotification"
     @read="markRead"
     @unread="markUnRead"

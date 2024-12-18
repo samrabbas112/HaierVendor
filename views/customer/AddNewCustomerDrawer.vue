@@ -129,7 +129,7 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
   >
     <!-- 👉 Title -->
     <AppDrawerHeaderSection
-      title="Add New Customer"
+      :title="props.customer?.id ? 'Edit Customer' : 'Add New Customer'"
       @cancel="closeNavigationDrawer"
     />
 

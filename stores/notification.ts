@@ -5,28 +5,40 @@ import { ref } from 'vue'
 export const useNotificationStore = defineStore('notification', () => {
   const cookieKey = 'notifications'
   const notificationCookie = useCookie(cookieKey)
+  const apiRequestObj = useApi();
+
+  onMounted(async () => {
+    const notificationObj = await apiRequestObj.makeRequest(
+        'common/notifications',
+        'get',
+    )
+    notifications.value = notificationObj.data.notification
+  })
 
   // Reactive notifications array
   const notifications = ref([])
 
   // Load initial notifications from cookies
-  const getNotification = () => {
-    const cookieValue = notificationCookie.value
-    // if (cookieValue)
-    //   notifications.value = JSON.parse(cookieValue)
+  const getNotification = async () => {
+    const notificationObj = await apiRequestObj.makeRequest(
+        'common/notifications',
+        'get',
+    )
+    notifications.value = notificationObj.data.notification
   }
 
   // Save current notifications to cookies
-  const saveNotification = (newNotification) => {
-    notifications.value.push(newNotification); // Update the reactive notifications array
-    notificationCookie.value = JSON.stringify(notifications.value); // Store updated notifications as a string
+  const saveNotification = (message) => {
+    console.log('saveNotification', message);
+    getNotification().then(r => {
+        notificationCookie.value = JSON.stringify(notifications.value);
+    });
   };
 
 
   // Remove a specific notification
-  const removeNotification = id => {
-    notifications.value = notifications.value.filter(n => n.id !== id)
-    saveNotification()
+  const removeNotification = () => {
+    saveNotification('testing');
   }
 
   // Clear all notifications
@@ -35,8 +47,6 @@ export const useNotificationStore = defineStore('notification', () => {
     notificationCookie.value = null // Clear the cookie
   }
 
-  // Load initial notifications when the store initializes
-  getNotification()
 
   return {
     notifications,

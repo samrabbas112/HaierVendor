@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineProps } from 'vue'
-
+const authStore = useAuthStore();
+const customThirdCardLabel =  authStore.user?.user_type === 'vendor' ? 'Total Customers' : 'Total Vendors';
 const props = defineProps({
   stats: {
     type: Object,
@@ -28,7 +29,7 @@ const logisticData = computed(() => [
   {
     icon: 'tabler-users',
     color: 'info',
-    title: 'Total Customers',
+    title: customThirdCardLabel,
     value: props.stats.totalCustomer,
     change: 4.3,
     isHover: false,

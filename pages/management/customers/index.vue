@@ -14,8 +14,8 @@ const loaderStore = useLoaderStore()
 const route = useRoute()
 const isConfirmDialogVisible = ref(false)
 const selectedCustomerId = ref()
-
 const authUser = useCookie('auth')
+console.log(authUser.value.user.user_type,'userObj');
 
 // Data table options
 const itemsPerPage = ref(10); 
@@ -25,12 +25,12 @@ const apiRequestObj = useApi();
 // Resolve user status for the UI
 const resolveUserStatusVariant = (stat: string) => {
   const statLowerCase = stat.toLowerCase()
-  if (statLowerCase === 'pending')
-    return 'warning'
-  if (statLowerCase === 'active')
+  if (statLowerCase === '2 ')
+    return 'danger'
+  if (statLowerCase === '1')
     return 'success'
-  if (statLowerCase === 'inactive')
-    return 'secondary'
+  if (statLowerCase === '0')
+    return 'warning'
 
   return 'primary'
 }
@@ -128,11 +128,7 @@ onMounted(fetchCustomers);
     <VRow justify="space-between" class="mb-6 align-center">
       <VCol cols="12" sm="6">
       </VCol>
-      <VCol cols="12" sm="6" class="text-end">
-        <VBtn prepend-icon="tabler-plus" color="primary" @click="addNewCustomer">
-          Add New Customer
-        </VBtn>
-      </VCol>
+
     </VRow>
 
     <!-- Filters Section -->
@@ -190,6 +186,11 @@ onMounted(fetchCustomers);
             </VBtn>
           </div>
         </VCol>
+          <VCol cols="12" sm="6" class="text-end">
+            <VBtn prepend-icon="tabler-plus" color="primary" @click="addNewCustomer">
+              Add New Customer
+            </VBtn>
+          </VCol>
       </VRow>
       </VCardText>
     </VCard>
@@ -218,7 +219,7 @@ onMounted(fetchCustomers);
       <!-- Status -->
       <template #item.confirmed="{ item }">
         <VChip :color="resolveUserStatusVariant(item.confirmed)" size="small" label class="text-capitalize">
-          {{ item.confirmed == 1 ? 'Active' : 'InActive' }}
+          {{ item.confirmed == 1 ? 'Approved' : (item.confirmed == 0 ? 'Pending' : 'Declined') }}
         </VChip>
       </template>
 
@@ -229,7 +230,7 @@ onMounted(fetchCustomers);
           <VIcon icon="tabler-trash" />
         </IconBtn>
 
-        <IconBtn @click="editCustomer(item)">
+        <IconBtn @click="editCustomer(item)" v-if="authUser.user.user_type === 'vendor'">
           <VIcon icon="tabler-pencil" />
         </IconBtn>
       </template>
