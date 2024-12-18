@@ -50,12 +50,18 @@ export default {
   components: {
     QrcodeVue,
   },
+  computed: {
+    // Concatenate base URL and prop URL
+    fullUrl() {
+      return `${window.location.origin}${this.url}`;
+    },
+  },
+
   methods: {
     // Copy URL to Clipboard
     async copyUrl() {
-      this.url = `${window.location.origin}${this.url}`;
       try {
-        await navigator.clipboard.writeText(this.url);
+        await navigator.clipboard.writeText(this.fullUrl);
         this.showCopiedMessage = true;
         setTimeout(() => (this.showCopiedMessage = false), 1500);
       } catch (error) {
