@@ -149,3 +149,13 @@ export const max6mbValidator = (value: unknown) => {
 
   return true;
 };
+export const imageFileValidator = (value: unknown) => {
+  const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+  for (const file of value) {
+    if (file instanceof File && !validImageTypes.includes(file.type)) {
+      return `Only image files (JPEG, PNG, GIF, WebP) are allowed.`;
+    }
+  }
+
+  return true;
+};
