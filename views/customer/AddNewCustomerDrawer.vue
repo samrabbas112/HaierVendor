@@ -34,6 +34,8 @@ const province = ref('');
 const city = ref('');
 const apiRequestObj = useApi();
 const isLoading = ref(false)
+const selectedProvinceId = ref<number | undefined>(undefined);
+const selectedCityId = ref<number | undefined>(undefined);
 watch(customer, (newCustomer) => {
   if (newCustomer) {
     name.value = newCustomer.name || '';
@@ -41,6 +43,8 @@ watch(customer, (newCustomer) => {
     address.value = newCustomer.address || '';
     province.value = newCustomer.province || '';
     city.value = newCustomer.city || '';
+    selectedProvinceId.value = newCustomer.provinceId ; 
+    selectedCityId.value = newCustomer.cityId ;
   }
 }, { immediate: true, deep: true });
 
@@ -60,8 +64,8 @@ const onSubmit = async () => {
       const formData = {
         name: name.value,
         phone_number: phoneNumber.value,
-        city: city.value,
-        province: province.value,
+        city: selectedCityId.value,
+        province: selectedProvinceId.value,
         address: 'New Address',
       };
 
@@ -176,29 +180,16 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                 />
               </VCol>
 
-              <!-- 👉 Province -->
               <VCol cols="12">
-                <AppTextField
-                  v-model="province"
-                  :rules="[requiredValidator]"
-                  label="Province"
-                  placeholder="Enter province"
-                />
-              </VCol>
-
-              <!-- 👉 City -->
-              <VCol cols="12">
-                <AppTextField
-                  v-model="city"
-                  :rules="[requiredValidator]"
-                  label="City"
-                  placeholder="Enter city"
+                <ProvinceCitySelector
+                v-model:selectedProvinceId="selectedProvinceId"
+                v-model:selectedCityId="selectedCityId"
                 />
               </VCol>
 
               <!-- 👉 Submit and Cancel -->
               <VCol cols="12">
-                <VBtn
+                <VBtn                         
                   type="submit"
                   class="me-3"
                 >

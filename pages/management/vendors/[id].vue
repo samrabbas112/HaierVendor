@@ -25,6 +25,8 @@ const isDetailsMode = mode === 'details' // Check if it's "details" mode
 // References
 const refForm = ref<VForm>()
 const isFormValid = ref(false)
+const selectedProvinceId = ref<number | undefined>(undefined);
+const selectedCityId = ref<number | undefined>(undefined);
 
 // Form State
 const form = ref({
@@ -41,9 +43,6 @@ const form = ref({
   status: 'active',
 })
 
-// Dropdown Options
-const provinces = ['Sindh', 'Punjab', 'KPK', 'Balochistan', 'Islamabad']
-const cities = ['Karachi', 'Lahore', 'Peshawar', 'Quetta', 'Islamabad']
 
 const statuses = [
   { text: 'Active', value: 'active' },
@@ -57,17 +56,20 @@ const fetchVendor = async () => {
     const response = await useApi().makeRequest(`haier/vendor/show/${vendorId}`, 'get')
     if (response?.success) {
       Object.assign(form.value, response.data)
+
       form.value.status = response.data.status ? 'active' : 'Inactive'
-    }
-    else {
+      selectedProvinceId.value = response.data.provinceId  
+      selectedCityId.value = response.data.cityId  
+     
+    } else {
       snackBarStore.showSnackbar('Failed to load vendor data', 'error')
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error fetching vendor:', error)
     snackBarStore.showSnackbar('An error occurred. Please try again.', 'error')
+  } finally {
+    loaderStore.hideLoader()
   }
-  loaderStore.hideLoader()
 }
 
 // Form Submission Handler
@@ -77,9 +79,12 @@ const submitForm = async () => {
       if (valid) {
         try {
           isLoading.value = true
-
+          console.log(selectedCityId.value);
+          console.log(selectedProvinceId.value);
           const payload = {
             ...form.value,
+            city: selectedCityId.value,
+            province: selectedProvinceId.value,
             status: form.value.status === 'active', // Convert to boolean
           }
 
@@ -215,33 +220,7 @@ onMounted(() => {
               />
             </VCol>
 
-            <!-- Province -->
-            <VCol
-              cols="12"
-              sm="6"
-            >
-              <AppSelect
-                v-model="form.province"
-                :items="provinces"
-                :rules="[requiredValidator]"
-                label="Province"
-                :disabled="isDetailsMode"
-              />
-            </VCol>
-
-            <!-- City -->
-            <VCol
-              cols="12"
-              sm="6"
-            >
-              <AppSelect
-                v-model="form.city"
-                :items="cities"
-                :rules="[requiredValidator]"
-                label="City"
-                :disabled="isDetailsMode"
-              />
-            </VCol>
+           
 
             <!-- Status -->
             <VCol
@@ -256,6 +235,13 @@ onMounted(() => {
                 item-title="text"
                 item-value="value"
                 :disabled="isDetailsMode"
+              />
+            </VCol>
+
+            <VCol cols="12" sm="6">
+              <ProvinceCitySelector
+              v-model:selectedProvinceId="selectedProvinceId"
+              v-model:selectedCityId="selectedCityId"
               />
             </VCol>
           </VRow>

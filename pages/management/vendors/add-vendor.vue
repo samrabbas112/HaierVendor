@@ -15,11 +15,12 @@ import {
   emailValidator,
   phoneValidator
 } from "@/utils/validators";
-
-
+const selectedProvinceId = ref<number | undefined>(undefined);
+const selectedCityId = ref<number | undefined>(undefined);
 const loaderStore = useLoaderStore()
 const router = useRouter();
 const snackBarStore = useSnackbarStore();
+
 
 // References
 const refForm = ref<VForm>();
@@ -43,9 +44,6 @@ const form = ref({
 
 
 
-// Dropdown Options
-const provinces = ['Sindh', 'Punjab', 'KPK', 'Balochistan', 'Islamabad'];
-const cities = ['Karachi', 'Lahore', 'Peshawar', 'Quetta', 'Islamabad'];
 const statuses = [
   { text: 'Active', value: 'active' },
   { text: 'Inactive', value: 'inactive' },
@@ -59,6 +57,8 @@ const submitForm = async () => {
       try {
         const payload = {
             ...form.value,
+            city: selectedCityId.value,
+            province: selectedProvinceId.value,
             status: form.value.status === 'active', // Convert to boolean
           };
         const response = await useApi().makeRequest(
@@ -121,22 +121,11 @@ const resetForm = () => {
                                 type="password" placeholder="Enter Password" />
                         </VCol>
                         
-                        <!-- Province -->
-                        <VCol cols="12" sm="6">
-                            <AppSelect v-model="form.province" :items="provinces" :rules="[requiredValidator]"
-                                label="Province" placeholder="Select Province" />
-                        </VCol>
 
                         <!-- Telephone -->
                         <VCol cols="12" sm="6">
                             <AppTextField v-model="form.telephone" :rules="[requiredValidator,phoneValidator]" label="Telephone"
                                 type="tel" placeholder="03xxxxxxxxx" />
-                        </VCol>
-
-                        <!-- City -->
-                        <VCol cols="12" sm="6">
-                            <AppSelect v-model="form.city" :items="cities" :rules="[requiredValidator]" label="City"
-                                placeholder="Select City" />
                         </VCol>
 
                         <!-- CNIC -->
@@ -160,6 +149,12 @@ const resetForm = () => {
                         <VCol cols="12" sm="6">
                             <AppTextField v-model="form.ntn" label="NTN" placeholder="Enter NTN (e.g., 1234567-8)" />
                         </VCol>
+                        <VCol cols="12" sm="6">
+                          <ProvinceCitySelector
+                          v-model:selectedProvinceId="selectedProvinceId"
+                          v-model:selectedCityId="selectedCityId"
+                          />
+                        </VCol>
 
                         <!-- Status -->
                         <VCol cols="12" sm="6">
@@ -172,6 +167,7 @@ const resetForm = () => {
                               item-value="value" 
                             />
                           </VCol>
+                          
                     </VRow>
 
                     <!-- Actions -->
