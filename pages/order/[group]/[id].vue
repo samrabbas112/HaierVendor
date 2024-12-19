@@ -150,7 +150,7 @@ const updateStatus = async () => {
       const token = useCookie('auth').value?.token
 
       // Make the API request
-      const { data, status, error, refresh, clear } = await useFetch('http://haiermall.test/api/v2/common/file-upload', {
+      const { data, status, error, refresh, clear } = await useFetch('https://haiermall.jochaho.global/api/v2/common/file-upload', {
         method: 'POST', // Specify HTTP method
         body: formData,
         onRequest({ request, options }) {
@@ -160,12 +160,12 @@ const updateStatus = async () => {
         },
       })
 
-      if (status.value == 'success' && data?.value?.data.status == 200) {
+      if (status.value == 'success' && data?.value?.status == 200) {
         selectedPics.value = []
         selectedPics.value = data?.value?.data
       }
       else {
-        snackbarStore.showSnackbar('Error in uploading files')
+        snackbarStore.showSnackbar('Error in uploading files','error')
 
         return
       }
@@ -253,8 +253,9 @@ const handleReasonDialog = async () => {
 const handleFileChange = event => {
   const files = event.target.files
   if (files && files.length > 0) {
-    if(files.length > 5){
-      return snackbarStore.showSnackbar('Please add between 1 to 5 images, and each must not be more than 6MB.', 'error')
+    if((selectedPics.value.length + files.length) > 5){
+      snackbarStore.showSnackbar('Please add between 1 to 5 images, and each must not be more than 6MB.', 'error')
+      return; 
     }
     const newFiles = Array.from(files)
 
