@@ -252,7 +252,10 @@ const handleReasonDialog = async () => {
 
 const handleFileChange = event => {
   const files = event.target.files
-  if (files && files.length > 0 && files.length <= 5) {
+  if (files && files.length > 0) {
+    if(files.length > 5){
+      return snackbarStore.showSnackbar('Please add between 1 to 5 images, and each must not be more than 6MB.', 'error')
+    }
     const newFiles = Array.from(files)
 
     selectedPics.value = [...selectedPics.value, ...newFiles]
