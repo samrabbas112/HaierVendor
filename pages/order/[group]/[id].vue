@@ -7,9 +7,12 @@ const isReasonDialogVisible = ref(false)
 const selectedStatus = ref(12)
 const selectedReason = ref()
 const selectedPics = ref([])
+const inputPics = ref([])
+const fileInput = ref(null)
 const customReason = ref(null)
 const dialogMsg = ref('Are you sure')
 const reasons = ref([])
+const imagePreviews = ref([])
 
 const userData = ref({
   fullName: '',
@@ -232,8 +235,8 @@ const handleReasonDialog = async () => {
     }
   }
   if (selectedStatus.value == orderStatusCodes.isClosed) {
-    if (isEmpty(selectedPics.value) || selectedPics.value.length > 5 || max6mbValidator(selectedPics.value)) {
-      snackbarStore.showSnackbar('Please add between 1 to 5 images, and each must not be more than 6MB.','error')
+    if (isEmpty(selectedPics.value) || selectedPics.value.length > 5 || !max6mbValidator(selectedPics.value) || !imageFileValidator(selectedPics.value)) {
+      snackbarStore.showSnackbar('Please add between 1 to 5 images, and each must not be more than 6MB.', 'error')
 
       return
     }
@@ -249,10 +252,39 @@ const handleReasonDialog = async () => {
 
 const handleFileChange = event => {
   const files = event.target.files
-  if (files) {
-    selectedPics.value = Array.from(files)
-    console.log('Selected Files:', selectedPics.value)
+  if (files && files.length > 0 && files.length <= 5) {
+    const newFiles = Array.from(files)
+
+    selectedPics.value = [...selectedPics.value, ...newFiles]
   }
+  else {
+    selectedPics.value = []
+  }
+  inputPics.value = selectedPics.value
+  generateImagePreviews(selectedPics.value)
+}
+
+// Generate image previews
+function generateImagePreviews(files) {
+  const previews = files.map(file => {
+    const reader = new FileReader()
+
+    return new Promise(resolve => {
+      reader.onloadend = () => resolve(reader.result)
+      reader.readAsDataURL(file)
+    })
+  })
+
+  // Once all files have been processed, update the previews array
+  Promise.all(previews).then(urls => {
+    imagePreviews.value = urls
+  })
+}
+
+// Remove selected file from the list
+function removeFile(index) {
+  imagePreviews.value.splice(index, 1)
+  selectedPics.value.splice(index, 1)
 }
 
 onMounted(async () => {
@@ -266,7 +298,6 @@ const headers = [
   { title: 'Price', key: 'price' },
   { title: 'Total', key: 'total' },
 ]
-
 </script>
 
 <template>
@@ -290,8 +321,14 @@ const headers = [
           {{ orderData?.date }}
         </div>
       </div>
-      <div v-if="authUser.user_type !== 'haier' && route.params.group !== 'vendor'"  class="d-flex gap-x-2">
-        <div v-if="authUser.user_type == 'vendor'" class="d-flex gap-x-2">
+      <div
+        v-if="authUser.user_type !== 'haier' && route.params.group !== 'vendor'"
+        class="d-flex gap-x-2"
+      >
+        <div
+          v-if="authUser.user_type == 'vendor'"
+          class="d-flex gap-x-2"
+        >
           <VBtn
             v-if="orderData?.status == orderStatusCodes.isExclusive || orderData?.status == orderStatusCodes.isPublic"
             variant="tonal"
@@ -577,15 +614,56 @@ const headers = [
             sm="8"
           >
             <VCol cols="12">
-              <VFileInput
-                v-if="selectedStatus == orderStatusCodes.isClosed"
-                v-model="selectedPics"
-                show-size
-                label="POD Files:"
-                multiple
-                :rules="[maxFiveFilesValidator, max6mbValidator]"
-                @change="handleFileChange"
-              />
+              <div v-if="selectedStatus === orderStatusCodes.isClosed">
+                <div class="d-flex align-center gap-x-1">
+                  <VFileInput
+                    id="pod-files"
+                    ref="fileInput"
+                    v-model="inputPics"
+                    show-size
+                    accept="image/png, image/jpeg, image/bmp"
+                    label="POD Files: Images must be between 1-5"
+                    prepend-icon="tabler-camera"
+                    multiple
+                    :rules="[maxFiveFilesValidator, max6mbValidator, imageFileValidator]"
+                    @change="handleFileChange"
+                    @click:clear="handleFileChange"
+                  />
+                  <VBtn
+                    icon="tabler-plus"
+                    size="24"
+                    color="primary"
+                    @click="() => $refs.fileInput.$el.querySelector('input').click()"
+                  />
+                </div>
+
+                <!-- Updated Preview Section -->
+                <VCol
+                  v-if="imagePreviews.length > 0"
+                  class="d-flex justify-center  flex-wrap gap-x-3"
+                >
+                  <div
+                    v-for="(preview, index) in imagePreviews"
+                    :key="index"
+                    class="preview-container position-relative"
+                  >
+                    <VImg
+                      :src="preview"
+                      height="175"
+                      width="175"
+                      alt="Preview"
+                    />
+                    <VBtn
+                      icon="tabler-x"
+                      size="20"
+                      color="error"
+                      class="remove-btn"
+                      @click="removeFile(index)"
+                    />
+                  </div>
+                </VCol>
+              </div>
+
               <AppSelect
                 v-else
                 v-model="selectedReason"
@@ -598,6 +676,7 @@ const headers = [
                 :rules="[requiredValidator]"
               />
             </VCol>
+
             <VCol
               v-if="selectedReason == 'other'"
               cols="12"
@@ -638,3 +717,15 @@ const headers = [
     </VDialog>
   </div>
 </template>
+
+<style scoped>
+.remove-btn {
+  position: absolute;
+  top: 30px;
+  right: 0px;
+}
+.preview-container {
+  position: relative;
+  display: inline-block;
+}
+</style>
