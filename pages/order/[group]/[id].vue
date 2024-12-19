@@ -523,11 +523,8 @@ const headers = [
             <div class="d-flex align-center">
               <div>
                 <h6 class="text-h6">
-                  {{ userData?.fullName }}
+                  Customer Full Name:   {{ userData?.fullName }}
                 </h6>
-                <div class="text-body-1">
-                  Customer IP: #{{ userData?.clientIp }}
-                </div>
               </div>
             </div>
 

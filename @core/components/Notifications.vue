@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import type { Notification } from "@layouts/types";
+import {orderStatusCodes} from "@/libs/order/order-status";
 
 const apiRequestObj = useApi();
 const snackBar = useSnackbarStore();
-
+const isConfirmDialogVisible = ref(false)
+const dialogMsg = ref('Are you sure you want to clear all notifications?')
 interface Props {
   notifications: Notification[];
   badgeProps?: object;
@@ -29,7 +31,7 @@ const isAllMarkRead = computed(() => {
 });
 
 const markAllReadOrUnread = () => {
-  emit('remove',1)
+  isConfirmDialogVisible.value = true;
 };
 
 const totalUnseenNotifications = computed(() => {
@@ -43,7 +45,11 @@ const toggleReadUnread = (isSeen: boolean, Id: number) => {
 const markAsRead = () => {
   emit("read", [1]);
 }
-
+const handleConfirm = async value => {
+  if (value) {
+    emit('remove',1);
+  }
+}
 </script>
 
 <template>
@@ -73,23 +79,15 @@ const markAsRead = () => {
         <!-- 👉 Header -->
         <VCardItem class="notification-section">
           <VCardTitle class="text-h6"> Notifications </VCardTitle>
-
           <template #append>
-            <IconBtn
+            <VCardTitle
               v-show="props.notifications.length"
-              size="34"
+              style="font-size: 14px;cursor:pointer"
+              class="list-item-hover-class"
               @click="markAllReadOrUnread"
             >
-              <VIcon
-                size="20"
-                color="high-emphasis"
-                icon="tabler-x"
-              />
-
-              <VTooltip activator="parent" location="start">
-                Clear Notifications
-              </VTooltip>
-            </IconBtn>
+              Clear Notifications
+            </VCardTitle>
           </template>
         </VCardItem>
 
@@ -197,7 +195,19 @@ const markAsRead = () => {
         </VCardText>
       </VCard>
     </VMenu>
+
+
   </IconBtn>
+
+  <ConfirmDialog
+    v-model:isDialogVisible="isConfirmDialogVisible"
+    :confirmation-question="dialogMsg"
+    cancel-msg="Request cancelled!!"
+    cancel-title="Cancelled"
+    confirm-msg="Your order status changed successfully."
+    confirm-title="Confirmed"
+    @confirm="handleConfirm"
+  />
 </template>
 
 <style lang="scss">

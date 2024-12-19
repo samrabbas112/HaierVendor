@@ -162,8 +162,6 @@ const getOrderSummery = async () => {
       orderSummaryLabels.length = 0
 
       Object.keys(res?.data).forEach(key => {
-        console.log(key,'keyin');
-        console.log(res?.data?.[key],'res?.data?.[key]');
         let label = replaceUnderscoreWithSpace(key) + ' ' + res?.data?.[key] || 0
         orderSummaryLabels.push(label)
         orderSummary.push(res?.data?.[key] || 0)

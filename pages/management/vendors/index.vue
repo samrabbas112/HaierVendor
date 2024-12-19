@@ -174,7 +174,7 @@ onMounted(fetchVendors);
         <VRow cols="12" sm="8">
           <!-- Search Vendors -->
           <VCol cols="12" sm="3">
-            <AppTextField v-model="searchQuery" placeholder="Search by name" />
+            <AppTextField v-model="searchQuery" placeholder="Search by name or number" />
           </VCol>
           <VCol cols="12" sm="3">
             <AppSelect

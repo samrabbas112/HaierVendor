@@ -350,12 +350,23 @@ export const getDonutChartConfig = (
     series3: "#826bf8",
     series4: "#32baff",
     series5: "#ffa1a1",
+    series6: "#ffd2a2",
+    series7: "#006699",
   };
 
   const { themeSecondaryTextColor, themePrimaryTextColor } =
     colorVariables(themeColors);
 
   return {
+    colors: [
+      "#fdd835",
+      "#00d4bd",
+      "#826bf8",
+      "#32baff",
+      "#ffa1a1",
+      "#ffd2a2",
+      "#006699",
+    ],
     stroke: { width: 0 },
     labels: [
       "Closed",
@@ -363,13 +374,8 @@ export const getDonutChartConfig = (
       "Rejected",
       "Out For Delivery",
       "Delivery Refused",
-    ],
-    colors: [
-      donutColors.series1,
-      donutColors.series5,
-      donutColors.series3,
-      donutColors.series2,
-      donutColors.series4,
+      "Ready To Ship",
+      "Rejected",
     ],
     dataLabels: {
       enabled: true,

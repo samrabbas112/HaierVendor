@@ -15,7 +15,7 @@ const route = useRoute()
 const isConfirmDialogVisible = ref(false)
 const selectedCustomerId = ref()
 const authUser = useCookie('auth')
-console.log(authUser.value.user.user_type,'userObj');
+const selectedVendorStatus = ref()
 
 // Data table options
 const itemsPerPage = ref(10); 
@@ -35,6 +35,13 @@ const resolveUserStatusVariant = (stat: string) => {
   return 'primary'
 }
 
+
+const vendorStatus = [
+  { title: 'Approved', value: 1 },
+  { title: 'Pending', value: 0 },
+  { title: 'Declined', value: 2 },
+]
+
 // Headers for the data table
 const headers = [
   { title: 'SN', key: 'id' },
@@ -50,12 +57,13 @@ const headers = [
 const fetchCustomers = async () => {
   loaderStore.showLoader();
   try {
-    const response = await apiRequestObj.makeRequest(`common/customer/list/${route.query.vendor || authUser.value.user.uid}`, 'get','', 
+    const response = await apiRequestObj.makeRequest(`common/customer/list/${route.query.vendor || authUser.value.user.uid}`, 'post',
        {
         page: page.value,
         itemsPerPage: itemsPerPage.value,
         query: searchQuery.value,
-      },
+    ...((selectedVendorStatus.value == 0 || selectedVendorStatus.value == 1 || selectedVendorStatus.value == 2) && { status: selectedVendorStatus.value }),
+    }
     );
 
     if (response?.success) {
@@ -158,6 +166,15 @@ onMounted(fetchCustomers);
             placeholder="Search by name"
           />
         </VCol>
+          <VCol cols="12" sm="3">
+            <AppSelect
+              v-model="selectedVendorStatus"
+              placeholder="Select  Status"
+              :items="vendorStatus"
+              clearable
+              clear-icon="tabler-x"
+            />
+          </VCol>
         <VCol
           cols="12"
           sm="3"
@@ -186,7 +203,7 @@ onMounted(fetchCustomers);
             </VBtn>
           </div>
         </VCol>
-          <VCol cols="12" sm="6" class="text-end">
+          <VCol cols="12" sm="3" class="text-end">
             <VBtn prepend-icon="tabler-plus" color="primary" @click="addNewCustomer">
               Add New Customer
             </VBtn>
@@ -230,7 +247,7 @@ onMounted(fetchCustomers);
           <VIcon icon="tabler-trash" />
         </IconBtn>
 
-        <IconBtn @click="editCustomer(item)" v-if="authUser.user.user_type === 'vendor'">
+        <IconBtn @click="editCustomer(item)" v-if="authUser.user.uid === item.reference_vendor">
           <VIcon icon="tabler-pencil" />
         </IconBtn>
       </template>

@@ -11,6 +11,7 @@ defineProps<{
 
 const configStore = useLayoutConfigStore();
 const shallRenderIcon = configStore.isVerticalNavMini();
+// console.log('heading, item', item.heading, item);
 </script>
 
 <template>

@@ -6,9 +6,9 @@ import type { VForm } from 'vuetify/components/VForm';
 const loaderStore = useLoaderStore();
 const snackbarStore = useSnackbarStore();
 const authStore = useAuthStore();
-import { useRuntimeConfig } from '#app';
+console.log('authStore', authStore);
 const userId = authStore.user?.uid || 'default';
-const qrCodeUrl = `/management/customers/${userId}`;
+const qrCodeUrl = `${useRuntimeConfig().public.qrURL}/management/customers/${userId}`;
 
 const router = useRouter()
 const requiredValidator = (value: string) => !!value || 'This field is required';
@@ -55,7 +55,7 @@ const updatePassword = async () => {
       formRef.reset();
       formRef.resetValidation();
       authStore.logout();
-      router.push("/login");
+      await router.push("/login");
     } else {
       snackbarStore.showSnackbar(response?.message || "An unknown error occurred.", 'error');
     }

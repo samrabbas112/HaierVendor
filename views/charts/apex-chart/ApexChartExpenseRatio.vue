@@ -25,6 +25,11 @@ const isSeriesZero = computed(() => props.series.every(value => value === 0));
 // Configure the chart
 const expenseRationChartConfig = computed(() => {
   const config = getDonutChartConfig(vuetifyTheme.current.value);
+  console.log({
+    config,
+    series: props.series,
+    labels: props.labels,
+  })
 
   config.labels = props.labels
 
