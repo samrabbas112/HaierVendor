@@ -210,19 +210,7 @@ const topicsData = [
 
 <template>
   <VCard>
-    <VCardItem title="Top Items Sold" class="d-flex flex-wrap justify-space-between gap-4"> 
-          <template #append>
-            <div class="date-picker-wrapper" style="width: 240px;">
-              <AppDateTimePicker
-                @update:modelValue="handleDateChange"
-                model-value="" prepend-inner-icon="tabler-calendar"
-                placeholder="Select Date" :config="$vuetify.display.smAndDown
-                  ? { position: 'auto center' }
-                  : { position: 'auto right' }
-                  " />
-            </div>
-          </template>
-
+    <VCardItem title="Top Items Sold" class="d-flex flex-wrap justify-space-between gap-4">
     </VCardItem>
 
     <VCardText>

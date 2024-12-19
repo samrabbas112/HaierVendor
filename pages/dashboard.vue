@@ -26,11 +26,11 @@ const topItemsSold = reactive([])
 const orderSummary = reactive([])
 const orderSummaryLabels = reactive([])
 const tableData = reactive([])
-const intervalType = ref('monthly')
+const intervalType = ref('all')
 const salesData = reactive({ labels: [], datasets: [] })
 const customerChart = reactive({ labels: [], datasets: [] })
 const rangeDate = ref([])
-const minDateOncustomerChart = ref(new Date())
+const btnloading = ref('false')
 
 const chartJsCustomColors: ChartJsCustomColors = {
   white: '#fff',
@@ -54,17 +54,14 @@ const chartJsCustomColors: ChartJsCustomColors = {
 }
 
 function replaceUnderscoreWithSpace(inputString) {
-  return inputString.replace(/_/g, ' ');
+  return inputString.replace(/_/g, ' ')
 }
 
-// const series = [85, 16, 50, 50, 20]
-
-// const labels = [
-//   'Closed',
-//   'Delivery Refused',
-//   'OutForDelivery',
-//   'Picked',
-// ]
+const getTypes = [
+  { title: 'All', value: 'all' },
+  { title: 'Weekly', value: 'weekly' },
+  { title: 'Monthly', value: 'monthly' },
+]
 
 const getOrderData = async () => {
   const params = {
@@ -83,15 +80,20 @@ const getOrderData = async () => {
 
 const getChartData = async () => {
   try {
-    const params = { vendor_id: userId, filter: intervalType.value }
+    const params = {
+      vendor_id: userId,
+      filter: intervalType.value,
+      fromDate: rangeDate.value[0],
+      toDate: rangeDate.value[1],
+    }
 
-    console.log('params', params)
+    console.log('getChartData params', params)
 
     const res = await api.makeRequest('common/dashboard/orders/graphs', 'post', params)
 
     salesData.labels = res.data.labels
     salesData.datasets = res.data.datasets
-    console.log('res', res)
+    console.log('*****************common/dashboard/orders/graphs res***********', res)
   }
   catch (err) {
     console.error('Error: ', err)
@@ -113,10 +115,7 @@ const getCustomerData = async () => {
 
     customerChart.labels = res.data.labels
     customerChart.datasets = res.data.datasets
-
-    minDateOncustomerChart.value = new Date(Math.min(...customerChart.labels.map(label => new Date(label))))
-
-    console.log('res', res)
+    console.log('*****************common/dashboard/customer/graphs************', res)
   }
   catch (err) {
     console.error('Error: ', err)
@@ -138,6 +137,7 @@ const getTopSelling = async () => {
 
     topItemsSold.length = 0 // Clear the array
     topItemsSold.push(...res.data)
+    console.log('**************common/dashboard/top/items************', res)
   }
   catch (err) {
     console.error('Error: ', err)
@@ -148,11 +148,16 @@ const getOrderSummery = async () => {
   try {
     const params = {
       vendor_id: userId,
+      filter: intervalType.value,
+      fromDate: rangeDate.value[0],
+      toDate: rangeDate.value[1],
     }
 
     console.log('params', params)
 
     const res = await api.makeRequest('common/dashboard/orders/summary', 'post', params)
+
+    console.log('**************common/dashboard/orders/summary************', res)
 
     // Update the ref object with the response data
 
@@ -162,9 +167,14 @@ const getOrderSummery = async () => {
       orderSummaryLabels.length = 0
 
       Object.keys(res?.data).forEach(key => {
-        let label = replaceUnderscoreWithSpace(key) + ' ' + res?.data?.[key] || 0
+        console.log(key, 'keyin')
+        console.log(res?.data?.[key], 'res?.data?.[key]')
+
+        const label = `${replaceUnderscoreWithSpace(key)} ${res?.data?.[key]}` || 0
+
         orderSummaryLabels.push(label)
         orderSummary.push(res?.data?.[key] || 0)
+
         // orderSummary.push(0)
       })
     }
@@ -192,7 +202,8 @@ const getTableData = async () => {
       let paymentChannel
       try {
         paymentChannel = JSON.parse(order.payload)?.channel || 'Unknown'
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Error parsing order payload:', error)
         paymentChannel = 'Unknown'
       }
@@ -205,67 +216,89 @@ const getTableData = async () => {
         status: order.pick_status?.name || 'Unknown',
       })
     })
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error fetching orders:', error)
   }
 }
 
-const lastDateRanges = new Map();
+const lastDateRanges = new Map()
 
 const handleDateChange = async (newDate, isCalendarOpen, key) => {
   const dateRegex = /(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})/
 
-  // Check if the current date is null
-  const isNewDateNull = !newDate || !newDate.trim();
-  const wasPreviousDateNull = !lastDateRanges.has(key) || !lastDateRanges.get(key);
+  const isNewDateNull = !newDate || !newDate.trim()
+  const wasPreviousDateNull = !lastDateRanges.has(key) || !lastDateRanges.get(key)
 
-  // If newDate and previous date are both null, skip the API call
   if (isNewDateNull && wasPreviousDateNull) {
-    console.log("No change detected and both dates are null, skipping API call.");
-    return;
-  }
-  if (newDate && !newDate.includes("to")) {
-    !isCalendarOpen && snackbarStore.showSnackbar("Please select a start and end date", 'primary')
-    return;
+    console.log('No change detected and both dates are null, skipping API call.')
+
+    return
   }
 
-  if (newDate && newDate.includes("to")) {
-    const match = newDate.match(dateRegex);
+  if (newDate && !newDate.includes('to')) {
+    !isCalendarOpen && snackbarStore.showSnackbar('Please select a start and end date', 'primary')
 
-    // Check if the current range matches the last range for this key
+    return
+  }
+
+  if (newDate && newDate.includes('to')) {
+    const match = newDate.match(dateRegex)
+
     if (
-      lastDateRanges.has(key) &&
-      lastDateRanges.get(key) &&
-      lastDateRanges.get(key).start === match[1] &&
-      lastDateRanges.get(key).end === match[2]
+      lastDateRanges.has(key)
+      && lastDateRanges.get(key)
+      && lastDateRanges.get(key).start === match[1]
+      && lastDateRanges.get(key).end === match[2]
     ) {
-      console.log("No change detected in date range, skipping API call.");
-      return;
+      console.log('No change detected in date range, skipping API call.')
+
+      return
     }
 
-    intervalType.value = 'custom';
-    rangeDate.value = [match[1], match[2]];
+    intervalType.value = 'custom'
+    rangeDate.value = [match[1], match[2]]
 
-    // Store the new date range for the current key
-    lastDateRanges.set(key, { start: match[1], end: match[2] });
-  } else if (isNewDateNull) {
-    // If newDate is null, reset to 'monthly' and clear the range
-    intervalType.value = 'monthly';
-    rangeDate.value = [new Date(), new Date()];
-    lastDateRanges.set(key, null);  // Set the last date range to null
+    lastDateRanges.set(key, { start: match[1], end: match[2] })
+  }
+  else if (isNewDateNull) {
+    intervalType.value = 'monthly'
+    rangeDate.value = [new Date(), new Date()]
+    lastDateRanges.set(key, null)
   }
 
   try {
-    loaderStore.showLoader();
-    if (key === 'top-item-sold') {
-      await getTopSelling();
-    } else {
-      await getCustomerData();
-    }
-  } finally {
-    loaderStore.hideLoader();
+    loaderStore.showLoader()
+    await fetchData() // Call all APIs when the date changes
   }
-};
+  catch (error) {
+    console.error('Error during API calls:', error)
+  }
+  finally {
+    loaderStore.hideLoader()
+  }
+}
+
+const handleIntervalTypeChange = async value => {
+  intervalType.value = value
+
+  // Clear date range when selecting "All", "Weekly", or "Monthly"
+  if (['all', 'weakly', 'monthly'].includes(value)) {
+    rangeDate.value = []
+    lastDateRanges.clear() // Reset stored date ranges
+  }
+
+  try {
+    loaderStore.showLoader()
+    await fetchData() // Call all APIs when the interval type changes
+  }
+  catch (error) {
+    console.error('Error fetching data for interval type:', error)
+  }
+  finally {
+    loaderStore.hideLoader()
+  }
+}
 
 const fetchData = async () => {
   try {
@@ -288,9 +321,49 @@ onMounted(() => {
   fetchData()
 })
 
-const exportData = () => {
-  const response = api.makeRequest('common/dashboard/export', 'get', { vendor_id: userId })
-  console.log({response});
+const exportData = async () => {
+  try {
+    console.log('Exporting data...')
+
+    function formatDate(date: string) {
+      const d = new Date(date)
+      const year = d.getFullYear()
+      const month = (d.getMonth() + 1).toString().padStart(2, '0')
+      const day = d.getDate().toString().padStart(2, '0')
+
+      return `${year}-${month}-${day}`
+    }
+
+    let formattedFromDate = ''
+    let formattedToDate = ''
+
+    if (rangeDate.value && rangeDate.value.length > 0) {
+      formattedFromDate = formatDate(rangeDate.value[0])
+      formattedToDate = formatDate(rangeDate.value[1])
+    }
+
+    const filter = intervalType.value === 'custom' ? 'custom' : intervalType.value
+
+    console.log('filter:', filter)
+    console.log('formattedFromDate:', formattedFromDate)
+    console.log('formattedToDate:', formattedToDate)
+
+    const exportUrl = `https://haiermall.jochaho.global/dashboard/export?vendor_id=${userId}&filter=${filter}&fromDate=${formattedFromDate}&toDate=${formattedToDate}`
+
+    console.log('exportUrl:', exportUrl)
+    window.location.href = exportUrl
+
+    // Trigger download or make a GET request
+    // await api.makeRequest(exportUrl, 'get')
+    snackbarStore.showSnackbar('Export successful!', 'success')
+  }
+  catch (error) {
+    console.error('Error exporting data:', error)
+    snackbarStore.showSnackbar('Failed to export data.', 'error')
+  }
+  finally {
+    // btnloading.value = false
+  }
 }
 </script>
 
@@ -300,67 +373,118 @@ const exportData = () => {
       <VCard>
         <VCardItem title="Dashboard">
           <template #append>
-            <button class="btn btn-primary" @click="exportData">Export </button>
-            <div class="date-picker-wrapper" style="width: 240px;">
-              <AppDateTimePicker @update:modelValue="(val, isCalendarOpen) => handleDateChange(val,isCalendarOpen.value, 'top-item-sold')"
-                @click:clear="handleNext"
-                model-value="" prepend-inner-icon="tabler-calendar"
-                placeholder="Select Date" :config="$vuetify.display.smAndDown
-                  ? { position: 'auto center' }
-                  : { position: 'auto right' }
-                  " />
+            <div class="d-flex align-items-center gap-5">
+              <div>
+                <VBtn
+                  color="secondary"
+                  @click="exportData"
+                >
+                  Export
+                  <VIcon
+                    end
+                    icon="tabler-arrow-big-down-lines"
+                  />
+                </VBtn>
+              </div>
+              <div
+                class="date-picker-wrapper"
+                style="width: 315px;"
+              >
+                <AppDateTimePicker
+                  v-model="rangeDate"
+                  prepend-inner-icon="tabler-calendar"
+                  placeholder="Select Date"
+                  :config="$vuetify.display.smAndDown
+                    ? { position: 'auto center' }
+                    : { position: 'auto right' }
+                  "
+                  @update:model-value="(val, isCalendarOpen) => handleDateChange(val, isCalendarOpen.value, 'customer-graphs')"
+                  @click:clear="handleNext"
+                />
+              </div>
+              <div
+                class=""
+                style="width: 200px;"
+              >
+                <AppSelect
+                  v-model="intervalType"
+                  placeholder="Select Type"
+                  :items="getTypes"
+                  clearable
+                  clear-icon="tabler-x"
+                  @update:model-value="handleIntervalTypeChange"
+                />
+              </div>
             </div>
           </template>
         </VCardItem>
       </VCard>
     </VCol>
     <VCol cols="12">
-      <LogisticsCardStatistics  :stats="ordersData" />
+      <LogisticsCardStatistics :stats="ordersData" />
     </VCol>
 
-    <VCol cols="12" md="6">
-      <VCard title="Delivered Orders" subtitle="">
+    <VCol
+      cols="12"
+      md="6"
+    >
+      <VCard
+        title="Delivered Orders"
+        subtitle=""
+      >
         <VCardText>
-          <ChartJsLineChart :colors="chartJsCustomColors" :sales="salesData" />
+          <ChartJsLineChart
+            :colors="chartJsCustomColors"
+            :sales="salesData"
+          />
         </VCardText>
       </VCard>
     </VCol>
     <!-- 👉 Latest Statistics -->
-    <VCol cols="12" md="6">
+    <VCol
+      cols="12"
+      md="6"
+    >
       <VCard>
         <VCardItem class="d-flex flex-wrap justify-space-between gap-4">
           <VCardTitle>Latest Statistics</VCardTitle>
-          <template #append>
-            <div class="date-picker-wrapper" style="width: 240px;">
-              <!-- <AppDateTimePicker @update:modelValue="handleDateChange" -->
-              <AppDateTimePicker @update:modelValue="(val, isCalendarOpen) => handleDateChange(val,isCalendarOpen.value, 'customer-graphs')"
-                @click:clear="handleNext"
-                model-value="" prepend-inner-icon="tabler-calendar"
-                placeholder="Select Date" :config="$vuetify.display.smAndDown
-                  ? { position: 'auto center' }
-                  : { position: 'auto right' }
-                  " />
-            </div>
-          </template>
         </VCardItem>
 
         <VCardText>
-          <ChartJsBarChart :colors="chartJsCustomColors" :customers="customerChart" />
+          <ChartJsBarChart
+            :colors="chartJsCustomColors"
+            :customers="customerChart"
+          />
         </VCardText>
       </VCard>
     </VCol>
 
     <!-- 👉 Top Sold Items -->
-    <VCol cols="12" md="6">
-      <AcademyTopicYouAreInterested :top-items-sold="topItemsSold" @dateChange="handleDateChange" />
+    <VCol
+      cols="12"
+      md="6"
+    >
+      <AcademyTopicYouAreInterested
+        :top-items-sold="topItemsSold"
+        @date-change="handleDateChange"
+      />
     </VCol>
     <!-- 👉 Top Sold Items End -->
 
     <!-- 👉 Order Summary  -->
-    <VCol cols="12" md="6">
-      <VCard title="Order Summary" subtitle="">
+    <VCol
+      cols="12"
+      md="6"
+    >
+      <VCard
+        title="Order Summary"
+        subtitle=""
+      >
         <VCardText>
-          <ApexChartExpenseRatio :series="orderSummary" :labels="orderSummaryLabels" />
+          <ApexChartExpenseRatio
+            :series="orderSummary"
+            :labels="orderSummaryLabels"
+          />
         </VCardText>
       </VCard>
     </VCol>
