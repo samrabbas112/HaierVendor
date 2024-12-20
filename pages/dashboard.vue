@@ -87,9 +87,14 @@ const getChartData = async () => {
       toDate: rangeDate.value[1],
     }
 
+    let apiUrl = 'common/dashboard/orders/graphs'
+
+    if (intervalType.value !== 'all')
+      apiUrl = 'common/dashboard/orders/graphs/filtered'
+
     console.log('getChartData params', params)
 
-    const res = await api.makeRequest('common/dashboard/orders/graphs', 'post', params)
+    const res = await api.makeRequest(apiUrl, 'post', params)
 
     salesData.labels = res.data.labels
     salesData.datasets = res.data.datasets
