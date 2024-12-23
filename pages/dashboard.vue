@@ -66,6 +66,9 @@ const getTypes = [
 const getOrderData = async () => {
   const params = {
     vendor_id: userId,
+    filter: intervalType.value,
+    fromDate: rangeDate.value[0],
+    toDate: rangeDate.value[1],
   }
 
   const response = await api.makeRequest('common/dashboard/stats', 'post', params)
@@ -194,6 +197,9 @@ const getOrderSummery = async () => {
 const getTableData = async () => {
   const params = {
     vendor_id: userId,
+    filter: intervalType.value,
+    fromDate: rangeDate.value[0],
+    toDate: rangeDate.value[1],
   }
 
   try {
