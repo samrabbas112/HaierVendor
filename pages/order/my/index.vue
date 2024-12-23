@@ -70,7 +70,7 @@ const makeSearch = async page => {
     order_no: searchQuery.value,
     order_status: selectedOrderStatus.value,
     payment_status: selectedPaymentMethod.value,
-    vendor_id: authUser.value.user.uid,
+    vendor_id: authUser.value.user.id,
     order_type: 'my_orders',
   }
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import { useSnackbarStore } from '@/stores/snackbar';
-import { Console } from 'console';
 import {
   requiredValidator,
   minLengthValidator,

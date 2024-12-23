@@ -21,6 +21,10 @@ await authStore.initialize()
 
 const userId = authStore?.user?.user_id
 
+
+const secondGraphLabel =  authStore.user?.user_type === 'vendor' ? 'Customers' : 'Vendors';
+const viewAllPath = authStore.user?.user_type === 'vendor' ?'/management/customers' : '/management/vendors';
+
 const ordersData = reactive({ totalOrders: 0, totalSales: 0, totalCustomer: 0 })
 const topItemsSold = reactive([])
 const orderSummary = reactive([])
@@ -118,8 +122,8 @@ const getCustomerData = async () => {
     }
 
     console.log('params', params)
-
-    const res = await api.makeRequest('common/dashboard/customer/graphs', 'post', params)
+    let url = authStore.user?.user_type == 'vendors' ? 'common/dashboard/vendor/graphs' :  'common/dashboard/customer/graphs'
+    const res = await api.makeRequest(url, 'post', params)
 
     customerChart.labels = res.data.labels
     customerChart.datasets = res.data.datasets
@@ -387,13 +391,13 @@ const exportData = async () => {
             <div class="d-flex align-items-center gap-5">
               <div>
                 <VBtn
-                  color="secondary"
+                  color="info"
                   @click="exportData"
                 >
                   Export
                   <VIcon
                     end
-                    icon="tabler-arrow-big-down-lines"
+                    icon="tabler-arrow-big-up-lines"
                   />
                 </VBtn>
               </div>
@@ -458,7 +462,13 @@ const exportData = async () => {
     >
       <VCard>
         <VCardItem class="d-flex flex-wrap justify-space-between gap-4">
-          <VCardTitle>Latest Statistics</VCardTitle>
+          <VCardTitle>
+            {{ secondGraphLabel }}
+
+          </VCardTitle>
+          <template #append>
+            <nuxt-link :to="viewAllPath">  View All</nuxt-link>
+          </template>
         </VCardItem>
 
         <VCardText>
