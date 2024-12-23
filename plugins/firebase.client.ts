@@ -10,18 +10,18 @@ import {useNotificationStore} from "@/stores/notification";
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
   //
-  const firebaseConfig = config.public.firebaseConfig;
-  const vapidKey = config.public.vapidKey;
+  // const firebaseConfig = config.public.firebaseConfig;
+  // const vapidKey = config.public.vapidKey;
 
-  // const firebaseConfig = {
-  //   apiKey: 'AIzaSyBaQu5PVEUspegu6HsBDzzQIb1-wpwZ95g',
-  //   authDomain: 'test-project-notificatio-6f653.firebaseapp.com',
-  //   projectId: 'test-project-notificatio-6f653',
-  //   storageBucket: 'test-project-notificatio-6f653.firebasestorage.app',
-  //   messagingSenderId: '1007601362942',
-  //   appId: '1:1007601362942:web:f5acbdba677993287bc2af',
-  // }
-  // const vapidKey = 'BBLHtz_6F-NFDdkLRU7yulpeNBGf8Xv5aC_suiUeyvmG2ybOGEyhnZTOlhpSJIy84EiRKkVkbNuAYU92ZEjTG-E'
+  const firebaseConfig = {
+    apiKey: 'AIzaSyC7o-syUZtxtG2bXC_TQgCR3ONtUDl4Ubk',
+    authDomain: 'haier-mall.firebaseapp.com',
+    projectId: 'haier-mall',
+    storageBucket: 'haier-mall.appspot.com',
+    messagingSenderId: '870746406313',
+    appId: '1:870746406313:web:fbeec57b0054',
+  }
+  const vapidKey = 'BLsZZXVCKKMPSkrHVr2UUWRE8ioL9H2exfrSVHMKXvWqtLYaC4C8Le9V33hhKieu1DBjBBEZVEZ9gGYO6yK9WVs'
   const firebaseApp = initializeApp(firebaseConfig)
   const messaging: Messaging = getMessaging(firebaseApp)
 
