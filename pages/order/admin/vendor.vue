@@ -42,7 +42,7 @@ const paymentMethods = [
 ]
 
 const orderTypes = [
-  { title: 'Private', value: 'privte' },
+  { title: 'Private', value: 'private' },
   { title: 'Public', value: 'public' },
 ]
 
