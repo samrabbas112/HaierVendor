@@ -63,7 +63,7 @@ const onSubmit = async () => {
         phone_number: phoneNumber.value,
         city: selectedCityId.value,
         province: selectedProvinceId.value,
-        address: 'New Address',
+        address: address.value,
       };
 
       try {
