@@ -59,6 +59,7 @@ const onSubmit = async () => {
   refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
       const formData = {
+        id: props.customer?.id ??  null,
         name: name.value,
         phone_number: phoneNumber.value,
         city: selectedCityId.value,
@@ -86,6 +87,9 @@ const onSubmit = async () => {
         if (response?.success) {
           emit('customer-updated');
           emit('update:isDrawerOpen', false);
+          if(props.customer?.id)
+            snackBarStore.showSnackbar("Customer Updated Successfully.", 'success')
+           else
           snackBarStore.showSnackbar("Customer Created Successfully.", 'success')
 
           nextTick(() => {
