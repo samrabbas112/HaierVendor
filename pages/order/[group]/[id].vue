@@ -292,6 +292,17 @@ function removeFile(index) {
   selectedPics.value.splice(index, 1)
 }
 
+const resolveMethod = (status: string) => {
+  if (status === 'COD')
+    return { text: 'COD', color: 'warning' }
+  if (status === 'Card')
+    return { text: 'Card', color: 'success' }
+  if (status === 'EasyPaisa')
+    return { text: 'EasyPaisa', color: 'error' }
+  if (status === 'jazzCash')
+    return { text: 'jazzCash', color: 'info' }
+}
+
 onMounted(async () => {
   await fetchData()
 })
@@ -323,7 +334,20 @@ const headers = [
           </div>
         </div>
         <div class="text-body-1">
-          {{ orderData?.date }}
+          {{ new Date(orderData?.date).toLocaleString() }}
+        </div>
+        <div class="d-flex gap-2 align-center mb-2 flex-wrap">
+          <h5 class="text-h5">
+            Payment Method
+          </h5>
+          <div class="d-flex gap-x-2">
+            <VChip
+              v-if="orderData?.method"
+              v-bind="resolveMethod(orderData?.method)"
+              label
+              size="small"
+            />
+          </div>
         </div>
       </div>
       <div
@@ -514,14 +538,6 @@ const headers = [
             <div class="d-flex align-end flex-column">
               <table class="text-high-emphasis">
                 <tbody>
-                  <tr>
-                    <td width="200px">
-                      Subtotal:
-                    </td>
-                    <td class="font-weight-medium">
-                      <span class="font-weight-light">PKR</span>{{ subtotal }}
-                    </td>
-                  </tr>
                   <!--
                     <tr>
                     <td>Extra:</td>
@@ -537,11 +553,11 @@ const headers = [
                     </tr>
                   -->
                   <tr>
-                    <td class="text-high-emphasis font-weight-medium">
+                    <td class="text-high-emphasis font-weight-medium" width="200px">
                       Total:
                     </td>
                     <td class="font-weight-medium">
-                      <span class="font-weight-light">PKR</span>{{ Total }}
+                      <span class="font-weight-light">PKR </span>{{ Total }}
                     </td>
                   </tr>
                 </tbody>
@@ -565,7 +581,7 @@ const headers = [
             <div class="d-flex align-center">
               <div>
                 <h6 class="text-h6">
-                  Customer Full Name:   {{ userData?.fullName }}
+                  Customer Name:   {{ userData?.fullName }}
                 </h6>
               </div>
             </div>
@@ -576,7 +592,7 @@ const headers = [
                   Contact Info
                 </h6>
               </div>
-              <span v-if="orderData?.status == orderStatusCodes.isPublic">Mobile: 03*******{{ userData?.contact.slice(-2) }}</span>
+              <span v-if="orderData?.status == orderStatusCodes.isPublic || orderData?.status == orderStatusCodes.isDeliveryTimeout">Mobile: 03*******{{ userData?.contact.slice(-2) }}</span>
               <span v-else>Mobile: {{ userData?.contact }}</span>
             </div>
           </VCardText>

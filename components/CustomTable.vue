@@ -24,8 +24,12 @@ const updateOptions = (options: any) => {
 const resolveMethod = (status: string) => {
   if (status === 'COD')
     return { text: 'COD', color: 'warning' }
-  if (status === 'Paid')
-    return { text: 'Paid', color: 'success' }
+  if (status === 'Card')
+    return { text: 'Card', color: 'success' }
+  if (status === 'EasyPaisa')
+    return { text: 'EasyPaisa', color: 'error' }
+  if (status === 'jazzCash')
+    return { text: 'jazzCash', color: 'info' }
 }
 
 console.log({ data })
