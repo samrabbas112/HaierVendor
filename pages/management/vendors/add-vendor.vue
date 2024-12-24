@@ -214,16 +214,10 @@ const resetForm = () => {
                 placeholder="Enter NTN (e.g., 1234567-8)"
               />
             </VCol>
-            <VCol
-              cols="12"
-              sm="6"
-            >
-              <ProvinceCitySelector
-                v-model:selectedProvinceId="selectedProvinceId"
-                v-model:selectedCityId="selectedCityId"
-              />
-            </VCol>
-
+            <ProvinceCitySelector
+              v-model:selectedProvinceId="selectedProvinceId"
+              v-model:selectedCityId="selectedCityId"
+            />
             <!-- Status -->
             <VCol
               cols="12"
