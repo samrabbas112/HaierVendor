@@ -193,6 +193,11 @@ onMounted(fetchVendors)
           >
             <AppTextField
               v-model="searchQuery"
+              @keypress.enter="() => {
+              page = 1;
+              fetchVendors();
+              }"
+
               placeholder="Search by name or number"
             />
           </VCol>
