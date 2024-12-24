@@ -165,7 +165,7 @@ const updateStatus = async () => {
         selectedPics.value = data?.value?.data
       }
       else {
-        snackbarStore.showSnackbar('Error in uploading files','error')
+        snackbarStore.showSnackbar('Error in uploading files', 'error')
 
         return
       }
@@ -253,9 +253,10 @@ const handleReasonDialog = async () => {
 const handleFileChange = event => {
   const files = event.target.files
   if (files && files.length > 0) {
-    if((selectedPics.value.length + files.length) > 5){
+    if ((selectedPics.value.length + files.length) > 5) {
       snackbarStore.showSnackbar('Please add between 1 to 5 images, and each must not be more than 6MB.', 'error')
-      return; 
+
+      return
     }
     const newFiles = Array.from(files)
 
@@ -575,7 +576,8 @@ const headers = [
                   Contact Info
                 </h6>
               </div>
-              <span>Mobile: {{ userData?.contact }}</span>
+              <span v-if="orderData?.status == orderStatusCodes.isPublic">Mobile: 03*******{{ userData?.contact.slice(-2) }}</span>
+              <span v-else>Mobile: {{ userData?.contact }}</span>
             </div>
           </VCardText>
         </VCard>
