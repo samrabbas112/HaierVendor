@@ -32,6 +32,8 @@ const secondsRemaining = ref(totalSeconds)
 const progressValue = ref(100)
 const isCountdownActive = ref(false)
 const isLoading = ref(false)
+const isOtpLoading = ref(false)
+const inValidOtp = ref(false)
 const router = useRouter()
 
 const apiRequestObj = useApi()
@@ -156,18 +158,22 @@ const getCode = async () => {
 }
 
 const verifyCode = async () => {
-  isLoading.value = true
+  isOtpLoading.value = true
   if (form.value.code.length === 6) {
+    inValidOtp.value = false
     const response = await apiRequestObj.makeRequest('common/authentication/verify-code', 'post', form?.value)
     if (response && response.success) {
       form.value.is_otp_verified = true
       snackbarStore.showSnackbar('Code verified', 'success')
     }
+    else {
+      snackbarStore.showSnackbar('Invalid/Expired Code', 'error')
+    }
   }
   else {
-    snackbarStore.showSnackbar('Invalid/Expired Code', 'error')
+    inValidOtp.value = true
   }
-  isLoading.value = false
+  isOtpLoading.value = false
 }
 </script>
 
@@ -246,8 +252,11 @@ const verifyCode = async () => {
                   label="Phone Number*"
                   placeholder="03XXXXXXXXX"
                   required
-                  type="text"
+                  type="number"
                   :disabled="form.is_otp_verified"
+                  @input="() => {
+                    form.telephone = onInputRestrictLength(form.telephone, 11)
+                  }"
                 />
               </VCol>
               <!-- otp -->
@@ -286,6 +295,8 @@ const verifyCode = async () => {
                   :disabled="form.is_otp_verified"
                   type="number"
                   class="pa-0"
+                  :error="inValidOtp"
+                  :loading="isOtpLoading"
                 />
                 <!-- @finish="onFinish" -->
               </VCol>
@@ -296,8 +307,8 @@ const verifyCode = async () => {
               >
                 <AppTextField
                   v-model="form.password"
-                  label="Password"
-                  placeholder="············"
+                  label="New Password"
+                  placeholder="Enter new password"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
                   "

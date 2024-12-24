@@ -38,7 +38,7 @@ export const passwordValidator = (password: string) => {
 
 // 👉 Confirm Password Validator
 export const confirmedValidator = (value: string, target: string) =>
-  value === target || "The Confirm Password field confirmation does not match";
+  value === target || "Password must match";
 
 // 👉 Between Validator
 export const betweenValidator = (value: unknown, min: number, max: number) => {
@@ -160,3 +160,10 @@ export const imageFileValidator = (value: unknown) => {
 
   return true;
 };
+
+export const onInputRestrictLength = (value, maxLength) => {
+  if (value.length > maxLength)
+   return value.slice(0, maxLength)
+
+  return value
+}
