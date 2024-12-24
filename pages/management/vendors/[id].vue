@@ -99,7 +99,23 @@ const submitForm = async () => {
             router.push('/management/vendors')
           }
           else {
-            snackBarStore.showSnackbar('Failed to update vendor', 'error')
+            const messages = response?.message;
+          console.log(messages);
+          
+          if (Array.isArray(messages)) {
+            messages.forEach(item => {
+              Object.keys(item).forEach(key => {
+                const errorMessages = item[key]; 
+                if (Array.isArray(errorMessages)) {
+                  errorMessages.forEach(errorMessage => {
+                    snackBarStore.showSnackbar(errorMessage, 'error');
+                  });
+                }
+              });
+            });
+          } else {
+            snackBarStore.showSnackbar('Failed to update vendor.', 'error');
+          }
           }
         }
         catch (error) {

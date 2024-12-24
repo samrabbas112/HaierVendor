@@ -56,11 +56,12 @@ const submitForm = async () => {
     if (valid) {
       try {
         const payload = {
-            ...form.value,
-            city: selectedCityId.value,
-            province: selectedProvinceId.value,
-            status: form.value.status === 'active', // Convert to boolean
-          };
+          ...form.value,
+          city: selectedCityId.value,
+          province: selectedProvinceId.value,
+          status: form.value.status === 'active', // Convert to boolean
+        };
+
         const response = await useApi().makeRequest(
           'haier/vendor/store',
           'post',
@@ -68,15 +69,27 @@ const submitForm = async () => {
         );
 
         if (response && response.success) {
-            resetForm();
+          resetForm();
           snackBarStore.showSnackbar('Vendor created successfully!', 'success');
           router.push('/management/vendors'); // Navigate to the vendor list page
         } else {
-          console.log(response);
-          snackBarStore.showSnackbar(
-            response.message || 'Failed to save vendor data',
-            'error'
-          );
+          const messages = response?.message;
+          console.log(messages);
+          
+          if (Array.isArray(messages)) {
+            messages.forEach(item => {
+              Object.keys(item).forEach(key => {
+                const errorMessages = item[key]; 
+                if (Array.isArray(errorMessages)) {
+                  errorMessages.forEach(errorMessage => {
+                    snackBarStore.showSnackbar(errorMessage, 'error');
+                  });
+                }
+              });
+            });
+          } else {
+            snackBarStore.showSnackbar('An unexpected error occurred.', 'error');
+          }
         }
       } catch (error) {
         snackBarStore.showSnackbar('An error occurred. Please try again.', 'error');
@@ -84,6 +97,7 @@ const submitForm = async () => {
     }
   });
 };
+
 
 // Reset Form Handler
 const resetForm = () => {
