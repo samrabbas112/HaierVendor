@@ -37,7 +37,7 @@ const resolveUserStatusVariant = (stat: string) => {
 
 
 const vendorStatus = [
-  { title: 'Approved', value: 1 },
+  { title: 'Confirmed', value: 1 },
   { title: 'Pending', value: 0 },
   { title: 'Declined', value: 2 },
 ]
@@ -163,7 +163,7 @@ onMounted(fetchCustomers);
         >
           <AppTextField
             v-model="searchQuery"
-            placeholder="Search by name"
+            placeholder="Search by contact no"
           />
         </VCol>
           <VCol cols="12" sm="3">

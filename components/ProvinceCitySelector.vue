@@ -11,6 +11,7 @@ import {
 const props = defineProps({
   selectedProvinceId: Number,
   selectedCityId: Number,
+  addClass: Boolean ,
 })
 
 const emit = defineEmits(['update:selectedProvinceId', 'update:selectedCityId'])
@@ -65,9 +66,10 @@ onMounted(() => {
 </script>
 
 <template>
+
   <VCol
     cols="12"
-    sm="6"
+    :sm="props.addClass ? 12 : 6"
   >
     <AppSelect
       v-model="props.selectedProvinceId"
@@ -82,7 +84,7 @@ onMounted(() => {
   </VCol>
   <VCol
     cols="12"
-    sm="6"
+    :sm="props.addClass ? 12 : 6"
   >
     <AppSelect
       v-model="props.selectedCityId"

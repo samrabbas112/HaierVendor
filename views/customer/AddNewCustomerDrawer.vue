@@ -3,17 +3,11 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 import type { VForm } from 'vuetify/components/VForm'
 import { useSnackbarStore } from '@/stores/snackbar'
-import {
-  requiredValidator,
-  minLengthValidator,
-  numberValidator,
-  phoneValidator
-} from "@/utils/validators";
-
 
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void;
 }
+
 
 interface Props {
   isDrawerOpen: boolean;
@@ -48,17 +42,20 @@ watch(customer, (newCustomer) => {
   }
 }, { immediate: true, deep: true });
 
+
 // 👉 Drawer close
 const closeNavigationDrawer = () => {
-  emit('update:isDrawerOpen', false);
-  nextTick(() => {
+    emit('update:isDrawerOpen', false);
     refForm.value?.reset();
     refForm.value?.resetValidation();
-  });
 };
 
 
+
+
+
 const onSubmit = async () => {
+  if(isLoading.value) return;
   refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
       const formData = {
@@ -70,6 +67,7 @@ const onSubmit = async () => {
       };
 
       try {
+
         isLoading.value = true
         let response;
         if (props.customer?.id) {
@@ -119,7 +117,13 @@ const onSubmit = async () => {
 
 const handleDrawerModelValueUpdate = (val: boolean) => {
   emit('update:isDrawerOpen', val);
+  refForm.value?.reset();
+  refForm.value?.resetValidation();
 };
+
+watch(address, (newValue) => {
+  if(newValue) address.value = newValue.trimStart();
+});
 </script>
 
 <template>
@@ -153,7 +157,7 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
               <VCol cols="12">
                 <AppTextField
                   v-model="name"
-                  :rules="[requiredValidator,minLengthValidator(3)]"
+                  :rules="[requiredValidator,minLengthValidator(3),alphabetValidator]"
                   label="Name"
                   placeholder="Enter name"
                 />
@@ -166,7 +170,7 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                   type="tel"
                   :rules="[requiredValidator,phoneValidator, minLengthValidator(10), numberValidator]"
                   label="Phone Number"
-                  placeholder="+1234567890"
+                  placeholder="03xxxxxxxxx"
                 />
               </VCol>
 
@@ -180,12 +184,13 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                 />
               </VCol>
 
-              <VCol cols="12">
+
                 <ProvinceCitySelector
+                  :addClass="true"
                 v-model:selectedProvinceId="selectedProvinceId"
                 v-model:selectedCityId="selectedCityId"
                 />
-              </VCol>
+
 
               <!-- 👉 Submit and Cancel -->
               <VCol cols="12">
