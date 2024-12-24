@@ -89,6 +89,15 @@ const resetForm = () => {
   refForm.value?.reset()
   refForm.value?.resetValidation()
 }
+
+const onInputRestrictLength = (field, maxLength) => {
+  if (form.value[field].length > maxLength) {
+    form.value[field] = form.value[field].slice(0, maxLength);
+  }
+};
+
+const ibanRegex = /^[A-Z]{2}\d{2}[A-Z\d]{1,30}$/;
+const ntnRegex = /^\d{7}-\d{1}$/;
 </script>
 
 <template>
@@ -159,8 +168,9 @@ const resetForm = () => {
                 v-model="form.telephone"
                 :rules="[requiredValidator, phoneValidator]"
                 label="Telephone"
-                type="tel"
+                type="number"
                 placeholder="03xxxxxxxxx"
+                @input="() => onInputRestrictLength('telephone', 11)"
               />
             </VCol>
 
@@ -171,9 +181,11 @@ const resetForm = () => {
             >
               <AppTextField
                 v-model="form.cnic"
+                type="number"
                 :rules="[requiredValidator, exactLengthValidator(13), numberValidator]"
                 label="CNIC"
-                placeholder="Enter CNIC (e.g., 12345-1234567-1)"
+                placeholder="Enter CNIC Without Dashes (e.g.,3520250XXXXXX )"
+                @input="() => onInputRestrictLength('cnic', 13)"
               />
             </VCol>
 
@@ -200,6 +212,8 @@ const resetForm = () => {
                 v-model="form.iban"
                 label="IBAN"
                 placeholder="Enter IBAN (e.g., CountryCode + CheckDigits + BasicBankAccountNumber)"
+                :rules="[regexValidator(form.iban, ibanRegex, 'Invalid IBAN')]"
+                @input="onInputRestrictLength('iban', 24)"
               />
             </VCol>
 
@@ -212,6 +226,8 @@ const resetForm = () => {
                 v-model="form.ntn"
                 label="NTN"
                 placeholder="Enter NTN (e.g., 1234567-8)"
+                :rules="[regexValidator(form.ntn, ntnRegex, 'Invalid NTN format. Correct format: 1234567-8')]"
+                @input="onInputRestrictLength('ntn', 9)"
               />
             </VCol>
             <ProvinceCitySelector
