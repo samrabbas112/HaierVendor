@@ -11,7 +11,7 @@ import {
 const props = defineProps({
   selectedProvinceId: Number,
   selectedCityId: Number,
-  addClass: Boolean ,
+  addClass: Boolean,
 })
 
 const emit = defineEmits(['update:selectedProvinceId', 'update:selectedCityId'])
@@ -31,8 +31,7 @@ const fetchProvinces = async () => {
     }))
     if (provinces.value.length > 0 && props.selectedProvinceId !== undefined)
       emit('update:selectedProvinceId', provinces.value[0]?.value) // Set default province
-  }
-  catch (error) {
+  } catch (error) {
     snackBarStore.showSnackbar('Failed to load provinces', 'error')
   }
 }
@@ -45,25 +44,32 @@ const fetchCities = async (provinceId: number) => {
       value: city.id,
       title: city.name,
     }))
-  }
-  catch (error) {
+  } catch (error) {
     snackBarStore.showSnackbar('Failed to load cities', 'error')
   }
 }
 
 // Watch province selection and load cities
-watch(() => props.selectedProvinceId, newProvinceId => {
-  if (newProvinceId)
-    fetchCities(newProvinceId)
-}, { immediate: true })
+watch(
+  () => props.selectedProvinceId,
+  async newProvinceId => {
+    if (newProvinceId) {
+      emit('update:selectedCityId', undefined) // Reset selectedCityId to undefined
+      await fetchCities(newProvinceId) // Fetch new cities based on the province
+    } else {
+      cities.value = [] // Clear cities if no province is selected
+      emit('update:selectedCityId', undefined) // Ensure city is reset
+    }
+  },
+  { immediate: true }
+)
 
 // Fetch provinces on mount
 onMounted(() => {
-  console.log(props.selectedProvinceId)
-  console.log(props.selectedCityId)
   fetchProvinces()
 })
 </script>
+
 
 <template>
 
