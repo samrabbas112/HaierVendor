@@ -309,7 +309,7 @@ const deleteOrder = async (id: number) => {}
 
         <!-- Date -->
         <template #item.date="{ item }">
-          {{ new Date(item.date).toDateString() }}
+          {{ new Date(item.date).toLocaleDateString() }}
         </template>
 
         <!-- Customers  -->

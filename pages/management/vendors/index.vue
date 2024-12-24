@@ -270,7 +270,7 @@ onMounted(fetchVendors)
       </template>
 
       <template #item.created_at="{ item }">
-        {{ new Date(item.created_at).toDateString() }}
+        {{ new Date(item.created_at).toLocaleDateString() }}
       </template>
 
       <!-- Status -->
