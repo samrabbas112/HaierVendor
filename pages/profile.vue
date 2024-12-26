@@ -12,6 +12,7 @@ const qrCodeUrl = `${useRuntimeConfig().public.qrURL}/management/customers/${use
 
 const router = useRouter()
 const requiredValidator = (value: string) => !!value || 'This field is required';
+const trimPassword =  (value: string) => value.trim().length > 0 || 'This field is required';
 const passwordConfirmationRule = (value: string) => (v: string) => {
   if (!v) return 'Confirm password is required';
   if (v !== value) return 'Password must match';
@@ -30,6 +31,26 @@ const form = ref({
 
 const isFormValid = ref(false);
 
+watch(() => form.value.current_password, () => {
+  if (form.value.current_password) {
+    form.value.current_password = form.value.current_password.trimStart();
+  }
+}, { deep: true });
+
+watch(() => form.value.new_password, () => {
+  if (form.value.new_password) {
+    form.value.new_password = form.value.new_password.trimStart();
+  }
+}, { deep: true });
+
+watch(() => form.value.confirm_new_password, () => {
+  if (form.value.confirm_new_password) {
+    form.value.confirm_new_password = form.value.confirm_new_password.trimStart();
+  }
+}, { deep: true });
+
+
+
 const updatePassword = async () => {
   // Validate the form
   const formRef = refForm.value;
@@ -37,7 +58,6 @@ const updatePassword = async () => {
 
   const { valid } = await formRef.validate();
   if (!valid) {
-    snackbarStore.showSnackbar("Please fix the validation errors.", 'error');
     return;
   }
 
@@ -86,7 +106,7 @@ const updatePassword = async () => {
               <!-- Left side: Form Fields -->
               <VCol cols="12" sm="6">
                 <!-- Current Password -->
-                <AppTextField v-model="form.current_password" :rules="[requiredValidator]" label="Current Password"
+                <AppTextField v-model="form.current_password" :rules="[requiredValidator,trimPassword]" label="Current Password"
                   placeholder="Enter your current password" maxlength="50"
                   :type="isCurrentPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isCurrentPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'" autocomplete="on"
@@ -95,7 +115,7 @@ const updatePassword = async () => {
 
               <!-- New Password -->
               <VCol cols="12" sm="6">
-                <AppTextField v-model="form.new_password" :rules="[requiredValidator, passwordValidator]"
+                <AppTextField v-model="form.new_password" :rules="[requiredValidator, passwordValidator,trimPassword]"
                   label="New Password" placeholder="Enter your new password"
                   :type="isNewPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isNewPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'" autocomplete="on"
@@ -105,7 +125,7 @@ const updatePassword = async () => {
               <!-- Confirm New Password -->
               <VCol cols="12" sm="6">
                 <AppTextField v-model="form.confirm_new_password"
-                  :rules="[requiredValidator, passwordConfirmationRule(form.new_password)]" label="Confirm New Password"
+                  :rules="[requiredValidator,trimPassword, passwordConfirmationRule(form.new_password)]" label="Confirm New Password"
                   placeholder="Confirm your new password" :type="isConfirmPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'" autocomplete="on"
                   @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible" />
@@ -121,7 +141,7 @@ const updatePassword = async () => {
           </VRow>
 
           <!-- Actions (Submit and Reset buttons) -->
-          <VRow justify="end" class="mt-6">
+          <VRow>
             <VCol cols="12" sm="3">
               <VBtn color="primary" type="submit">
                 Submit
