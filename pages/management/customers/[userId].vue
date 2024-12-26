@@ -231,12 +231,10 @@ const onSubmit = async () => {
                   placeholder="Enter address"
                 />
               </VCol>
-              <VCol cols="12">
                 <ProvinceCitySelector
                   v-model:selectedProvinceId="selectedProvinceId"
                   v-model:selectedCityId="selectedCityId"
                 />
-              </VCol>
 
               <!-- Phone Number -->
               <VCol cols="12">
