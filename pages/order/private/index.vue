@@ -57,7 +57,7 @@ const makeSearch = async (page) => {
   const formData = {
     order_no: searchQuery.value,
     order_type: "private",
-    vendor_id: authUser.value.user.uid,
+    vendor_id: authUser.value.user.id,
   };
 
   console.log("formData", formData);

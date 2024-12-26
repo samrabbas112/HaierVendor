@@ -129,7 +129,6 @@ const submitForm = async () => {
     snackbarStore.showSnackbar('Logged in successfully', 'success')
     await nextTick(() => {
       window.location.href = '/dashboard';
-      // router.push('/dashboard')
     })
   } else if(response && response.message == 'Please Accept Terms and conditions.') {
     termsStore.showTerms();
@@ -171,13 +170,6 @@ const submitForm = async () => {
           />
         </div>
 
-        <img
-          class="auth-footer-mask flip-in-rtl"
-          :src="authThemeMask"
-          alt="auth-footer-mask"
-          height="280"
-          width="100"
-        />
       </div>
     </VCol>
 
