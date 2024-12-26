@@ -13,7 +13,7 @@ export default [
   },
   {
     title: 'Public Orders',
-    to: {name: 'order-lahore'},
+    to: {name: 'order-location'},
     icon: { icon: 'tabler-files' },
     action: 'read',
     subject: 'Vendor',
