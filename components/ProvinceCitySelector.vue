@@ -52,21 +52,28 @@ const fetchCities = async (provinceId: number) => {
 // Watch province selection and load cities
 watch(
   () => props.selectedProvinceId,
-  async newProvinceId => {
-    if (newProvinceId) {
-      emit('update:selectedCityId', undefined) // Reset selectedCityId to undefined
-      await fetchCities(newProvinceId) // Fetch new cities based on the province
-    } else {
-      cities.value = [] // Clear cities if no province is selected
-      emit('update:selectedCityId', undefined) // Ensure city is reset
+  async (newProvinceId, oldProvinceId) => {
+    console.log('oldProvinceId',oldProvinceId);
+    console.log('newProvinceId',newProvinceId);
+    if(newProvinceId && oldProvinceId == undefined) {
+      await fetchCities(newProvinceId)
+    }
+    // Only reset cities if the province is changed and it's a valid province
+    else if (newProvinceId !== oldProvinceId) {
+      emit('update:selectedCityId', undefined)  // Reset selected city
+      await fetchCities(newProvinceId)  // Fetch cities based on the new province
     }
   },
   { immediate: true }
 )
 
+
+
 // Fetch provinces on mount
 onMounted(() => {
   fetchProvinces()
+  console.log(props.selectedCityId);
+
 })
 </script>
 
