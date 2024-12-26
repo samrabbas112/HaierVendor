@@ -53,15 +53,12 @@ const fetchCities = async (provinceId: number) => {
 watch(
   () => props.selectedProvinceId,
   async (newProvinceId, oldProvinceId) => {
-    console.log('oldProvinceId',oldProvinceId);
-    console.log('newProvinceId',newProvinceId);
     if(newProvinceId && oldProvinceId == undefined) {
       await fetchCities(newProvinceId)
     }
-    // Only reset cities if the province is changed and it's a valid province
     else if (newProvinceId !== oldProvinceId) {
       emit('update:selectedCityId', undefined)  // Reset selected city
-      await fetchCities(newProvinceId)  // Fetch cities based on the new province
+      await fetchCities(newProvinceId)
     }
   },
   { immediate: true }
