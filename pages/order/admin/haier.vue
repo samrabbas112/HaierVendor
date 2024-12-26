@@ -1,99 +1,98 @@
 <script setup lang="ts">
-import { orderStatusCodes } from '@/libs/order/order-status';
+import { orderStatusCodes } from "@/libs/order/order-status";
 
-const apiRequestObj = useApi()
-const snackbarStore = useSnackbarStore()
-const loaderStore = useLoaderStore()
+const apiRequestObj = useApi();
+const snackbarStore = useSnackbarStore();
+const loaderStore = useLoaderStore();
 
-const searchQuery = ref('')
-const selectedPaymentMethod = ref()
-const selectedOrderStatus = ref()
+const searchQuery = ref("");
+const selectedPaymentMethod = ref();
+const selectedOrderStatus = ref();
 
 const ordersData = ref({
   per_page: 10,
   current_page: 1,
   total: 0,
   orders: [],
-})
+});
 
-const authUser = useCookie('auth')
+const authUser = useCookie("auth");
 
 // Data table Headers
 const headers = [
-  { title: 'Order#', key: 'order', sortable: false },
-  { title: 'Total Price', key: 'payment', sortable: false },
-  { title: 'Customers', key: 'customer', sortable: false },
-  { title: 'Payment Method', key: 'method', sortable: false },
-  { title: 'Placed At', key: 'date', sortable: false },
-  { title: 'City', key: 'city', sortable: false },
-  { title: 'Status', key: 'status', sortable: false },
-  { title: 'Action', key: 'actions', sortable: false },
-]
+  { title: "Order#", key: "order", sortable: false },
+  { title: "Total Price", key: "payment", sortable: false },
+  { title: "Customers", key: "customer", sortable: false },
+  { title: "Payment Method", key: "method", sortable: false },
+  { title: "Placed At", key: "date", sortable: false },
+  { title: "City", key: "city", sortable: false },
+  { title: "Status", key: "status", sortable: false },
+  { title: "Action", key: "actions", sortable: false },
+];
 
 const paymentMethods = [
-  { title: 'COD', value: 'COD' },
-  { title: 'Card', value: 'Card' },
-  { title: 'EasyPaisa', value: 'EasyPaisa' },
-  { title: 'jazzCash', value: 'jazzCash' },
-]
+  { title: "COD", value: "COD" },
+  { title: "Card", value: "Card" },
+  { title: "EasyPaisa", value: "EasyPaisa" },
+  { title: "jazzCash", value: "jazzCash" },
+];
 
 const orderStatus = [
-  { title: 'Out for delivery', value: orderStatusCodes.isOutForDelivery },
-  { title: 'Delivery Refused', value: orderStatusCodes.isDeliveryRefused },
-  { title: 'Closed', value: orderStatusCodes.isClosed },
-  { title: 'Ready to ship', value: orderStatusCodes.isReadyToShip },
-  { title: 'haier operations', value: orderStatusCodes.isHaier },
-  { title: 'Delivery timeout', value: orderStatusCodes.isDeliveryTimeout },
-  { title: 'Rejected', value: orderStatusCodes.isRejected },
-  { title: 'Cancelled', value: orderStatusCodes.isCancelled },
-]
+  { title: "Out for delivery", value: orderStatusCodes.isOutForDelivery },
+  { title: "Delivery Refused", value: orderStatusCodes.isDeliveryRefused },
+  { title: "Closed", value: orderStatusCodes.isClosed },
+  { title: "Ready to ship", value: orderStatusCodes.isReadyToShip },
+  { title: "haier operations", value: orderStatusCodes.isHaier },
+  { title: "Delivery timeout", value: orderStatusCodes.isDeliveryTimeout },
+  { title: "Rejected", value: orderStatusCodes.isRejected },
+  { title: "Cancelled", value: orderStatusCodes.isCancelled },
+];
 
-const transformData = apiResponse => {
-  return apiResponse.map(item => {
-    const customer = item.customer
+const transformData = (apiResponse) => {
+  return apiResponse.map((item) => {
+    const customer = item.customer;
 
     return {
       id: item.id,
       uid: item.uid,
       order: item.order_no,
-      customer: customer.name || 'N/A',
-      mobile: customer.mobile || '03XXXXXXXXXX',
+      customer: customer.name || "N/A",
+      mobile: customer.mobile || "03XXXXXXXXXX",
       payment: Number.parseFloat(item.paymentAmount) || 0,
       status: item.pick_status.id || 1,
-      method: item.payment_method || 'COD', // Payment method
+      method: item.payment_method || "COD", // Payment method
       date: item.created_at,
       time: item.pick_before,
       city: item.city,
-    }
-  })
-}
+    };
+  });
+};
 
-let previousSearchQuery = ''
+let previousSearchQuery = "";
 
-const makeSearch = async page => {
+const makeSearch = async (page) => {
   // return console.log("search api hit", typeof page, searchQuery.value, page);
-  console.log('search function hit', searchQuery.value)
+  console.log("search function hit", searchQuery.value);
 
   // Check if searchQuery has changed, reset page to 1 if it has
-  if (searchQuery.value !== previousSearchQuery)
-    page = 1 // Reset to page 1 if the search query has changed
+  if (searchQuery.value !== previousSearchQuery) page = 1; // Reset to page 1 if the search query has changed
 
   const formData = {
     order_no: searchQuery.value,
     order_status: selectedOrderStatus.value,
     payment_status: selectedPaymentMethod.value,
     vendor_id: authUser.value.user.user_id,
-    order_type: 'my_orders',
-  }
+    order_type: "my_orders",
+  };
 
   try {
-    loaderStore.showLoader()
+    loaderStore.showLoader();
 
     const response = await apiRequestObj.makeRequest(
-      `common/order/list?page=${typeof page == 'number' ? page : 1}`,
-      'post',
+      `common/order/list?page=${typeof page == "number" ? page : 1}`,
+      "post",
       formData,
-    )
+    );
 
     if (response && response.success) {
       // Transform and set the data
@@ -102,29 +101,26 @@ const makeSearch = async page => {
         current_page: response?.data?.currentPage,
         total: response?.data?.total, // Set total count of orders
         orders: transformData(response?.data?.orders),
-      }
-    }
-    else {
+      };
+    } else {
       snackbarStore.showSnackbar(
-        'An error occurred. Please try again.',
-        'error',
-      )
+        "An error occurred. Please try again.",
+        "error",
+      );
     }
-  }
-  catch (error) {
-    snackbarStore.showSnackbar('An error occurred. Please try again.', 'error')
-  }
-  finally {
-    loaderStore.hideLoader()
+  } catch (error) {
+    snackbarStore.showSnackbar("An error occurred. Please try again.", "error");
+  } finally {
+    loaderStore.hideLoader();
   }
 
   // Update the previous search query to the current one
-  previousSearchQuery = searchQuery.value
-}
+  previousSearchQuery = searchQuery.value;
+};
 
 onMounted(() => {
-  makeSearch(1)
-})
+  makeSearch(1);
+});
 </script>
 
 <template>
@@ -135,24 +131,12 @@ onMounted(() => {
     @update:page="makeSearch"
   >
     <VCardText>
-      <VRow
-        cols="12"
-        sm="8"
-      >
+      <VRow cols="12" sm="8">
         <!-- 👉 Select Status -->
-        <VCol
-          cols="12"
-          sm="3"
-        >
-          <AppTextField
-            v-model="searchQuery"
-            placeholder="Search Order#"
-          />
+        <VCol cols="12" sm="3">
+          <AppTextField v-model="searchQuery" placeholder="Search Order#" />
         </VCol>
-        <VCol
-          cols="12"
-          sm="3"
-        >
+        <VCol cols="12" sm="3">
           <AppSelect
             v-model="selectedOrderStatus"
             placeholder="Select Order Status"
@@ -161,10 +145,7 @@ onMounted(() => {
             clear-icon="tabler-x"
           />
         </VCol>
-        <VCol
-          cols="12"
-          sm="3"
-        >
+        <VCol cols="12" sm="3">
           <AppSelect
             v-model="selectedPaymentMethod"
             placeholder="Select Payment Method"
@@ -174,30 +155,24 @@ onMounted(() => {
           />
         </VCol>
 
-        <VCol
-          cols="12"
-          sm="3"
-        >
+        <VCol cols="12" sm="3">
           <div class="d-flex">
             <VBtn
               class="me-2"
               variant="outlined"
               color="secondary"
-              @click="() => {
-                searchQuery = '';
-                selectedOrderStatus = null;
-                selectedPaymentMethod = null
-                makeSearch(1)
-              }"
+              @click="
+                () => {
+                  searchQuery = '';
+                  selectedOrderStatus = null;
+                  selectedPaymentMethod = null;
+                  makeSearch(1);
+                }
+              "
             >
               Reset
             </VBtn>
-            <VBtn
-              variant="flat"
-              @click="makeSearch"
-            >
-              Search
-            </VBtn>
+            <VBtn variant="flat" @click="makeSearch"> Search </VBtn>
           </div>
         </VCol>
       </VRow>

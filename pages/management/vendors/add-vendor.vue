@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { inject, onMounted, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import type { VForm } from 'vuetify/components/VForm'
-import { useSnackbarStore } from '@/stores/snackbar'
-import { useLoaderStore } from '@/stores/loader'
+import { inject, onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import type { VForm } from "vuetify/components/VForm";
+import { useSnackbarStore } from "@/stores/snackbar";
+import { useLoaderStore } from "@/stores/loader";
 
 import {
   alphabetValidator,
@@ -13,38 +13,38 @@ import {
   numberValidator,
   phoneValidator,
   requiredValidator,
-} from '@/utils/validators'
+} from "@/utils/validators";
 
-const selectedProvinceId = ref<number | undefined>(undefined)
-const selectedCityId = ref<number | undefined>(undefined)
-const loaderStore = useLoaderStore()
-const router = useRouter()
-const snackBarStore = useSnackbarStore()
+const selectedProvinceId = ref<number | undefined>(undefined);
+const selectedCityId = ref<number | undefined>(undefined);
+const loaderStore = useLoaderStore();
+const router = useRouter();
+const snackBarStore = useSnackbarStore();
 
 // References
-const refForm = ref<VForm>()
-const isFormValid = ref(false)
-const isPasswordVisible = ref(false)
+const refForm = ref<VForm>();
+const isFormValid = ref(false);
+const isPasswordVisible = ref(false);
 
 // Form State
 const form = ref({
-  name: '',
-  email: '',
-  password: '',
-  telephone: '',
-  cnic: '',
-  address: '',
-  iban: '',
-  ntn: '',
-  province: 'Select Province',
-  city: 'Select City',
-  status: 'active',
-})
+  name: "",
+  email: "",
+  password: "",
+  telephone: "",
+  cnic: "",
+  address: "",
+  iban: "",
+  ntn: "",
+  province: "Select Province",
+  city: "Select City",
+  status: "active",
+});
 
 const statuses = [
-  { text: 'Active', value: 'active' },
-  { text: 'Inactive', value: 'inactive' },
-]
+  { text: "Active", value: "active" },
+  { text: "Inactive", value: "inactive" },
+];
 
 // Form Submission Handler
 const submitForm = async () => {
@@ -55,86 +55,84 @@ const submitForm = async () => {
           ...form.value,
           city: selectedCityId.value,
           province: selectedProvinceId.value,
-          status: form.value.status === 'active', // Convert to boolean
-        }
+          status: form.value.status === "active", // Convert to boolean
+        };
 
         const response = await useApi().makeRequest(
-          'haier/vendor/store',
-          'post',
+          "haier/vendor/store",
+          "post",
           payload,
-        )
+        );
 
         if (response && response.success) {
-          resetForm()
-          snackBarStore.showSnackbar('Vendor created successfully!', 'success')
-          router.push('/management/vendors') // Navigate to the vendor list page
-        }
-        else {
-          const messages = response?.message
+          resetForm();
+          snackBarStore.showSnackbar("Vendor created successfully!", "success");
+          router.push("/management/vendors"); // Navigate to the vendor list page
+        } else {
+          const messages = response?.message;
 
-          console.log(messages)
+          console.log(messages);
 
           if (Array.isArray(messages)) {
-            messages.forEach(item => {
-              Object.keys(item).forEach(key => {
-                const errorMessages = item[key]
+            messages.forEach((item) => {
+              Object.keys(item).forEach((key) => {
+                const errorMessages = item[key];
                 if (Array.isArray(errorMessages)) {
-                  errorMessages.forEach(errorMessage => {
-                    snackBarStore.showSnackbar(errorMessage, 'error')
-                  })
+                  errorMessages.forEach((errorMessage) => {
+                    snackBarStore.showSnackbar(errorMessage, "error");
+                  });
                 }
-              })
-            })
-          }
-          else {
-            snackBarStore.showSnackbar('An unexpected error occurred.', 'error')
+              });
+            });
+          } else {
+            snackBarStore.showSnackbar(
+              "An unexpected error occurred.",
+              "error",
+            );
           }
         }
-      }
-      catch (error) {
-        snackBarStore.showSnackbar('An error occurred. Please try again.', 'error')
+      } catch (error) {
+        snackBarStore.showSnackbar(
+          "An error occurred. Please try again.",
+          "error",
+        );
       }
     }
-  })
-}
+  });
+};
 
 // Reset Form Handler
 const resetForm = () => {
-  refForm.value?.reset()
-  refForm.value?.resetValidation()
-}
+  refForm.value?.reset();
+  refForm.value?.resetValidation();
+};
 
 const onInputRestrictLength = (field, maxLength) => {
   if (form.value[field].length > maxLength)
-    form.value[field] = form.value[field].slice(0, maxLength)
-}
+    form.value[field] = form.value[field].slice(0, maxLength);
+};
 
-const ibanRegex = /^[A-Z]{2}\d{2}[A-Z\d]{1,30}$/
-const ntnRegex = /^\d{7}-\d$/
+const ibanRegex = /^[A-Z]{2}\d{2}[A-Z\d]{1,30}$/;
+const ntnRegex = /^\d{7}-\d$/;
 </script>
 
 <template>
   <section>
     <VCard>
-      <VCardTitle>
-        Add New Vendor
-      </VCardTitle>
+      <VCardTitle> Add New Vendor </VCardTitle>
       <VCardText>
         <!-- Form -->
-        <VForm
-          ref="refForm"
-          v-model="isFormValid"
-          @submit.prevent="submitForm"
-        >
+        <VForm ref="refForm" v-model="isFormValid" @submit.prevent="submitForm">
           <VRow>
             <!-- Name -->
-            <VCol
-              cols="12"
-              sm="6"
-            >
+            <VCol cols="12" sm="6">
               <AppTextField
                 v-model="form.name"
-                :rules="[requiredValidator, minLengthValidator(3), alphabetValidator]"
+                :rules="[
+                  requiredValidator,
+                  minLengthValidator(3),
+                  alphabetValidator,
+                ]"
                 label="Name"
                 placeholder="Enter Vendor Name"
                 maxlength="50"
@@ -142,10 +140,7 @@ const ntnRegex = /^\d{7}-\d$/
             </VCol>
 
             <!-- Email -->
-            <VCol
-              cols="12"
-              sm="6"
-            >
+            <VCol cols="12" sm="6">
               <AppTextField
                 v-model="form.email"
                 :rules="[requiredValidator, emailValidator]"
@@ -155,10 +150,7 @@ const ntnRegex = /^\d{7}-\d$/
             </VCol>
 
             <!-- Password -->
-            <VCol
-              cols="12"
-              sm="6"
-            >
+            <VCol cols="12" sm="6">
               <AppTextField
                 v-model="form.password"
                 label="Password"
@@ -173,10 +165,7 @@ const ntnRegex = /^\d{7}-\d$/
             </VCol>
 
             <!-- Telephone -->
-            <VCol
-              cols="12"
-              sm="6"
-            >
+            <VCol cols="12" sm="6">
               <AppTextField
                 v-model="form.telephone"
                 :rules="[requiredValidator, phoneValidator]"
@@ -188,14 +177,15 @@ const ntnRegex = /^\d{7}-\d$/
             </VCol>
 
             <!-- CNIC -->
-            <VCol
-              cols="12"
-              sm="6"
-            >
+            <VCol cols="12" sm="6">
               <AppTextField
                 v-model="form.cnic"
                 type="number"
-                :rules="[requiredValidator, exactLengthValidator(13), numberValidator]"
+                :rules="[
+                  requiredValidator,
+                  exactLengthValidator(13),
+                  numberValidator,
+                ]"
                 label="CNIC"
                 placeholder="Enter CNIC Without Dashes (e.g.,3520250XXXXXX )"
                 @input="() => onInputRestrictLength('cnic', 13)"
@@ -203,10 +193,7 @@ const ntnRegex = /^\d{7}-\d$/
             </VCol>
 
             <!-- Address -->
-            <VCol
-              cols="12"
-              sm="6"
-            >
+            <VCol cols="12" sm="6">
               <AppTextField
                 v-model="form.address"
                 :rules="[requiredValidator, minLengthValidator(10)]"
@@ -217,10 +204,7 @@ const ntnRegex = /^\d{7}-\d$/
             </VCol>
 
             <!-- IBAN (Optional) -->
-            <VCol
-              cols="12"
-              sm="6"
-            >
+            <VCol cols="12" sm="6">
               <AppTextField
                 v-model="form.iban"
                 label="IBAN"
@@ -231,15 +215,18 @@ const ntnRegex = /^\d{7}-\d$/
             </VCol>
 
             <!-- NTN (Optional) -->
-            <VCol
-              cols="12"
-              sm="6"
-            >
+            <VCol cols="12" sm="6">
               <AppTextField
                 v-model="form.ntn"
                 label="NTN"
                 placeholder="Enter NTN (e.g., 1234567-8)"
-                :rules="[regexValidator(form.ntn, ntnRegex, 'Invalid NTN format. Correct format: 1234567-8')]"
+                :rules="[
+                  regexValidator(
+                    form.ntn,
+                    ntnRegex,
+                    'Invalid NTN format. Correct format: 1234567-8',
+                  ),
+                ]"
                 @input="onInputRestrictLength('ntn', 9)"
               />
             </VCol>
@@ -249,10 +236,7 @@ const ntnRegex = /^\d{7}-\d$/
             />
 
             <!-- Status -->
-            <VCol
-              cols="12"
-              sm="6"
-            >
+            <VCol cols="12" sm="6">
               <AppSelect
                 v-model="form.status"
                 :items="statuses"
@@ -265,20 +249,9 @@ const ntnRegex = /^\d{7}-\d$/
           </VRow>
 
           <!-- Actions -->
-          <VRow
-            justify="end"
-            class="mt-6"
-          >
-            <VCol
-              cols="12"
-              sm="3"
-            >
-              <VBtn
-                color="primary"
-                type="submit"
-              >
-                Submit
-              </VBtn>
+          <VRow justify="end" class="mt-6">
+            <VCol cols="12" sm="3">
+              <VBtn color="primary" type="submit"> Submit </VBtn>
               <VBtn
                 class="ml-2"
                 variant="tonal"

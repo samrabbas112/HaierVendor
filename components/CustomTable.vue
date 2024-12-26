@@ -3,50 +3,45 @@ const { headers, data, from } = defineProps({
   headers: Array,
   data: [Array, Object],
   from: String,
-})
+});
 
-const emit = defineEmits()
+const emit = defineEmits();
 
-const route = useRoute()
+const route = useRoute();
 
 // Data table options
-const sortBy = ref()
-const orderBy = ref()
-const selectedRows = ref([])
+const sortBy = ref();
+const orderBy = ref();
+const selectedRows = ref([]);
 
 // Update data table options
 const updateOptions = (options: any) => {
-  sortBy.value = options.sortBy[0]?.key
-  orderBy.value = options.sortBy[0]?.order
-}
-
+  sortBy.value = options.sortBy[0]?.key;
+  orderBy.value = options.sortBy[0]?.order;
+};
 
 const resolveMethod = (status: string) => {
-  if (status === 'COD')
-    return { text: 'COD', color: 'warning' }
-  if (status === 'Card')
-    return { text: 'Card', color: 'success' }
-  if (status === 'EasyPaisa')
-    return { text: 'EasyPaisa', color: 'error' }
-  if (status === 'jazzCash')
-    return { text: 'jazzCash', color: 'info' }
-}
+  if (status === "COD") return { text: "COD", color: "warning" };
+  if (status === "Card") return { text: "Card", color: "success" };
+  if (status === "EasyPaisa") return { text: "EasyPaisa", color: "error" };
+  if (status === "jazzCash") return { text: "jazzCash", color: "info" };
+};
 
-console.log({ data })
+console.log({ data });
 
-const updatePage = value => {
-  emit('update:page', value)
-}
+const updatePage = (value) => {
+  emit("update:page", value);
+};
 
 // Delete Orders
 const deleteData = async (id: number) => {
-  emit('delete:record', id)
-}
+  emit("delete:record", id);
+};
 </script>
 
 <template>
   <div>
-      <!-- 👉 Filters -->
+    <!-- 👉 Filters -->
     <VCard class="mb-6">
       <slot />
     </VCard>
@@ -128,11 +123,7 @@ const deleteData = async (id: number) => {
 
         <!-- Status -->
         <template #item.status="{ item }">
-          <VChip
-            v-bind="resolveOrderStatus(item.status)"
-            label
-            size="small"
-          />
+          <VChip v-bind="resolveOrderStatus(item.status)" label size="small" />
         </template>
 
         <!-- Method -->
@@ -141,15 +132,8 @@ const deleteData = async (id: number) => {
             :class="`text-${resolveMethod(item.method)?.color}`"
             class="font-weight-medium d-flex align-center gap-x-2"
           >
-            <VIcon
-              icon="tabler-circle-filled"
-              size="10"
-            />
-            <VChip
-              v-bind="resolveMethod(item.method)"
-              label
-              size="small"
-            />
+            <VIcon icon="tabler-circle-filled" size="10" />
+            <VChip v-bind="resolveMethod(item.method)" label size="small" />
           </div>
         </template>
 
@@ -165,16 +149,10 @@ const deleteData = async (id: number) => {
             <VIcon icon="tabler-dots-vertical" />
             <VMenu activator="parent">
               <VList>
-                <VListItem
-                  value="view"
-                  :to="`/order/${from}/${item.uid}`"
-                >
+                <VListItem value="view" :to="`/order/${from}/${item.uid}`">
                   View
                 </VListItem>
-                <VListItem
-                  value="delete"
-                  @click="deleteData(item.id)"
-                >
+                <VListItem value="delete" @click="deleteData(item.id)">
                   Deleted
                 </VListItem>
               </VList>

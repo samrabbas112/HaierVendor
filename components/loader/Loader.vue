@@ -1,15 +1,12 @@
 <!-- components/Loader.vue -->
 <script setup lang="ts">
-import { useLoaderStore } from '@/stores/loader'
+import { useLoaderStore } from "@/stores/loader";
 
-const loaderStore = useLoaderStore()
+const loaderStore = useLoaderStore();
 </script>
 
 <template>
-  <div
-    v-if="loaderStore.isLoading"
-    class="loader"
-  >
+  <div v-if="loaderStore.isLoading" class="loader">
     <div class="loaderMiniContainer">
       <div class="barContainer">
         <span class="bar" />

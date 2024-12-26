@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const toastStore = useToastStore()
+const toastStore = useToastStore();
 </script>
 
 <template>
@@ -17,7 +17,7 @@ const toastStore = useToastStore()
 </template>
 
 <style scoped>
-.alert{
+.alert {
   width: 18%;
   position: sticky;
   top: 4%;

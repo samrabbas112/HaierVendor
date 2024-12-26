@@ -1,11 +1,11 @@
 export interface Faq {
-  question: string
-  answer: string
+  question: string;
+  answer: string;
 }
 
 export interface FaqCategory {
-  faqTitle: string
-  faqIcon: string
-  faqSubtitle: string
-  faqs: Faq[]
+  faqTitle: string;
+  faqIcon: string;
+  faqSubtitle: string;
+  faqs: Faq[];
 }

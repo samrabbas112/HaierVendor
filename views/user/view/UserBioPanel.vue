@@ -1,52 +1,49 @@
 <script setup lang="ts">
 interface Props {
   userData: {
-    id: number
-    fullName: string
-    firstName: string
-    lastName: string
-    company: string
-    username: string
-    role: string
-    country: string
-    contact: string
-    email: string
-    currentPlan: string
-    status: string
-    avatar: string
-    taskDone: number
-    projectDone: number
-    taxId: string
-    language: string
-  }
+    id: number;
+    fullName: string;
+    firstName: string;
+    lastName: string;
+    company: string;
+    username: string;
+    role: string;
+    country: string;
+    contact: string;
+    email: string;
+    currentPlan: string;
+    status: string;
+    avatar: string;
+    taskDone: number;
+    projectDone: number;
+    taxId: string;
+    language: string;
+  };
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const standardPlan = {
-  plan: 'Standard',
+  plan: "Standard",
   price: 99,
-  benefits: ['10 Users', 'Up to 10GB storage', 'Basic Support'],
-}
+  benefits: ["10 Users", "Up to 10GB storage", "Basic Support"],
+};
 
-const isUserInfoEditDialogVisible = ref(false)
-const isUpgradePlanDialogVisible = ref(false)
+const isUserInfoEditDialogVisible = ref(false);
+const isUpgradePlanDialogVisible = ref(false);
 
 // 👉 Role variant resolver
 const resolveUserRoleVariant = (role: string) => {
-  if (role === 'subscriber')
-    return { color: 'warning', icon: 'tabler-user' }
-  if (role === 'author')
-    return { color: 'success', icon: 'tabler-circle-check' }
-  if (role === 'maintainer')
-    return { color: 'primary', icon: 'tabler-chart-pie-2' }
-  if (role === 'editor')
-    return { color: 'info', icon: 'tabler-pencil' }
-  if (role === 'admin')
-    return { color: 'secondary', icon: 'tabler-server-2' }
+  if (role === "subscriber") return { color: "warning", icon: "tabler-user" };
+  if (role === "author")
+    return { color: "success", icon: "tabler-circle-check" };
+  if (role === "maintainer")
+    return { color: "primary", icon: "tabler-chart-pie-2" };
+  if (role === "editor") return { color: "info", icon: "tabler-pencil" };
+  if (role === "admin") return { color: "secondary", icon: "tabler-server-2" };
 
-  return { color: 'primary', icon: 'tabler-user' }
-}
+  return { color: "primary", icon: "tabler-user" };
+};
 </script>
 
 <template>
@@ -62,14 +59,8 @@ const resolveUserRoleVariant = (role: string) => {
             :color="!props.userData.avatar ? 'primary' : undefined"
             :variant="!props.userData.avatar ? 'tonal' : undefined"
           >
-            <VImg
-              v-if="props.userData.avatar"
-              :src="props.userData.avatar"
-            />
-            <span
-              v-else
-              class="text-5xl font-weight-medium"
-            >
+            <VImg v-if="props.userData.avatar" :src="props.userData.avatar" />
+            <span v-else class="text-5xl font-weight-medium">
               {{ avatarText(props.userData.fullName) }}
             </span>
           </VAvatar>
@@ -91,7 +82,9 @@ const resolveUserRoleVariant = (role: string) => {
         </VCardText>
 
         <VCardText>
-          <div class="d-flex justify-space-around gap-x-6 gap-y-2 flex-wrap mb-6">
+          <div
+            class="d-flex justify-space-around gap-x-6 gap-y-2 flex-wrap mb-6"
+          >
             <!-- 👉 Done task -->
             <div class="d-flex align-center me-8">
               <VAvatar
@@ -101,10 +94,7 @@ const resolveUserRoleVariant = (role: string) => {
                 variant="tonal"
                 class="me-4"
               >
-                <VIcon
-                  icon="tabler-checkbox"
-                  size="24"
-                />
+                <VIcon icon="tabler-checkbox" size="24" />
               </VAvatar>
               <div>
                 <h5 class="text-h5">
@@ -124,10 +114,7 @@ const resolveUserRoleVariant = (role: string) => {
                 variant="tonal"
                 class="me-4"
               >
-                <VIcon
-                  icon="tabler-briefcase"
-                  size="24"
-                />
+                <VIcon icon="tabler-briefcase" size="24" />
               </VAvatar>
               <div>
                 <h5 class="text-h5">
@@ -139,9 +126,7 @@ const resolveUserRoleVariant = (role: string) => {
           </div>
 
           <!-- 👉 Details -->
-          <h5 class="text-h5">
-            Details
-          </h5>
+          <h5 class="text-h5">Details</h5>
 
           <VDivider class="my-4" />
 
@@ -160,9 +145,7 @@ const resolveUserRoleVariant = (role: string) => {
 
             <VListItem>
               <VListItemTitle>
-                <span class="text-h6">
-                  Billing Email:
-                </span>
+                <span class="text-h6"> Billing Email: </span>
                 <span class="text-body-1">
                   {{ props.userData.email }}
                 </span>
@@ -239,19 +222,11 @@ const resolveUserRoleVariant = (role: string) => {
 
         <!-- 👉 Edit and Suspend button -->
         <VCardText class="d-flex justify-center gap-x-4">
-          <VBtn
-            variant="elevated"
-            @click="isUserInfoEditDialogVisible = true"
-          >
+          <VBtn variant="elevated" @click="isUserInfoEditDialogVisible = true">
             Edit
           </VBtn>
 
-          <VBtn
-            variant="tonal"
-            color="error"
-          >
-            Suspend
-          </VBtn>
+          <VBtn variant="tonal" color="error"> Suspend </VBtn>
         </VCardText>
       </VCard>
     </VCol>
@@ -262,12 +237,7 @@ const resolveUserRoleVariant = (role: string) => {
       <VCard>
         <VCardText class="d-flex">
           <!-- 👉 Standard Chip -->
-          <VChip
-            label
-            color="primary"
-            size="small"
-            class="font-weight-medium"
-          >
+          <VChip label color="primary" size="small" class="font-weight-medium">
             Popular
           </VChip>
 
@@ -276,20 +246,17 @@ const resolveUserRoleVariant = (role: string) => {
           <!-- 👉 Current Price  -->
           <div class="d-flex align-center">
             <sup class="text-h5 text-primary mt-1">$</sup>
-            <h1 class="text-h1 text-primary">
-              99
-            </h1>
-            <sub class="mt-3"><h6 class="text-h6 font-weight-regular mb-n1">/ month</h6></sub>
+            <h1 class="text-h1 text-primary">99</h1>
+            <sub class="mt-3"
+              ><h6 class="text-h6 font-weight-regular mb-n1">/ month</h6></sub
+            >
           </div>
         </VCardText>
 
         <VCardText>
           <!-- 👉 Price Benefits -->
           <VList class="card-list">
-            <VListItem
-              v-for="benefit in standardPlan.benefits"
-              :key="benefit"
-            >
+            <VListItem v-for="benefit in standardPlan.benefits" :key="benefit">
               <div class="d-flex align-center gap-x-2">
                 <VIcon
                   size="10"
@@ -306,12 +273,8 @@ const resolveUserRoleVariant = (role: string) => {
           <!-- 👉 Days -->
           <div class="my-6">
             <div class="d-flex justify-space-between mb-1">
-              <h6 class="text-h6">
-                Days
-              </h6>
-              <h6 class="text-h6">
-                26 of 30 Days
-              </h6>
+              <h6 class="text-h6">Days</h6>
+              <h6 class="text-h6">26 of 30 Days</h6>
             </div>
 
             <!-- 👉 Progress -->
@@ -322,17 +285,12 @@ const resolveUserRoleVariant = (role: string) => {
               color="primary"
             />
 
-            <p class="mt-1">
-              4 days remaining
-            </p>
+            <p class="mt-1">4 days remaining</p>
           </div>
 
           <!-- 👉 Upgrade Plan -->
           <div class="d-flex gap-4">
-            <VBtn
-              block
-              @click="isUpgradePlanDialogVisible = true"
-            >
+            <VBtn block @click="isUpgradePlanDialogVisible = true">
               Upgrade Plan
             </VBtn>
           </div>

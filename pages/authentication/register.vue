@@ -1,82 +1,86 @@
 <script setup>
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
-import registerMultiStepIllustrationDark from '@images/illustrations/register-multi-step-illustration-dark.png'
-import registerMultiStepIllustrationLight from '@images/illustrations/register-multi-step-illustration-light.png'
-import registerMultiStepBgDark from '@images/pages/register-multi-step-bg-dark.png'
-import registerMultiStepBgLight from '@images/pages/register-multi-step-bg-light.png'
+import { useGenerateImageVariant } from "@core/composable/useGenerateImageVariant";
+import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
+import { themeConfig } from "@themeConfig";
+import registerMultiStepIllustrationDark from "@images/illustrations/register-multi-step-illustration-dark.png";
+import registerMultiStepIllustrationLight from "@images/illustrations/register-multi-step-illustration-light.png";
+import registerMultiStepBgDark from "@images/pages/register-multi-step-bg-dark.png";
+import registerMultiStepBgLight from "@images/pages/register-multi-step-bg-light.png";
 
-const registerMultiStepBg = useGenerateImageVariant(registerMultiStepBgLight, registerMultiStepBgDark)
+const registerMultiStepBg = useGenerateImageVariant(
+  registerMultiStepBgLight,
+  registerMultiStepBgDark,
+);
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
   public: true,
+});
 
-})
-
-const currentStep = ref(0)
-const isPasswordVisible = ref(false)
-const isConfirmPasswordVisible = ref(false)
-const registerMultiStepIllustration = useGenerateImageVariant(registerMultiStepIllustrationLight, registerMultiStepIllustrationDark)
+const currentStep = ref(0);
+const isPasswordVisible = ref(false);
+const isConfirmPasswordVisible = ref(false);
+const registerMultiStepIllustration = useGenerateImageVariant(
+  registerMultiStepIllustrationLight,
+  registerMultiStepIllustrationDark,
+);
 
 const radioContent = [
   {
-    title: 'Starter',
-    desc: 'A simple start for everyone.',
-    value: '0',
+    title: "Starter",
+    desc: "A simple start for everyone.",
+    value: "0",
   },
   {
-    title: 'Standard',
-    desc: 'For small to medium businesses.',
-    value: '99',
+    title: "Standard",
+    desc: "For small to medium businesses.",
+    value: "99",
   },
   {
-    title: 'Enterprise',
-    desc: 'Solution for big organizations.',
-    value: '499',
+    title: "Enterprise",
+    desc: "Solution for big organizations.",
+    value: "499",
   },
-]
+];
 
 const items = [
   {
-    title: 'Account',
-    subtitle: 'Account Details',
-    icon: 'tabler-file-analytics',
+    title: "Account",
+    subtitle: "Account Details",
+    icon: "tabler-file-analytics",
   },
   {
-    title: 'Personal',
-    subtitle: 'Enter Information',
-    icon: 'tabler-user',
+    title: "Personal",
+    subtitle: "Enter Information",
+    icon: "tabler-user",
   },
   // {
   //   title: 'Billing',
   //   subtitle: 'Payment Details',
   //   icon: 'tabler-credit-card',
   // },
-]
+];
 
 const form = ref({
-  name: '',
-  email: '',
-  password: '',
-  password_confirmation: '',
-  is_otp_verified: '',
-  termsOfService: '',
-  city: '',
-  province: '',
-  telephone: '',
-  cnic: '',
-  address: '',
+  name: "",
+  email: "",
+  password: "",
+  password_confirmation: "",
+  is_otp_verified: "",
+  termsOfService: "",
+  city: "",
+  province: "",
+  telephone: "",
+  cnic: "",
+  address: "",
   qty: null,
-  status: '0',
-})
+  status: "0",
+});
 
 const onSubmit = () => {
-
   // eslint-disable-next-line no-alert
-  alert('Submitted..!!')
-}
+  alert("Submitted..!!");
+};
 </script>
 
 <template>
@@ -89,14 +93,8 @@ const onSubmit = () => {
     </div>
   </NuxtLink>
 
-  <VRow
-    no-gutters
-    class="auth-wrapper"
-  >
-    <VCol
-      md="4"
-      class="d-none d-md-flex"
-    >
+  <VRow no-gutters class="auth-wrapper">
+    <VCol md="4" class="d-none d-md-flex">
       <!-- here your illustration -->
       <div class="d-flex justify-center align-center w-100 position-relative">
         <VImg
@@ -109,7 +107,7 @@ const onSubmit = () => {
           :src="registerMultiStepBg"
           alt="register-multi-step-bg"
           height="340"
-        >
+        />
       </div>
     </VCol>
 
@@ -117,12 +115,9 @@ const onSubmit = () => {
       cols="12"
       md="8"
       class="auth-card-v2 d-flex align-center justify-center pa-10"
-      style="background-color: rgb(var(--v-theme-surface));"
+      style="background-color: rgb(var(--v-theme-surface))"
     >
-      <VCard
-        flat
-        class="mt-12 mt-sm-10"
-      >
+      <VCard flat class="mt-12 mt-sm-10">
         <AppStepper
           v-model:current-step="currentStep"
           :items="items"
@@ -134,22 +129,15 @@ const onSubmit = () => {
         <VWindow
           v-model="currentStep"
           class="disable-tab-transition"
-          style="max-inline-size: 681px;"
+          style="max-inline-size: 681px"
         >
           <VForm>
             <VWindowItem>
-              <h4 class="text-h4">
-                Account Information
-              </h4>
-              <p class="text-body-1 mb-6">
-                Enter Your Account Details
-              </p>
+              <h4 class="text-h4">Account Information</h4>
+              <p class="text-body-1 mb-6">Enter Your Account Details</p>
 
               <VRow>
-                <VCol
-                  cols="12"
-                  md="6"
-                >
+                <VCol cols="12" md="6">
                   <AppTextField
                     v-model="form.name"
                     label="name"
@@ -158,10 +146,7 @@ const onSubmit = () => {
                   />
                 </VCol>
 
-                <VCol
-                  cols="12"
-                  md="6"
-                >
+                <VCol cols="12" md="6">
                   <AppTextField
                     v-model="form.email"
                     label="Email"
@@ -170,51 +155,49 @@ const onSubmit = () => {
                   />
                 </VCol>
 
-                <VCol
-                  cols="12"
-                  md="6"
-                >
+                <VCol cols="12" md="6">
                   <AppTextField
                     v-model="form.password"
                     label="Password"
                     placeholder="············"
                     :type="isPasswordVisible ? 'text' : 'password'"
-                    :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                    :append-inner-icon="
+                      isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
+                    "
                     :rules="[requiredValidator, passwordValidator]"
                     @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   />
                 </VCol>
 
-                <VCol
-                  cols="12"
-                  md="6"
-                >
+                <VCol cols="12" md="6">
                   <AppTextField
                     v-model="form.password_confirmation"
                     label="Confirm Password"
                     placeholder="············"
                     :type="isConfirmPasswordVisible ? 'text' : 'password'"
-                    :append-inner-icon="isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
-                    :rules="confirmedValidator(form.password_confirmation, form.password)"
-                    @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
+                    :append-inner-icon="
+                      isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
+                    "
+                    :rules="
+                      confirmedValidator(
+                        form.password_confirmation,
+                        form.password,
+                      )
+                    "
+                    @click:append-inner="
+                      isConfirmPasswordVisible = !isConfirmPasswordVisible
+                    "
                   />
                 </VCol>
               </VRow>
             </VWindowItem>
 
             <VWindowItem>
-              <h4 class="text-h4">
-                Personal Information
-              </h4>
-              <p>
-                Enter Your Personal Information
-              </p>
+              <h4 class="text-h4">Personal Information</h4>
+              <p>Enter Your Personal Information</p>
 
               <VRow>
-                <VCol
-                  cols="12"
-                  md="6"
-                >
+                <VCol cols="12" md="6">
                   <AppTextField
                     v-model="form.firstName"
                     label="First Name"
@@ -222,10 +205,7 @@ const onSubmit = () => {
                   />
                 </VCol>
 
-                <VCol
-                  cols="12"
-                  md="6"
-                >
+                <VCol cols="12" md="6">
                   <AppTextField
                     v-model="form.lastName"
                     label="Last Name"
@@ -233,10 +213,7 @@ const onSubmit = () => {
                   />
                 </VCol>
 
-                <VCol
-                  cols="12"
-                  md="6"
-                >
+                <VCol cols="12" md="6">
                   <AppTextField
                     v-model="form.mobile"
                     type="number"
@@ -245,10 +222,7 @@ const onSubmit = () => {
                   />
                 </VCol>
 
-                <VCol
-                  cols="12"
-                  md="6"
-                >
+                <VCol cols="12" md="6">
                   <AppTextField
                     v-model="form.pincode"
                     type="number"
@@ -273,10 +247,7 @@ const onSubmit = () => {
                   />
                 </VCol>
 
-                <VCol
-                  cols="12"
-                  md="6"
-                >
+                <VCol cols="12" md="6">
                   <AppTextField
                     v-model="form.city"
                     label="City"
@@ -284,24 +255,25 @@ const onSubmit = () => {
                   />
                 </VCol>
 
-                <VCol
-                  cols="12"
-                  md="6"
-                >
+                <VCol cols="12" md="6">
                   <AppSelect
                     v-model="form.state"
                     label="State"
                     placeholder="Select State"
-                    :items="['New York', 'California', 'Florida', 'Washington', 'Texas']"
+                    :items="[
+                      'New York',
+                      'California',
+                      'Florida',
+                      'Washington',
+                      'Texas',
+                    ]"
                   />
                 </VCol>
               </VRow>
             </VWindowItem>
 
             <VWindowItem>
-              <h4 class="text-h4">
-                Select Plan
-              </h4>
+              <h4 class="text-h4">Select Plan</h4>
               <p class="text-body-1 mb-5">
                 Select plan as per your requirement
               </p>
@@ -331,12 +303,8 @@ const onSubmit = () => {
                 </template>
               </CustomRadiosWithIcon>
 
-              <h4 class="text-h4 mt-12">
-                Payment Information
-              </h4>
-              <p class="text-body-1 mb-6">
-                Enter your card information
-              </p>
+              <h4 class="text-h4 mt-12">Payment Information</h4>
+              <p class="text-body-1 mb-6">Enter your card information</p>
 
               <VRow>
                 <VCol cols="12">
@@ -348,10 +316,7 @@ const onSubmit = () => {
                   />
                 </VCol>
 
-                <VCol
-                  cols="12"
-                  md="6"
-                >
+                <VCol cols="12" md="6">
                   <AppTextField
                     v-model="form.cardName"
                     label="Name on Card"
@@ -359,10 +324,7 @@ const onSubmit = () => {
                   />
                 </VCol>
 
-                <VCol
-                  cols="6"
-                  md="3"
-                >
+                <VCol cols="6" md="3">
                   <AppTextField
                     v-model="form.expiryDate"
                     label="Expiry"
@@ -370,10 +332,7 @@ const onSubmit = () => {
                   />
                 </VCol>
 
-                <VCol
-                  cols="6"
-                  md="3"
-                >
+                <VCol cols="6" md="3">
                   <AppTextField
                     v-model="form.cvv"
                     type="number"
@@ -393,11 +352,7 @@ const onSubmit = () => {
             variant="tonal"
             @click="currentStep--"
           >
-            <VIcon
-              icon="tabler-arrow-left"
-              start
-              class="flip-in-rtl"
-            />
+            <VIcon icon="tabler-arrow-left" start class="flip-in-rtl" />
             Previous
           </VBtn>
 
@@ -409,17 +364,10 @@ const onSubmit = () => {
             submit
           </VBtn>
 
-          <VBtn
-            v-else
-            @click="currentStep++"
-          >
+          <VBtn v-else @click="currentStep++">
             Next
 
-            <VIcon
-              icon="tabler-arrow-right"
-              end
-              class="flip-in-rtl"
-            />
+            <VIcon icon="tabler-arrow-right" end class="flip-in-rtl" />
           </VBtn>
         </div>
       </VCard>

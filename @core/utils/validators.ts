@@ -116,25 +116,25 @@ export const alphaDashValidator = (value: unknown) => {
   const valueAsString = String(value);
 
   return /^[\w-]*$/.test(valueAsString) || "All Character are not valid";
-}
+};
 export const phoneValidator = (value: unknown) => {
   let phoneNumber = String(value).trim();
 
   // Remove non-digit characters
-  phoneNumber = phoneNumber.replace(/\D/g, '');
+  phoneNumber = phoneNumber.replace(/\D/g, "");
 
   // Regular expression to check if the phone number starts with 03 and is followed by 9 digits
   const phoneNumberRegex = /^03\d{9}$/;
 
   if (!phoneNumberRegex.test(phoneNumber)) {
-    return 'Phone number should start with 03 and must be exactly 11 digits long.';
+    return "Phone number should start with 03 and must be exactly 11 digits long.";
   }
 
   return true; // Return true if validation passes
 };
 
 export const maxFiveFilesValidator = (value: unknown) => {
- if (Array.isArray(value) && value.length > 5) {
+  if (Array.isArray(value) && value.length > 5) {
     return "You can upload a maximum of 5 files.";
   }
   return true;
@@ -151,7 +151,12 @@ export const max6mbValidator = (value: unknown) => {
   return true;
 };
 export const imageFileValidator = (value: unknown) => {
-  const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+  const validImageTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+  ];
   for (const file of value) {
     if (file instanceof File && !validImageTypes.includes(file.type)) {
       return `Only image files (JPEG, PNG, GIF, WebP) are allowed.`;
@@ -162,8 +167,7 @@ export const imageFileValidator = (value: unknown) => {
 };
 
 export const onInputRestrictLength = (value, maxLength) => {
-  if (value.length > maxLength)
-   return value.slice(0, maxLength)
+  if (value.length > maxLength) return value.slice(0, maxLength);
 
-  return value
-}
+  return value;
+};

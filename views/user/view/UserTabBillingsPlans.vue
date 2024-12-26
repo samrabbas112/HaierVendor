@@ -1,90 +1,90 @@
 <script setup lang="ts">
-import americanExpress from '@images/icons/payments/american-express.png'
-import mastercard from '@images/icons/payments/mastercard.png'
-import visa from '@images/icons/payments/visa.png'
+import americanExpress from "@images/icons/payments/american-express.png";
+import mastercard from "@images/icons/payments/mastercard.png";
+import visa from "@images/icons/payments/visa.png";
 
 interface CardDetail {
-  name: string
-  number: string
-  expiry: string
-  isPrimary: boolean
-  isExpired?: boolean
-  type: string
-  cvv: string
-  image: string
+  name: string;
+  number: string;
+  expiry: string;
+  isPrimary: boolean;
+  isExpired?: boolean;
+  type: string;
+  cvv: string;
+  image: string;
 }
 
-const isUpgradePlanDialogVisible = ref(false)
+const isUpgradePlanDialogVisible = ref(false);
 
-const currentCardDetails = ref()
-const isCardEditDialogVisible = ref(false)
-const isCardAddDialogVisible = ref(false)
-const isEditAddressDialogVisible = ref(false)
+const currentCardDetails = ref();
+const isCardEditDialogVisible = ref(false);
+const isCardAddDialogVisible = ref(false);
+const isEditAddressDialogVisible = ref(false);
 
 const openEditCardDialog = (cardDetails: CardDetail) => {
-  currentCardDetails.value = cardDetails
+  currentCardDetails.value = cardDetails;
 
-  isCardEditDialogVisible.value = true
-}
+  isCardEditDialogVisible.value = true;
+};
 
 const creditCards: CardDetail[] = [
   {
-    name: 'Tom McBride',
-    number: '4851234567899865',
-    expiry: '12/24',
+    name: "Tom McBride",
+    number: "4851234567899865",
+    expiry: "12/24",
     isPrimary: true,
     isExpired: false,
-    type: 'mastercard',
-    cvv: '123',
+    type: "mastercard",
+    cvv: "123",
     image: mastercard,
   },
   {
-    name: 'Mildred Wagner',
-    number: '5531234567895678',
-    expiry: '02/24',
+    name: "Mildred Wagner",
+    number: "5531234567895678",
+    expiry: "02/24",
     isPrimary: false,
     isExpired: false,
-    type: 'visa',
-    cvv: '456',
+    type: "visa",
+    cvv: "456",
     image: visa,
   },
   {
-    name: 'Lester Jennings',
-    number: '5531234567890002',
-    expiry: '08/20',
+    name: "Lester Jennings",
+    number: "5531234567890002",
+    expiry: "08/20",
     isPrimary: false,
     isExpired: true,
-    type: 'visa',
-    cvv: '456',
+    type: "visa",
+    cvv: "456",
     image: americanExpress,
   },
-]
+];
 
 const currentAddress = {
-  companyName: 'Pixinvent',
-  billingEmail: 'gertrude@gmail.com',
-  taxID: 'TAX-875623',
-  vatNumber: 'SDF754K77',
-  address: '100 Water Plant Avenue, Building 1303 Wake Island',
-  contact: '+1(609) 933-44-22',
-  country: 'USA',
-  state: 'Queensland',
+  companyName: "Pixinvent",
+  billingEmail: "gertrude@gmail.com",
+  taxID: "TAX-875623",
+  vatNumber: "SDF754K77",
+  address: "100 Water Plant Avenue, Building 1303 Wake Island",
+  contact: "+1(609) 933-44-22",
+  country: "USA",
+  state: "Queensland",
   zipCode: 403114,
-}
+};
 
 const currentBillingAddress = {
-  firstName: 'Shamus',
-  lastName: 'Tuttle',
-  selectedCountry: 'USA',
-  addressLine1: '45 Rocker Terrace',
-  addressLine2: 'Latheronwheel',
-  landmark: 'KW5 8NW, London',
-  contact: '+1 (609) 972-22-22',
-  country: 'USA',
-  city: 'London',
-  state: 'London',
+  firstName: "Shamus",
+  lastName: "Tuttle",
+  selectedCountry: "USA",
+  addressLine1: "45 Rocker Terrace",
+  addressLine2: "Latheronwheel",
+  landmark: "KW5 8NW, London",
+  contact: "+1 (609) 972-22-22",
+  country: "USA",
+  city: "London",
+  state: "London",
   zipCode: 110001,
-}
+};
 </script>
 
 <template>
@@ -94,68 +94,37 @@ const currentBillingAddress = {
       <VCard title="Current Plan">
         <VCardText>
           <VRow>
-            <VCol
-              cols="12"
-              md="6"
-              order-md="1"
-              order="2"
-            >
-              <h6 class="text-h6 mb-1">
-                Your Current Plan is Basic
-              </h6>
-              <p>
-                A simple start for everyone
-              </p>
+            <VCol cols="12" md="6" order-md="1" order="2">
+              <h6 class="text-h6 mb-1">Your Current Plan is Basic</h6>
+              <p>A simple start for everyone</p>
 
-              <h6 class="text-h6 mb-1">
-                Active until Dec 09, 2021
-              </h6>
+              <h6 class="text-h6 mb-1">Active until Dec 09, 2021</h6>
               <p>
                 We will send you a notification upon Subscription expiration
               </p>
 
               <h6 class="text-h6 mb-1">
                 <span class="d-inline-block me-2">$99 Per Month</span>
-                <VChip
-                  color="primary"
-                  size="small"
-                  label
-                >
-                  Popular
-                </VChip>
+                <VChip color="primary" size="small" label> Popular </VChip>
               </h6>
-              <p class="mb-0">
-                Standard plan for small to medium businesses
-              </p>
+              <p class="mb-0">Standard plan for small to medium businesses</p>
             </VCol>
 
-            <VCol
-              cols="12"
-              md="6"
-              order-md="2"
-              order="1"
-            >
+            <VCol cols="12" md="6" order-md="2" order="1">
               <!-- 👉 Alert -->
-              <VAlert
-                color="warning"
-                variant="tonal"
-              >
+              <VAlert color="warning" variant="tonal">
                 <VAlertTitle class="mb-1">
                   We need your attention!
                 </VAlertTitle>
-                <div class="text-base">
-                  Your plan requires update
-                </div>
+                <div class="text-base">Your plan requires update</div>
               </VAlert>
 
               <!-- 👉 Progress -->
-              <div class="d-flex justify-space-between font-weight-bold mt-4 mb-2">
-                <h6 class="text-h6">
-                  Days
-                </h6>
-                <h6 class="text-h6">
-                  26 of 30 Days
-                </h6>
+              <div
+                class="d-flex justify-space-between font-weight-bold mt-4 mb-2"
+              >
+                <h6 class="text-h6">Days</h6>
+                <h6 class="text-h6">26 of 30 Days</h6>
               </div>
 
               <VProgressLinear
@@ -164,26 +133,16 @@ const currentBillingAddress = {
                 :height="10"
                 :model-value="75"
               />
-              <p class="text-sm mt-1">
-                Your plan requires update
-              </p>
+              <p class="text-sm mt-1">Your plan requires update</p>
             </VCol>
 
-            <VCol
-              cols="12"
-              order="3"
-            >
+            <VCol cols="12" order="3">
               <div class="d-flex flex-wrap gap-4">
                 <VBtn @click="isUpgradePlanDialogVisible = true">
                   upgrade plan
                 </VBtn>
 
-                <VBtn
-                  color="error"
-                  variant="tonal"
-                >
-                  Cancel Subscription
-                </VBtn>
+                <VBtn color="error" variant="tonal"> Cancel Subscription </VBtn>
               </div>
             </VCol>
           </VRow>
@@ -205,18 +164,12 @@ const currentBillingAddress = {
         </template>
 
         <VCardText class="d-flex flex-column gap-y-4">
-          <VCard
-            v-for="card in creditCards"
-            :key="card.name"
-            border
-            flat
-          >
-            <VCardText class="d-flex flex-sm-row flex-column gap-6 justify-space-between">
+          <VCard v-for="card in creditCards" :key="card.name" border flat>
+            <VCardText
+              class="d-flex flex-sm-row flex-column gap-6 justify-space-between"
+            >
               <div class="text-no-wrap">
-                <img
-                  :src="card.image"
-                  :height="25"
-                >
+                <img :src="card.image" :height="25" />
                 <div class="my-2 d-flex gap-x-2 align-center">
                   <h6 class="text-h6">
                     {{ card.name }}
@@ -224,14 +177,27 @@ const currentBillingAddress = {
                   <VChip
                     v-if="card.isPrimary || card.isExpired"
                     label
-                    :color="card.isPrimary ? 'primary' : card.isExpired ? 'error' : 'secondary'"
+                    :color="
+                      card.isPrimary
+                        ? 'primary'
+                        : card.isExpired
+                          ? 'error'
+                          : 'secondary'
+                    "
                     size="small"
                   >
-                    {{ card.isPrimary ? 'Popular' : card.isExpired ? 'Expired' : '' }}
+                    {{
+                      card.isPrimary
+                        ? "Popular"
+                        : card.isExpired
+                          ? "Expired"
+                          : ""
+                    }}
                   </VChip>
                 </div>
                 <div class="text-body-1">
-                  **** **** **** {{ card.number.substring(card.number.length - 4) }}
+                  **** **** ****
+                  {{ card.number.substring(card.number.length - 4) }}
                 </div>
               </div>
 
@@ -245,11 +211,7 @@ const currentBillingAddress = {
                   >
                     Edit
                   </VBtn>
-                  <VBtn
-                    color="error"
-                    variant="tonal"
-                    size="small"
-                  >
+                  <VBtn color="error" variant="tonal" size="small">
                     Delete
                   </VBtn>
                 </div>
@@ -279,16 +241,11 @@ const currentBillingAddress = {
 
         <VCardText>
           <VRow>
-            <VCol
-              cols="12"
-              lg="6"
-            >
+            <VCol cols="12" lg="6">
               <VTable class="billing-address-table">
                 <tr>
                   <td>
-                    <h6 class="text-h6 text-no-wrap mb-2">
-                      Company Name:
-                    </h6>
+                    <h6 class="text-h6 text-no-wrap mb-2">Company Name:</h6>
                   </td>
                   <td>
                     <p class="text-body-1 mb-2">
@@ -298,9 +255,7 @@ const currentBillingAddress = {
                 </tr>
                 <tr>
                   <td>
-                    <h6 class="text-h6 text-no-wrap mb-2">
-                      Billing Email:
-                    </h6>
+                    <h6 class="text-h6 text-no-wrap mb-2">Billing Email:</h6>
                   </td>
                   <td>
                     <p class="text-body-1 mb-2">
@@ -310,9 +265,7 @@ const currentBillingAddress = {
                 </tr>
                 <tr>
                   <td>
-                    <h6 class="text-h6 text-no-wrap mb-2">
-                      Tax ID:
-                    </h6>
+                    <h6 class="text-h6 text-no-wrap mb-2">Tax ID:</h6>
                   </td>
                   <td>
                     <p class="text-body-1 mb-2">
@@ -322,9 +275,7 @@ const currentBillingAddress = {
                 </tr>
                 <tr>
                   <td>
-                    <h6 class="text-h6 text-no-wrap mb-2">
-                      VAT Number:
-                    </h6>
+                    <h6 class="text-h6 text-no-wrap mb-2">VAT Number:</h6>
                   </td>
                   <td>
                     <p class="text-body-1 mb-2">
@@ -334,9 +285,7 @@ const currentBillingAddress = {
                 </tr>
                 <tr>
                   <td class="d-flex align-baseline">
-                    <h6 class="text-h6 text-no-wrap">
-                      Billing Address:
-                    </h6>
+                    <h6 class="text-h6 text-no-wrap">Billing Address:</h6>
                   </td>
                   <td>
                     <p class="text-body-1 mb-2">
@@ -347,16 +296,11 @@ const currentBillingAddress = {
               </VTable>
             </VCol>
 
-            <VCol
-              cols="12"
-              lg="6"
-            >
+            <VCol cols="12" lg="6">
               <VTable class="billing-address-table">
                 <tr>
                   <td>
-                    <h6 class="text-h6 text-no-wrap mb-2">
-                      Contact:
-                    </h6>
+                    <h6 class="text-h6 text-no-wrap mb-2">Contact:</h6>
                   </td>
                   <td>
                     <p class="text-body-1 mb-2">
@@ -366,9 +310,7 @@ const currentBillingAddress = {
                 </tr>
                 <tr>
                   <td>
-                    <h6 class="text-h6 text-no-wrap mb-2">
-                      Country:
-                    </h6>
+                    <h6 class="text-h6 text-no-wrap mb-2">Country:</h6>
                   </td>
                   <td>
                     <p class="text-body-1 mb-2">
@@ -378,9 +320,7 @@ const currentBillingAddress = {
                 </tr>
                 <tr>
                   <td>
-                    <h6 class="text-h6 text-no-wrap mb-2">
-                      State:
-                    </h6>
+                    <h6 class="text-h6 text-no-wrap mb-2">State:</h6>
                   </td>
                   <td>
                     <p class="text-body-1 mb-2">
@@ -390,9 +330,7 @@ const currentBillingAddress = {
                 </tr>
                 <tr>
                   <td>
-                    <h6 class="text-h6 text-no-wrap mb-2">
-                      Zip Code:
-                    </h6>
+                    <h6 class="text-h6 text-no-wrap mb-2">Zip Code:</h6>
                   </td>
                   <td>
                     <p class="text-body-1 mb-2">

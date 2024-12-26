@@ -21,7 +21,10 @@
         </div>
 
         <!-- Copy Success Message -->
-        <div v-if="showCopiedMessage" class="mt-2 text-green-darken-2 text-caption">
+        <div
+          v-if="showCopiedMessage"
+          class="mt-2 text-green-darken-2 text-caption"
+        >
           URL copied to clipboard!
         </div>
       </div>

@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import DemoDialogFullscreen from '@/components/dialogs/DemoDialogFullscreen.vue'
-import { ability } from '@/plugins/casl/ability'
-import { useSnackbarStore } from '@/stores/snackbar'
+import { nextTick, onMounted, ref } from 'vue'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
@@ -11,7 +9,9 @@ import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
-import { nextTick, ref } from 'vue'
+import { useSnackbarStore } from '@/stores/snackbar'
+import DemoDialogFullscreen from '@/components/dialogs/DemoDialogFullscreen.vue'
+import { ability } from '@/plugins/casl/ability'
 
 definePageMeta({
   layout: 'blank',
@@ -24,7 +24,6 @@ const form = ref({
   password: 'Haier@123',
   remember: false,
 })
-
 
 const toast = useToastStore()
 const loader = useLoaderStore()
@@ -45,7 +44,24 @@ const authThemeImg = useGenerateImageVariant(
 
 const isLoading = ref(false)
 
-const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
+
+function setInputCursor(event) {
+  setTimeout(() => {
+    const inputElement = event.target
+      .closest(".v-input")
+      .querySelector("input");
+    if (inputElement) {
+      const length = inputElement.value.length; // Get the length of the input value
+      inputElement.focus(); // Focus the input
+      inputElement.setSelectionRange(length, length); // Set cursor to the end
+    }
+  }, 1);
+}
+
+const togglePassword = (event) => {
+  isPasswordVisible.value = !isPasswordVisible.value;
+  setInputCursor(event);
+}
 
 const submitForm = async () => {
   isLoading.value = true
@@ -102,13 +118,13 @@ const submitForm = async () => {
         { action: 'read', subject: 'Order' },
       ])
       ability.update([
-        { action: 'read', subject: 'Customer' },
-        { action: 'read', subject: 'Management' },
-        { action: 'read', subject: 'Dashboard' },
-        { action: 'read', subject: 'Admin' },
-        { action: 'read', subject: 'Order' },
-      ])
-      console.log('Vendor cookie set:', userAbilityRules.value)
+        { action: "read", subject: "Customer" },
+        { action: "read", subject: "Management" },
+        { action: "read", subject: "Dashboard" },
+        { action: "read", subject: "Admin" },
+        { action: "read", subject: "Order" },
+      ]);
+      console.log("Vendor cookie set:", userAbilityRules.value);
     }
     snackbarStore.showSnackbar('Logged in successfully', 'success')
     await nextTick(() => {
@@ -126,8 +142,8 @@ const submitForm = async () => {
     snackbarStore.showSnackbar('Incorrect Email or Password', 'error')
     console.error('Login failed')
   }
-  isLoading.value = false
-}
+  isLoading.value = false;
+};
 </script>
 
 <template>
@@ -141,14 +157,8 @@ const submitForm = async () => {
     </div>
   </a>
 
-  <VRow
-    no-gutters
-    class="auth-wrapper bg-surface"
-  >
-    <VCol
-      md="8"
-      class="d-none d-md-flex"
-    >
+  <VRow no-gutters class="auth-wrapper bg-surface">
+    <VCol md="8" class="d-none d-md-flex">
       <div class="position-relative bg-background w-100 me-0">
         <div
           class="d-flex align-center justify-center w-100 h-100"
@@ -167,7 +177,7 @@ const submitForm = async () => {
           alt="auth-footer-mask"
           height="280"
           width="100"
-        >
+        />
       </div>
     </VCol>
 
@@ -176,11 +186,7 @@ const submitForm = async () => {
       md="4"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VCard
-        flat
-        :max-width="500"
-        class="mt-12 mt-sm-0 pa-6"
-      >
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-6">
         <VCardText>
           <h4 class="text-h4 mb-1">
             Welcome to
@@ -214,7 +220,7 @@ const submitForm = async () => {
                   :append-inner-icon="
                     isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
                   "
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  @click:append-inner="togglePassword"
                 />
 
                 <div class="d-flex align-center flex-wrap justify-space-between my-6">
@@ -226,23 +232,18 @@ const submitForm = async () => {
                     Forgot Password?
                   </NuxtLink>
                 </div>
-                
 
-                <VBtn
-                  block
-                  @click="!isLoading && submitForm()"
-                >
+
+                <VBtn block @click="!isLoading && submitForm()">
                   <VProgressCircular
                     v-if="isLoading"
                     indeterminate
                     color="white"
                   />
-                  <template v-else>
-                    Login
-                  </template>
+                  <template v-else> Login </template>
                 </VBtn>
               </VCol>
-             
+
               <!--
                 <VCol
                 cols="12"

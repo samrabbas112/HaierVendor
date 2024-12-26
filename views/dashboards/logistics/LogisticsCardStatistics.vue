@@ -1,40 +1,41 @@
 <script setup lang="ts">
-import { computed, defineProps } from 'vue'
+import { computed, defineProps } from "vue";
 const authStore = useAuthStore();
-const customThirdCardLabel =  authStore.user?.user_type === 'vendor' ? 'Total Customers' : 'Total Vendors';
+const customThirdCardLabel =
+  authStore.user?.user_type === "vendor" ? "Total Customers" : "Total Vendors";
 const props = defineProps({
   stats: {
     type: Object,
     required: true,
   },
-})
+});
 
 const logisticData = computed(() => [
   {
-    icon: 'tabler-truck',
-    color: 'primary',
-    title: 'Delivered Orders',
+    icon: "tabler-truck",
+    color: "primary",
+    title: "Delivered Orders",
     value: props.stats.totalOrders,
     change: 18.2,
     isHover: false,
   },
   {
-    icon: 'tabler-chart-pie-2',
-    color: 'warning',
-    title: 'Total Sales',
+    icon: "tabler-chart-pie-2",
+    color: "warning",
+    title: "Total Sales",
     value: props.stats.totalSales,
     change: -8.7,
     isHover: false,
   },
   {
-    icon: 'tabler-users',
-    color: 'info',
+    icon: "tabler-users",
+    color: "info",
     title: customThirdCardLabel,
     value: props.stats.totalCustomer,
     change: 4.3,
     isHover: false,
   },
-])
+]);
 </script>
 
 <template>
@@ -59,15 +60,8 @@ const logisticData = computed(() => [
         >
           <VCardText>
             <div class="d-flex align-center gap-x-4 mb-1">
-              <VAvatar
-                variant="tonal"
-                :color="data.color"
-                rounded
-              >
-                <VIcon
-                  :icon="data.icon"
-                  size="28"
-                />
+              <VAvatar variant="tonal" :color="data.color" rounded>
+                <VIcon :icon="data.icon" size="28" />
               </VAvatar>
               <h4 class="text-h4">
                 {{ data.value }}

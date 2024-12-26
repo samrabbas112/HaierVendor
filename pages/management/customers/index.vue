@@ -1,69 +1,71 @@
 <script setup lang="ts">
-import AddNewCustomerDrawer from '@/views/customer/AddNewCustomerDrawer.vue'
-import { ref, onMounted, watch, nextTick } from 'vue';
+import AddNewCustomerDrawer from "@/views/customer/AddNewCustomerDrawer.vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 const snackBarStore = useSnackbarStore();
-import { useLoaderStore } from '@/stores/loader'
+import { useLoaderStore } from "@/stores/loader";
 
 // State
-const searchQuery = ref('');
+const searchQuery = ref("");
 const selectedCustomer = ref(null);
 const customersData = ref({ total: 0, customers: [] });
 const isAddNewCustomerDrawerVisible = ref(false);
 const selectedRows = ref([]);
-const loaderStore = useLoaderStore()
-const route = useRoute()
-const isConfirmDialogVisible = ref(false)
-const selectedCustomerId = ref()
-const authUser = useCookie('auth')
-const selectedVendorStatus = ref()
+const loaderStore = useLoaderStore();
+const route = useRoute();
+const isConfirmDialogVisible = ref(false);
+const selectedCustomerId = ref();
+const authUser = useCookie("auth");
+const selectedVendorStatus = ref();
 
 // Data table options
-const itemsPerPage = ref(10); 
+const itemsPerPage = ref(10);
 const page = ref(1);
 const apiRequestObj = useApi();
 
 // Resolve user status for the UI
 const resolveUserStatusVariant = (stat: string) => {
-  const statLowerCase = stat.toLowerCase()
-  if (statLowerCase === '2 ')
-    return 'danger'
-  if (statLowerCase === '1')
-    return 'success'
-  if (statLowerCase === '0')
-    return 'warning'
+  const statLowerCase = stat.toLowerCase();
+  if (statLowerCase === "2 ") return "danger";
+  if (statLowerCase === "1") return "success";
+  if (statLowerCase === "0") return "warning";
 
-  return 'primary'
-}
-
+  return "primary";
+};
 
 const vendorStatus = [
-  { title: 'Confirmed', value: 1 },
-  { title: 'Pending', value: 0 },
-  { title: 'Declined', value: 2 },
-]
+  { title: "Confirmed", value: 1 },
+  { title: "Pending", value: 0 },
+  { title: "Declined", value: 2 },
+];
 
 // Headers for the data table
 const headers = [
-  { title: 'SN', key: 'id' },
-  { title: 'Name', key: 'name' },
-  { title: 'Phone', key: 'phone_number' },
-  { title: 'City', key: 'city' },
-  { title: 'Status', key: 'confirmed' },
-  { title: 'Registered At', key: 'created_at' },
-  { title: 'Actions', key: 'actions', sortable: false },
+  { title: "SN", key: "id" },
+  { title: "Name", key: "name" },
+  { title: "Phone", key: "phone_number" },
+  { title: "City", key: "city" },
+  { title: "Status", key: "confirmed" },
+  { title: "Registered At", key: "created_at" },
+  { title: "Actions", key: "actions", sortable: false },
 ];
 
 // Fetch customers from the API
 const fetchCustomers = async () => {
   loaderStore.showLoader();
   try {
-    const response = await apiRequestObj.makeRequest(`common/customer/list/${route.query.vendor || authUser.value.user.uid}`, 'post',
-       {
+    const response = await apiRequestObj.makeRequest(
+      `common/customer/list/${route.query.vendor || authUser.value.user.uid}`,
+      "post",
+      {
         page: page.value,
         itemsPerPage: itemsPerPage.value,
         query: searchQuery.value,
-    ...((selectedVendorStatus.value == 0 || selectedVendorStatus.value == 1 || selectedVendorStatus.value == 2) && { status: selectedVendorStatus.value }),
-    }
+        ...((selectedVendorStatus.value == 0 ||
+          selectedVendorStatus.value == 1 ||
+          selectedVendorStatus.value == 2) && {
+          status: selectedVendorStatus.value,
+        }),
+      },
     );
 
     if (response?.success) {
@@ -73,29 +75,32 @@ const fetchCustomers = async () => {
       };
     }
   } catch (error) {
-    console.error('Error fetching customers:', error);
+    console.error("Error fetching customers:", error);
   }
   loaderStore.hideLoader();
 };
 
-const deleteCustomer = (id) =>{
-   selectedCustomerId.value  = id
-   isConfirmDialogVisible.value = !isConfirmDialogVisible.value
-}
+const deleteCustomer = (id) => {
+  selectedCustomerId.value = id;
+  isConfirmDialogVisible.value = !isConfirmDialogVisible.value;
+};
 
 // Delete a customer
 const handleConfirm = async (value) => {
-  if(value){
+  if (value) {
     loaderStore.showLoader();
     try {
-      const response = await apiRequestObj.makeRequest(`common/customer/delete/${selectedCustomerId.value}`, 'DELETE');
+      const response = await apiRequestObj.makeRequest(
+        `common/customer/delete/${selectedCustomerId.value}`,
+        "DELETE",
+      );
       if (response?.success) {
         await fetchCustomers();
       }
     } catch (error) {
-      console.error('Error deleting customer:', error);
+      console.error("Error deleting customer:", error);
     } finally {
-      snackBarStore.showSnackbar("Customer Deleted Successfully.", 'success')
+      snackBarStore.showSnackbar("Customer Deleted Successfully.", "success");
       loaderStore.hideLoader();
     }
   }
@@ -123,20 +128,17 @@ watch([page], () => {
 });
 
 const handleCustomerUpdated = () => {
-  fetchCustomers(); 
+  fetchCustomers();
 };
 
 onMounted(fetchCustomers);
 </script>
 
-
 <template>
   <section>
     <!-- Header Section with Add New Customer Button -->
     <VRow justify="space-between" class="mb-6 align-center">
-      <VCol cols="12" sm="6">
-      </VCol>
-
+      <VCol cols="12" sm="6"> </VCol>
     </VRow>
 
     <!-- Filters Section -->
@@ -152,20 +154,14 @@ onMounted(fetchCustomers);
             />
           </VCol> -->
         </VRow>
-        <VRow
-        cols="12"
-        sm="8"
-      >
-        <!-- 👉 Select Status -->
-        <VCol
-          cols="12"
-          sm="3"
-        >
-          <AppTextField
-            v-model="searchQuery"
-            placeholder="Search by contact no"
-          />
-        </VCol>
+        <VRow cols="12" sm="8">
+          <!-- 👉 Select Status -->
+          <VCol cols="12" sm="3">
+            <AppTextField
+              v-model="searchQuery"
+              placeholder="Search by contact no"
+            />
+          </VCol>
           <VCol cols="12" sm="3">
             <AppSelect
               v-model="selectedVendorStatus"
@@ -175,53 +171,58 @@ onMounted(fetchCustomers);
               clear-icon="tabler-x"
             />
           </VCol>
-        <VCol
-          cols="12"
-          sm="3"
-        >
-          <div class="d-flex">
-            <VBtn
-              class="me-2"
-              variant="outlined"
-              color="secondary"
-              @click="() => {
-                searchQuery = '';
-                page = 1
-                fetchCustomers();
-              }"
-            >
-              Reset
-            </VBtn>
-            <VBtn
-              variant="flat"
-              @click="()=>{
-                page = 1;
-                fetchCustomers();
-              }"
-            >
-              Search
-            </VBtn>
-          </div>
-        </VCol>
+          <VCol cols="12" sm="3">
+            <div class="d-flex">
+              <VBtn
+                class="me-2"
+                variant="outlined"
+                color="secondary"
+                @click="
+                  () => {
+                    searchQuery = '';
+                    page = 1;
+                    fetchCustomers();
+                  }
+                "
+              >
+                Reset
+              </VBtn>
+              <VBtn
+                variant="flat"
+                @click="
+                  () => {
+                    page = 1;
+                    fetchCustomers();
+                  }
+                "
+              >
+                Search
+              </VBtn>
+            </div>
+          </VCol>
           <VCol cols="12" sm="3" class="text-end">
-            <VBtn prepend-icon="tabler-plus" color="primary" @click="addNewCustomer">
+            <VBtn
+              prepend-icon="tabler-plus"
+              color="primary"
+              @click="addNewCustomer"
+            >
               Add New Customer
             </VBtn>
           </VCol>
-      </VRow>
+        </VRow>
       </VCardText>
     </VCard>
 
     <!-- Customers Table -->
     <VDataTableServer
-      v-model:items-per-page="itemsPerPage" 
-      v-model:model-value="selectedRows" 
+      v-model:items-per-page="itemsPerPage"
+      v-model:model-value="selectedRows"
       v-model:page="page"
-      :items="customersData.customers" 
-      item-value="id" 
-      :items-length="customersData.total" 
+      :items="customersData.customers"
+      item-value="id"
+      :items-length="customersData.total"
       :headers="headers"
-      class="text-no-wrap"  
+      class="text-no-wrap"
       @update:options="updateOptions"
     >
       <template #item.id="{ index }">
@@ -235,8 +236,19 @@ onMounted(fetchCustomers);
       </template>
       <!-- Status -->
       <template #item.confirmed="{ item }">
-        <VChip :color="resolveUserStatusVariant(item.confirmed)" size="small" label class="text-capitalize">
-          {{ item.confirmed == 1 ? 'Approved' : (item.confirmed == 0 ? 'Pending' : 'Declined') }}
+        <VChip
+          :color="resolveUserStatusVariant(item.confirmed)"
+          size="small"
+          label
+          class="text-capitalize"
+        >
+          {{
+            item.confirmed == 1
+              ? "Approved"
+              : item.confirmed == 0
+                ? "Pending"
+                : "Declined"
+          }}
         </VChip>
       </template>
 
@@ -247,14 +259,21 @@ onMounted(fetchCustomers);
           <VIcon icon="tabler-trash" />
         </IconBtn>
 
-        <IconBtn @click="editCustomer(item)" v-if="authUser.user.uid === item.reference_vendor">
+        <IconBtn
+          @click="editCustomer(item)"
+          v-if="authUser.user.uid === item.reference_vendor"
+        >
           <VIcon icon="tabler-pencil" />
         </IconBtn>
       </template>
 
       <!-- pagination -->
       <template #bottom>
-        <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="customersData.total" />
+        <TablePagination
+          v-model:page="page"
+          :items-per-page="itemsPerPage"
+          :total-items="customersData.total"
+        />
       </template>
     </VDataTableServer>
 
@@ -275,4 +294,3 @@ onMounted(fetchCustomers);
     />
   </section>
 </template>
-

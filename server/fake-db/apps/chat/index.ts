@@ -1,37 +1,39 @@
-import type { Chat, ChatContact } from './types'
-import { getPublicUrl } from '@/server/utils/getPublicUrl'
+import type { Chat, ChatContact } from "./types";
+import { getPublicUrl } from "@/server/utils/getPublicUrl";
 
 interface DB {
   profileUser: ChatContact & {
     settings: {
-      isTwoStepAuthVerificationEnabled: boolean
-      isNotificationsOn: boolean
-    }
-  }
-  contacts: ChatContact[]
-  chats: Chat[]
+      isTwoStepAuthVerificationEnabled: boolean;
+      isNotificationsOn: boolean;
+    };
+  };
+  contacts: ChatContact[];
+  chats: Chat[];
 }
 
-const previousDay = new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
-const dayBeforePreviousDay = new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 2)
+const previousDay = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+const dayBeforePreviousDay = new Date(
+  new Date().getTime() - 24 * 60 * 60 * 1000 * 2,
+);
 
-const avatar1 = getPublicUrl('/images/avatars/avatar-1.png')
-const avatar2 = getPublicUrl('/images/avatars/avatar-2.png')
-const avatar3 = getPublicUrl('/images/avatars/avatar-3.png')
-const avatar4 = getPublicUrl('/images/avatars/avatar-4.png')
-const avatar5 = getPublicUrl('/images/avatars/avatar-5.png')
-const avatar6 = getPublicUrl('/images/avatars/avatar-6.png')
-const avatar8 = getPublicUrl('/images/avatars/avatar-8.png')
+const avatar1 = getPublicUrl("/images/avatars/avatar-1.png");
+const avatar2 = getPublicUrl("/images/avatars/avatar-2.png");
+const avatar3 = getPublicUrl("/images/avatars/avatar-3.png");
+const avatar4 = getPublicUrl("/images/avatars/avatar-4.png");
+const avatar5 = getPublicUrl("/images/avatars/avatar-5.png");
+const avatar6 = getPublicUrl("/images/avatars/avatar-6.png");
+const avatar8 = getPublicUrl("/images/avatars/avatar-8.png");
 
 export const db: DB = {
   profileUser: {
     id: 11,
     avatar: avatar1,
-    fullName: 'John Doe',
-    role: 'admin',
+    fullName: "John Doe",
+    role: "admin",
     about:
-      'Dessert chocolate cake lemon drops jujubes. Biscuit cupcake ice cream bear claw brownie marshmallow.',
-    status: 'online',
+      "Dessert chocolate cake lemon drops jujubes. Biscuit cupcake ice cream bear claw brownie marshmallow.",
+    status: "online",
     settings: {
       isTwoStepAuthVerificationEnabled: true,
       isNotificationsOn: false,
@@ -41,90 +43,93 @@ export const db: DB = {
   contacts: [
     {
       id: 1,
-      fullName: 'Gavin Griffith',
-      role: 'Frontend Developer',
-      about: 'Cake pie jelly jelly beans. Marzipan lemon drops halvah cake. Pudding cookie lemon drops icing',
+      fullName: "Gavin Griffith",
+      role: "Frontend Developer",
+      about:
+        "Cake pie jelly jelly beans. Marzipan lemon drops halvah cake. Pudding cookie lemon drops icing",
       avatar: avatar5,
-      status: 'offline',
+      status: "offline",
     },
     {
       id: 2,
-      fullName: 'Harriet McBride',
-      role: 'UI/UX Designer',
+      fullName: "Harriet McBride",
+      role: "UI/UX Designer",
       about:
-        'Toffee caramels jelly-o tart gummi bears cake I love ice cream lollipop. Sweet liquorice croissant candy danish dessert icing. Cake macaroon gingerbread toffee sweet.',
+        "Toffee caramels jelly-o tart gummi bears cake I love ice cream lollipop. Sweet liquorice croissant candy danish dessert icing. Cake macaroon gingerbread toffee sweet.",
       avatar: avatar2,
-      status: 'busy',
+      status: "busy",
     },
     {
       id: 3,
-      fullName: 'Danny Conner',
-      role: 'Town planner',
+      fullName: "Danny Conner",
+      role: "Town planner",
       about:
-        'Soufflé soufflé caramels sweet roll. Jelly lollipop sesame snaps bear claw jelly beans sugar plum sugar plum.',
-      avatar: '',
-      status: 'away',
+        "Soufflé soufflé caramels sweet roll. Jelly lollipop sesame snaps bear claw jelly beans sugar plum sugar plum.",
+      avatar: "",
+      status: "away",
     },
     {
       id: 4,
-      fullName: 'Janie West',
-      role: 'Data scientist',
+      fullName: "Janie West",
+      role: "Data scientist",
       about:
-        'Chupa chups candy canes chocolate bar marshmallow liquorice muffin. Lemon drops oat cake tart liquorice tart cookie. Jelly-o cookie tootsie roll halvah.',
-      avatar: '',
-      status: 'online',
+        "Chupa chups candy canes chocolate bar marshmallow liquorice muffin. Lemon drops oat cake tart liquorice tart cookie. Jelly-o cookie tootsie roll halvah.",
+      avatar: "",
+      status: "online",
     },
     {
       id: 5,
-      fullName: 'Bryan Murray',
-      role: 'Dietitian',
-      about: 'Cake pie jelly jelly beans. Marzipan lemon drops halvah cake. Pudding cookie lemon drops icing',
+      fullName: "Bryan Murray",
+      role: "Dietitian",
+      about:
+        "Cake pie jelly jelly beans. Marzipan lemon drops halvah cake. Pudding cookie lemon drops icing",
       avatar: avatar5,
-      status: 'busy',
+      status: "busy",
     },
     {
       id: 6,
-      fullName: 'Albert Underwood',
-      role: 'Marketing executive',
+      fullName: "Albert Underwood",
+      role: "Marketing executive",
       about:
-        'Toffee caramels jelly-o tart gummi bears cake I love ice cream lollipop. Sweet liquorice croissant candy danish dessert icing. Cake macaroon gingerbread toffee sweet.',
+        "Toffee caramels jelly-o tart gummi bears cake I love ice cream lollipop. Sweet liquorice croissant candy danish dessert icing. Cake macaroon gingerbread toffee sweet.",
       avatar: avatar6,
-      status: 'online',
+      status: "online",
     },
     {
       id: 7,
-      fullName: 'Adele Ross',
-      role: 'Special educational needs teacher',
+      fullName: "Adele Ross",
+      role: "Special educational needs teacher",
       about:
-        'Biscuit powder oat cake donut brownie ice cream I love soufflé. I love tootsie roll I love powder tootsie roll.',
-      avatar: '',
-      status: 'online',
+        "Biscuit powder oat cake donut brownie ice cream I love soufflé. I love tootsie roll I love powder tootsie roll.",
+      avatar: "",
+      status: "online",
     },
     {
       id: 8,
-      fullName: 'Mark Berry',
-      role: 'Advertising copywriter',
+      fullName: "Mark Berry",
+      role: "Advertising copywriter",
       about:
-        'Bear claw ice cream lollipop gingerbread carrot cake. Brownie gummi bears chocolate muffin croissant jelly I love marzipan wafer.',
+        "Bear claw ice cream lollipop gingerbread carrot cake. Brownie gummi bears chocolate muffin croissant jelly I love marzipan wafer.",
       avatar: avatar3,
-      status: 'away',
+      status: "away",
     },
     {
       id: 9,
-      fullName: 'Joseph Evans',
-      role: 'Designer, television/film set',
+      fullName: "Joseph Evans",
+      role: "Designer, television/film set",
       about:
-        'Gummies gummi bears I love candy icing apple pie I love marzipan bear claw. I love tart biscuit I love candy canes pudding chupa chups liquorice croissant.',
+        "Gummies gummi bears I love candy icing apple pie I love marzipan bear claw. I love tart biscuit I love candy canes pudding chupa chups liquorice croissant.",
       avatar: avatar8,
-      status: 'offline',
+      status: "offline",
     },
     {
       id: 10,
-      fullName: 'Blake Carter',
-      role: 'Building surveyor',
-      about: 'Cake pie jelly jelly beans. Marzipan lemon drops halvah cake. Pudding cookie lemon drops icing',
+      fullName: "Blake Carter",
+      role: "Building surveyor",
+      about:
+        "Cake pie jelly jelly beans. Marzipan lemon drops halvah cake. Pudding cookie lemon drops icing",
       avatar: avatar4,
-      status: 'away',
+      status: "away",
     },
   ],
 
@@ -135,8 +140,8 @@ export const db: DB = {
       unseenMsgs: 0,
       messages: [
         {
-          message: 'Hi',
-          time: 'Mon Dec 10 2018 07:45:00 GMT+0000 (GMT)',
+          message: "Hi",
+          time: "Mon Dec 10 2018 07:45:00 GMT+0000 (GMT)",
           senderId: 11,
           feedback: {
             isSent: true,
@@ -145,8 +150,8 @@ export const db: DB = {
           },
         },
         {
-          message: 'Hello. How can I help You?',
-          time: 'Mon Dec 11 2018 07:45:15 GMT+0000 (GMT)',
+          message: "Hello. How can I help You?",
+          time: "Mon Dec 11 2018 07:45:15 GMT+0000 (GMT)",
           senderId: 2,
           feedback: {
             isSent: true,
@@ -155,8 +160,9 @@ export const db: DB = {
           },
         },
         {
-          message: 'Can I get details of my last transaction I made last month? 🤔',
-          time: 'Mon Dec 11 2018 07:46:10 GMT+0000 (GMT)',
+          message:
+            "Can I get details of my last transaction I made last month? 🤔",
+          time: "Mon Dec 11 2018 07:46:10 GMT+0000 (GMT)",
           senderId: 11,
           feedback: {
             isSent: true,
@@ -165,8 +171,8 @@ export const db: DB = {
           },
         },
         {
-          message: 'We need to check if we can provide you such information.',
-          time: 'Mon Dec 11 2018 07:45:15 GMT+0000 (GMT)',
+          message: "We need to check if we can provide you such information.",
+          time: "Mon Dec 11 2018 07:45:15 GMT+0000 (GMT)",
           senderId: 2,
           feedback: {
             isSent: true,
@@ -175,8 +181,8 @@ export const db: DB = {
           },
         },
         {
-          message: 'I will inform you as I get update on this.',
-          time: 'Mon Dec 11 2018 07:46:15 GMT+0000 (GMT)',
+          message: "I will inform you as I get update on this.",
+          time: "Mon Dec 11 2018 07:46:15 GMT+0000 (GMT)",
           senderId: 2,
           feedback: {
             isSent: true,
@@ -185,7 +191,7 @@ export const db: DB = {
           },
         },
         {
-          message: 'If it takes long you can mail me at my mail address.',
+          message: "If it takes long you can mail me at my mail address.",
           time: String(dayBeforePreviousDay),
           senderId: 11,
           feedback: {
@@ -202,8 +208,8 @@ export const db: DB = {
       unseenMsgs: 1,
       messages: [
         {
-          message: 'How can we help? We\'re here for you!',
-          time: 'Mon Dec 10 2018 07:45:00 GMT+0000 (GMT)',
+          message: "How can we help? We're here for you!",
+          time: "Mon Dec 10 2018 07:45:00 GMT+0000 (GMT)",
           senderId: 11,
           feedback: {
             isSent: true,
@@ -212,8 +218,9 @@ export const db: DB = {
           },
         },
         {
-          message: 'Hey John, I am looking for the best admin template. Could you please help me to find it out?',
-          time: 'Mon Dec 10 2018 07:45:23 GMT+0000 (GMT)',
+          message:
+            "Hey John, I am looking for the best admin template. Could you please help me to find it out?",
+          time: "Mon Dec 10 2018 07:45:23 GMT+0000 (GMT)",
           senderId: 1,
           feedback: {
             isSent: true,
@@ -222,8 +229,8 @@ export const db: DB = {
           },
         },
         {
-          message: 'It should use nice Framework.',
-          time: 'Mon Dec 10 2018 07:45:55 GMT+0000 (GMT)',
+          message: "It should use nice Framework.",
+          time: "Mon Dec 10 2018 07:45:55 GMT+0000 (GMT)",
           senderId: 1,
           feedback: {
             isSent: true,
@@ -232,8 +239,8 @@ export const db: DB = {
           },
         },
         {
-          message: 'Absolutely!',
-          time: 'Mon Dec 10 2018 07:46:00 GMT+0000 (GMT)',
+          message: "Absolutely!",
+          time: "Mon Dec 10 2018 07:46:00 GMT+0000 (GMT)",
           senderId: 11,
           feedback: {
             isSent: true,
@@ -242,8 +249,8 @@ export const db: DB = {
           },
         },
         {
-          message: 'Our admin is the responsive admin template.!',
-          time: 'Mon Dec 10 2018 07:46:05 GMT+0000 (GMT)',
+          message: "Our admin is the responsive admin template.!",
+          time: "Mon Dec 10 2018 07:46:05 GMT+0000 (GMT)",
           senderId: 11,
           feedback: {
             isSent: true,
@@ -252,8 +259,8 @@ export const db: DB = {
           },
         },
         {
-          message: 'Looks clean and fresh UI. 😍',
-          time: 'Mon Dec 10 2018 07:46:23 GMT+0000 (GMT)',
+          message: "Looks clean and fresh UI. 😍",
+          time: "Mon Dec 10 2018 07:46:23 GMT+0000 (GMT)",
           senderId: 1,
           feedback: {
             isSent: true,
@@ -262,8 +269,8 @@ export const db: DB = {
           },
         },
         {
-          message: 'It\'s perfect for my next project.',
-          time: 'Mon Dec 10 2018 07:46:33 GMT+0000 (GMT)',
+          message: "It's perfect for my next project.",
+          time: "Mon Dec 10 2018 07:46:33 GMT+0000 (GMT)",
           senderId: 1,
           feedback: {
             isSent: true,
@@ -272,8 +279,8 @@ export const db: DB = {
           },
         },
         {
-          message: 'How can I purchase it?',
-          time: 'Mon Dec 10 2018 07:46:43 GMT+0000 (GMT)',
+          message: "How can I purchase it?",
+          time: "Mon Dec 10 2018 07:46:43 GMT+0000 (GMT)",
           senderId: 1,
           feedback: {
             isSent: true,
@@ -282,8 +289,8 @@ export const db: DB = {
           },
         },
         {
-          message: 'Thanks, From our official site  😇',
-          time: 'Mon Dec 10 2018 07:46:53 GMT+0000 (GMT)',
+          message: "Thanks, From our official site  😇",
+          time: "Mon Dec 10 2018 07:46:53 GMT+0000 (GMT)",
           senderId: 11,
           feedback: {
             isSent: true,
@@ -292,7 +299,7 @@ export const db: DB = {
           },
         },
         {
-          message: 'I will purchase it for sure. 👍',
+          message: "I will purchase it for sure. 👍",
           time: String(previousDay),
           senderId: 1,
           feedback: {
@@ -304,4 +311,4 @@ export const db: DB = {
       ],
     },
   ],
-}
+};

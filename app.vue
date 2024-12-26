@@ -44,28 +44,40 @@ onMounted(() => {
   </VLocaleProvider>
 </template>
 <style lang="scss">
-.v-theme--light{
+.v-theme--light {
   .app-text-field {
     label {
-        color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity)) !important;
+      color: rgba(
+        var(--v-theme-on-surface),
+        var(--v-high-emphasis-opacity)
+      ) !important;
     }
   }
-  .app-select{
+  .app-select {
     label {
-        color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity)) !important;
+      color: rgba(
+        var(--v-theme-on-surface),
+        var(--v-high-emphasis-opacity)
+      ) !important;
     }
   }
 }
 
-.v-theme--dark{
+.v-theme--dark {
   .app-text-field {
     label {
-       color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity)) !important;
+      color: rgba(
+        var(--v-theme-on-surface),
+        var(--v-high-emphasis-opacity)
+      ) !important;
     }
   }
-  .app-select{
+  .app-select {
     label {
-      color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity)) !important;
+      color: rgba(
+        var(--v-theme-on-surface),
+        var(--v-high-emphasis-opacity)
+      ) !important;
     }
   }
 }

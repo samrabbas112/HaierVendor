@@ -1,10 +1,10 @@
 export interface CalendarEvent {
-  id: number
-  url: string
-  title: string
-  start: Date
-  end: Date
-  allDay: boolean
+  id: number;
+  url: string;
+  title: string;
+  start: Date;
+  end: Date;
+  allDay: boolean;
 
-  extendedProps: Record<string, any>
+  extendedProps: Record<string, any>;
 }

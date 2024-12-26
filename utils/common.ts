@@ -12,5 +12,5 @@ export const dateTimeOptions = {
 };
 
 export const resolveOrderStatus = (status: string) => {
-  return orderCodeStatus[status] || { text: status, color: 'primary' }
-}
+  return orderCodeStatus[status] || { text: status, color: "primary" };
+};

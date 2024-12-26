@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { useTheme } from 'vuetify'
-import { getDonutChartConfig } from '@core/libs/apex-chart/apexCharConfig'
+import { useTheme } from "vuetify";
+import { getDonutChartConfig } from "@core/libs/apex-chart/apexCharConfig";
 
 const props = defineProps({
   series: {
@@ -9,9 +9,9 @@ const props = defineProps({
   labels: {
     type: Array,
   },
-})
+});
 
-const vuetifyTheme = useTheme()
+const vuetifyTheme = useTheme();
 
 // const expenseRationChartConfig = computed(() =>
 //   getDonutChartConfig(vuetifyTheme.current.value),
@@ -20,7 +20,7 @@ const vuetifyTheme = useTheme()
 // expenseRationChartConfig.value.labels = props.labels;
 
 // Check if all values in series are 0
-const isSeriesZero = computed(() => props.series.every(value => value === 0));
+const isSeriesZero = computed(() => props.series.every((value) => value === 0));
 
 // Configure the chart
 const expenseRationChartConfig = computed(() => {
@@ -29,12 +29,12 @@ const expenseRationChartConfig = computed(() => {
     config,
     series: props.series,
     labels: props.labels,
-  })
+  });
 
-  config.labels = props.labels
+  config.labels = props.labels;
 
   // Apply gray color if all series values are zero
-  config.colors = isSeriesZero.value ? ['#D3D3D3'] : undefined; // Gray color for zero values
+  config.colors = isSeriesZero.value ? ["#D3D3D3"] : undefined; // Gray color for zero values
 
   // Customize the center label to show 0% if series is zero
   config.plotOptions = {
@@ -44,19 +44,19 @@ const expenseRationChartConfig = computed(() => {
           show: true,
           total: {
             show: true,
-            label: 'Total',
+            label: "Total",
             formatter: () => {
               // Show "0%" if all values are zero
-              return isSeriesZero.value ? '0%' : '100%'
+              return isSeriesZero.value ? "0%" : "100%";
             },
           },
         },
       },
     },
-  }
+  };
 
-  return config
-})
+  return config;
+});
 </script>
 
 <template>

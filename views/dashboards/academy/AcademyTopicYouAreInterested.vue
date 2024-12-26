@@ -1,44 +1,58 @@
 <script setup lang="ts">
-import { defineEmits, defineProps } from 'vue';
+import { defineEmits, defineProps } from "vue";
 
 const props = defineProps<{
-  topItemsSold: Array<{ vendor_id: number; product_name: string; total_sales: string }>
-}>()
+  topItemsSold: Array<{
+    vendor_id: number;
+    product_name: string;
+    total_sales: string;
+  }>;
+}>();
 
 // Define emit for update:modelValue event
-const emit = defineEmits(['dateChange'])
+const emit = defineEmits(["dateChange"]);
 
 // Emit event function to trigger 'update:modelValue' with the selected date
 const handleDateChange = (newDate: string, isCalenderOpen) => {
-  let key = 'top-item-sold'
-  emit('dateChange', newDate, isCalenderOpen.value, key);
+  let key = "top-item-sold";
+  emit("dateChange", newDate, isCalenderOpen.value, key);
 };
 
 // Function to round to the nearest even number
-const roundToNearestFive = num => {
-  return Math.ceil(num / 5) * 5
-}
+const roundToNearestFive = (num) => {
+  return Math.ceil(num / 5) * 5;
+};
 
-const borderColor = 'rgba(var(--v-border-color), var(--v-border-opacity))'
+const borderColor = "rgba(var(--v-border-color), var(--v-border-opacity))";
 
 const chartData = computed(() => {
   // Clear the array first to avoid duplicating values
-  const topicsChartLabels = [...new Set(props.topItemsSold.map(item => item.product_name))];
+  const topicsChartLabels = [
+    ...new Set(props.topItemsSold.map((item) => item.product_name)),
+  ];
 
-  const totalSales = props.topItemsSold.reduce((sum, item) => sum + Number.parseInt(item.total_sales, 10), 0);
+  const totalSales = props.topItemsSold.reduce(
+    (sum, item) => sum + Number.parseInt(item.total_sales, 10),
+    0,
+  );
 
   const topicsChartSeries = [
     {
-      data: props.topItemsSold.map(item => {
+      data: props.topItemsSold.map((item) => {
         // Calculate percentage only if totalSales is greater than zero to avoid division by zero
         return totalSales > 0
-          ? Math.round((Number.parseInt(item.total_sales, 10) / totalSales) * 100)
+          ? Math.round(
+              (Number.parseInt(item.total_sales, 10) / totalSales) * 100,
+            )
           : 0; // Return 0 if totalSales is 0
-      })
-    }
+      }),
+    },
   ];
 
-  const xAxisCategories = Array.from({ length: props.topItemsSold.length }, (_, i) => (props.topItemsSold.length - i).toString());
+  const xAxisCategories = Array.from(
+    { length: props.topItemsSold.length },
+    (_, i) => (props.topItemsSold.length - i).toString(),
+  );
 
   const yMax = roundToNearestFive(Math.max(...topicsChartSeries[0].data) || 50);
 
@@ -116,7 +130,7 @@ const topicsChartConfig = computed(() => ({
       const productName = chartData.value.labels[opt.dataPointIndex];
 
       // If percentage is less than 5%, show truncated name with ellipsis
-      if (percentage <= (chartData.value.yMax / 5)) {
+      if (percentage <= chartData.value.yMax / 5) {
         return `${productName.substring(0, 4)}...`;
       } else {
         return productName;
@@ -174,8 +188,8 @@ const topicsChartConfig = computed(() => ({
     },
     custom: ({ seriesIndex, dataPointIndex }) => {
       // Access product name and total sales directly
-      const productName = chartData.value.labels[dataPointIndex]
-      const sale = props.topItemsSold[dataPointIndex].total_sales
+      const productName = chartData.value.labels[dataPointIndex];
+      const sale = props.topItemsSold[dataPointIndex].total_sales;
 
       // Customize tooltip content without "Series-1"
       return `
@@ -210,7 +224,10 @@ const topicsData = [
 
 <template>
   <VCard>
-    <VCardItem title="Top Items Sold" class="d-flex flex-wrap justify-space-between gap-4">
+    <VCardItem
+      title="Top Items Sold"
+      class="d-flex flex-wrap justify-space-between gap-4"
+    >
     </VCardItem>
 
     <VCardText>

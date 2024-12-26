@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import Alert from '@/components/alert/alert.vue';
-import Loader from '@/components/loader/Loader.vue';
+import Alert from "@/components/alert/alert.vue";
+import Loader from "@/components/loader/Loader.vue";
 
 const { injectSkinClasses } = useSkins();
 

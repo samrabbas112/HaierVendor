@@ -1,9 +1,9 @@
-import { createMongoAbility } from '@casl/ability'
-import { abilitiesPlugin } from '@casl/vue'
-import type { Rule } from './ability'
+import { createMongoAbility } from "@casl/ability";
+import { abilitiesPlugin } from "@casl/vue";
+import type { Rule } from "./ability";
 
-export default defineNuxtPlugin(nuxtApp => {
-  const userAbilityRules = useCookie<Rule[]>('userAbilityRules')
+export default defineNuxtPlugin((nuxtApp) => {
+  const userAbilityRules = useCookie<Rule[]>("userAbilityRules");
   // userAbilityRules.value = [
   //   { action: 'read', subject: 'Vendor' },
   //   { action: 'read', subject: 'Customer' },
@@ -11,9 +11,9 @@ export default defineNuxtPlugin(nuxtApp => {
   //   { action: 'read', subject: 'Order' },
   //   { action: 'read', subject: 'Dashboard' },
   // ]
-  const initialAbility = createMongoAbility(userAbilityRules.value ?? [])
+  const initialAbility = createMongoAbility(userAbilityRules.value ?? []);
 
   nuxtApp.vueApp.use(abilitiesPlugin, initialAbility, {
     useGlobalProperties: true,
-  })
-})
+  });
+});

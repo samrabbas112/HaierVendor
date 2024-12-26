@@ -318,7 +318,7 @@ input[altinputclass="inlinePicker"] {
         border: none !important;
         // background: rgba(var(--v-theme-primary), 0.24);
         // color: rgb(var(--v-theme-primary));
-        color: #393939;;
+        color: #393939;
       }
     }
 

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const props = defineProps<{
-  clickFunction: () => void
-  btnText?: string
-  variant?: string
-  class?: string
-  color?: string
-  isLoading?: boolean
-  block?: boolean
-}>()
+  clickFunction: () => void;
+  btnText?: string;
+  variant?: string;
+  class?: string;
+  color?: string;
+  isLoading?: boolean;
+  block?: boolean;
+}>();
 </script>
 
 <template>
@@ -19,13 +19,9 @@ const props = defineProps<{
     @click="props.clickFunction"
     :type="props.type || button"
   >
-    <VProgressCircular
-      v-if="props.isLoading"
-      indeterminate
-      color="white"
-    />
+    <VProgressCircular v-if="props.isLoading" indeterminate color="white" />
     <template v-else>
-      {{ props.btnText || 'Submit' }}
+      {{ props.btnText || "Submit" }}
     </template>
   </VBtn>
 </template>
