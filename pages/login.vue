@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue'
+import DemoDialogFullscreen from '@/components/dialogs/DemoDialogFullscreen.vue'
+import { ability } from '@/plugins/casl/ability'
+import { useSnackbarStore } from '@/stores/snackbar'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
@@ -9,9 +11,7 @@ import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
-import { useSnackbarStore } from '@/stores/snackbar'
-import DemoDialogFullscreen from '@/components/dialogs/DemoDialogFullscreen.vue'
-import { ability } from '@/plugins/casl/ability'
+import { nextTick, ref } from 'vue'
 
 definePageMeta({
   layout: 'blank',
@@ -24,6 +24,7 @@ const form = ref({
   password: 'Haier@123',
   remember: false,
 })
+
 
 const toast = useToastStore()
 const loader = useLoaderStore()
@@ -70,7 +71,6 @@ const submitForm = async () => {
     'post',
     payload,
   )
-
   if (response && response.success) {
     console.log('response success', response.data)
     authStore.login({ user: response.data, token: response.data.authToken })
@@ -115,6 +115,8 @@ const submitForm = async () => {
       window.location.href = '/dashboard';
       // router.push('/dashboard')
     })
+  } else if(response && response.message == 'Please Accept Terms and conditions.') {
+    termsStore.showTerms();
   }
   else {
     if(response?.message){
@@ -242,17 +244,7 @@ const submitForm = async () => {
                   </template>
                 </VBtn>
               </VCol>
-              <VCol
-                cols="12"
-                class="text-body-1 text-right"
-              >
-                <span>By signing up, you agree to the </span><a
-                  class="text-primary ms-1 d-inline-block text-body-1"
-                  href="javascript:void(0)"
-                  @click="termsStore.showTerms()"
-                >Haier terms of service
-                </a>
-              </VCol>
+             
               <!--
                 <VCol
                 cols="12"
@@ -285,7 +277,7 @@ const submitForm = async () => {
       </VCard>
     </VCol>
   </VRow>
-  <DemoDialogFullscreen />
+  <DemoDialogFullscreen :userEmail="form.email" :password="form.password" :remember="true"/>
 </template>
 
 <style lang="scss">
