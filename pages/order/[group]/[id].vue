@@ -85,9 +85,10 @@ const transformData = apiResponse => {
   orderDetail.value = apiResponse.orderProduct.map(orderProduct => {
     let singleProductTotal = 0
     orderProduct.specInfo.forEach(spec => {
-      subtotal.value += orderProduct.productPrice * spec.purchaseNum
-      singleProductTotal += orderProduct.productPrice * spec.purchaseNum
+      subtotal.value += spec.amount * spec.purchaseNum
+      singleProductTotal += spec.amount * spec.purchaseNum
     })
+    singleProductTotal += orderProduct.logisticAmount || 0
 
     return transformOrderDetail(orderProduct, singleProductTotal)
   })
@@ -118,7 +119,7 @@ const fetchData = async () => {
       const singleOrder = response.data
 
       orderData.value = transformData(singleOrder)
-      Total.value = subtotal.value // Update total with the subtotal
+      Total.value = singleOrder.paymentAmount || 0 // Update total with the subtotal
     }
     else {
       snackbarStore.showSnackbar(
@@ -312,7 +313,6 @@ const headers = [
   { title: 'Variation', key: 'variations' },
   { title: 'Quantity', key: 'quantity' },
   { title: 'Price', key: 'price' },
-  { title: 'Total', key: 'total' },
 ]
 </script>
 
@@ -350,6 +350,13 @@ const headers = [
           </div>
         </div>
       </div>
+      <PrintOrderDetail
+            :order-data="orderData"
+            :order-detail="orderDetail"
+            :subtotal="subtotal"
+            :Total="Total"
+            :userData="userData"
+          />
       <div
         v-if="authUser.user_type !== 'haier' && route.params.group !== 'vendor'"
         class="d-flex gap-x-2"
@@ -500,12 +507,6 @@ const headers = [
 
             <template #item.price="{ item }">
               <div class="text-body-1">
-                {{ item.price }}
-              </div>
-            </template>
-
-            <template #item.total="{ item }">
-              <div class="text-body-1">
                 {{ item.total }}
               </div>
             </template>
@@ -538,22 +539,11 @@ const headers = [
             <div class="d-flex align-end flex-column">
               <table class="text-high-emphasis">
                 <tbody>
-                  <!--
-                    <tr>
-                    <td>Extra:</td>
-                    <td class="font-weight-medium">
-                    PKR{{ extra }}
-                    </td>
-                    </tr>
-                    <tr>
-                    <td>Discount:</td>
-                    <td class="font-weight-medium">
-                    PKR{{ Discount }}
-                    </td>
-                    </tr>
-                  -->
                   <tr>
-                    <td class="text-high-emphasis font-weight-medium" width="200px">
+                    <td
+                      class="text-high-emphasis font-weight-medium"
+                      width="200px"
+                    >
                       Total:
                     </td>
                     <td class="font-weight-medium">
