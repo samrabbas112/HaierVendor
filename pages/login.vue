@@ -218,10 +218,7 @@ const submitForm = async () => {
                 />
 
                 <div class="d-flex align-center flex-wrap justify-space-between my-6">
-                  <VCheckbox
-                    v-model="form.remember"
-                    label="Remember me"
-                  />
+                  <div></div> <!-- Empty div to maintain alignment -->
                   <NuxtLink
                     class="text-primary"
                     :to="{ name: 'authentication-forgot-password' }"
@@ -229,6 +226,7 @@ const submitForm = async () => {
                     Forgot Password?
                   </NuxtLink>
                 </div>
+                
 
                 <VBtn
                   block
