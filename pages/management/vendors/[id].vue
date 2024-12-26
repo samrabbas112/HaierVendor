@@ -254,12 +254,11 @@ onMounted(() => {
               />
             </VCol>
 
-            <VCol cols="12" sm="6">
               <ProvinceCitySelector
               v-model:selectedProvinceId="selectedProvinceId"
               v-model:selectedCityId="selectedCityId"
               />
-            </VCol>
+
           </VRow>
 
           <!-- Actions -->

@@ -117,6 +117,10 @@ const submitForm = async () => {
     })
   }
   else {
+    if(response?.message){
+      snackbarStore.showSnackbar(response.message, 'error')
+    }
+    else
     snackbarStore.showSnackbar('Incorrect Email or Password', 'error')
     console.error('Login failed')
   }
