@@ -62,7 +62,7 @@ const deleteData = async (id: number) => {
           {{ item.id }}
         </template>
         <template #item.order="{ item }">
-          <NuxtLink> #{{ item.order }} </NuxtLink>
+          <NuxtLink> {{ item.order }} </NuxtLink>
         </template>
 
         <!-- Date -->
