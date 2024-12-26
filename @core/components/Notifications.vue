@@ -189,9 +189,9 @@ const handleConfirm = async (value) => {
         <VDivider />
 
         <!-- 👉 Footer -->
-        <VCardText v-show="props.notifications.length" class="pa-4">
-          <VBtn block size="small"> View All Notifications </VBtn>
-        </VCardText>
+<!--        <VCardText v-show="props.notifications.length" class="pa-4">-->
+<!--          <VBtn block size="small"> View All Notifications </VBtn>-->
+<!--        </VCardText>-->
       </VCard>
     </VMenu>
   </IconBtn>
