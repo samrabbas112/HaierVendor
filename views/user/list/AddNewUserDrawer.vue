@@ -1,48 +1,48 @@
 <script setup lang="ts">
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 
-import type { VForm } from 'vuetify/components/VForm'
+import type { VForm } from "vuetify/components/VForm";
 
-import type { UserProperties } from '@db/apps/users/types'
+import type { UserProperties } from "@db/apps/users/types";
 
 interface Emit {
-  (e: 'update:isDrawerOpen', value: boolean): void
-  (e: 'userData', value: UserProperties): void
+  (e: "update:isDrawerOpen", value: boolean): void;
+  (e: "userData", value: UserProperties): void;
 }
 
 interface Props {
-  isDrawerOpen: boolean
+  isDrawerOpen: boolean;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emit>();
 
-const isFormValid = ref(false)
-const refForm = ref<VForm>()
-const fullName = ref('')
-const userName = ref('')
-const email = ref('')
-const company = ref('')
-const country = ref()
-const contact = ref('')
-const role = ref()
-const plan = ref()
-const status = ref()
+const isFormValid = ref(false);
+const refForm = ref<VForm>();
+const fullName = ref("");
+const userName = ref("");
+const email = ref("");
+const company = ref("");
+const country = ref();
+const contact = ref("");
+const role = ref();
+const plan = ref();
+const status = ref();
 
 // 👉 drawer close
 const closeNavigationDrawer = () => {
-  emit('update:isDrawerOpen', false)
+  emit("update:isDrawerOpen", false);
 
   nextTick(() => {
-    refForm.value?.reset()
-    refForm.value?.resetValidation()
-  })
-}
+    refForm.value?.reset();
+    refForm.value?.resetValidation();
+  });
+};
 
 const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
-      emit('userData', {
+      emit("userData", {
         id: 0,
         fullName: fullName.value,
         company: company.value,
@@ -52,21 +52,21 @@ const onSubmit = () => {
         email: email.value,
         currentPlan: plan.value,
         status: status.value,
-        avatar: '',
-        billing: 'Auto Debit',
-      })
-      emit('update:isDrawerOpen', false)
+        avatar: "",
+        billing: "Auto Debit",
+      });
+      emit("update:isDrawerOpen", false);
       nextTick(() => {
-        refForm.value?.reset()
-        refForm.value?.resetValidation()
-      })
+        refForm.value?.reset();
+        refForm.value?.resetValidation();
+      });
     }
-  })
-}
+  });
+};
 
 const handleDrawerModelValueUpdate = (val: boolean) => {
-  emit('update:isDrawerOpen', val)
-}
+  emit("update:isDrawerOpen", val);
+};
 </script>
 
 <template>
@@ -90,11 +90,7 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
       <VCard flat>
         <VCardText>
           <!-- 👉 Form -->
-          <VForm
-            ref="refForm"
-            v-model="isFormValid"
-            @submit.prevent="onSubmit"
-          >
+          <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
             <VRow>
               <!-- 👉 Full name -->
               <VCol cols="12">
@@ -165,7 +161,13 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                   label="Select Role"
                   placeholder="Select Role"
                   :rules="[requiredValidator]"
-                  :items="['Admin', 'Author', 'Editor', 'Maintainer', 'Subscriber']"
+                  :items="[
+                    'Admin',
+                    'Author',
+                    'Editor',
+                    'Maintainer',
+                    'Subscriber',
+                  ]"
                 />
               </VCol>
 
@@ -187,18 +189,17 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
                   label="Select Status"
                   placeholder="Select Status"
                   :rules="[requiredValidator]"
-                  :items="[{ title: 'Active', value: 'active' }, { title: 'Inactive', value: 'inactive' }, { title: 'Pending', value: 'pending' }]"
+                  :items="[
+                    { title: 'Active', value: 'active' },
+                    { title: 'Inactive', value: 'inactive' },
+                    { title: 'Pending', value: 'pending' },
+                  ]"
                 />
               </VCol>
 
               <!-- 👉 Submit and Cancel -->
               <VCol cols="12">
-                <VBtn
-                  type="submit"
-                  class="me-3"
-                >
-                  Submit
-                </VBtn>
+                <VBtn type="submit" class="me-3"> Submit </VBtn>
                 <VBtn
                   type="reset"
                   variant="tonal"

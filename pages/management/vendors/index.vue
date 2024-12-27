@@ -1,174 +1,176 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import moment from 'moment'
-import { useLoaderStore } from '@/stores/loader'
+import { onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import moment from "moment";
+import { useLoaderStore } from "@/stores/loader";
 
-const snackBarStore = useSnackbarStore()
+const snackBarStore = useSnackbarStore();
 
 // State
-const searchQuery = ref('')
-const vendorsData = ref({ total: 0, vendors: [] })
-const selectedRows = ref([])
-const router = useRouter()
-const loaderStore = useLoaderStore()
-const isConfirmDialogVisible = ref(false)
-const selectedVendorId = ref()
-const selectedVendorStatus = ref()
+const searchQuery = ref("");
+const phoneQuery = ref("");
+const vendorsData = ref({ total: 0, vendors: [] });
+const selectedRows = ref([]);
+const router = useRouter();
+const loaderStore = useLoaderStore();
+const isConfirmDialogVisible = ref(false);
+const selectedVendorId = ref();
+const selectedVendorStatus = ref();
 
 // Data table options
-const itemsPerPage = ref(10)
-const page = ref(1)
-const apiRequestObj = useApi()
+const itemsPerPage = ref(10);
+const page = ref(1);
+const apiRequestObj = useApi();
 
 // Resolve user status for the UI
 const resolveUserStatusVariant = (stat: string) => {
-  const statLowerCase = stat.toLowerCase()
-  if (statLowerCase === 'pending')
-    return 'warning'
-  if (statLowerCase === 'active')
-    return 'success'
-  if (statLowerCase === 'inactive')
-    return 'secondary'
+  const statLowerCase = stat.toLowerCase();
+  if (statLowerCase === "pending") return "warning";
+  if (statLowerCase === "active") return "success";
+  if (statLowerCase === "inactive") return "secondary";
 
-  return 'primary'
-}
+  return "primary";
+};
 
 // Headers for the data table
 const headers = [
-  { title: 'SN', key: 'id' },
-  { title: 'Vendor ID', key: 'vendor_no' },
-  { title: 'Vendor', key: 'vendor' },
-  { title: 'Contact', key: 'contact' },
-  { title: 'Create Time', key: 'created_at' },
-  { title: 'Status', key: 'status' },
-  { title: 'Actions', key: 'actions', sortable: false },
-]
+  { title: "SN", key: "id" },
+  { title: "Vendor ID", key: "vendor_no" },
+  { title: "Vendor", key: "vendor" },
+  { title: "Contact", key: "contact" },
+  { title: "Create Time", key: "created_at" },
+  { title: "Status", key: "status" },
+  { title: "Actions", key: "actions", sortable: false },
+];
 
 const vendorStatus = [
-  { title: 'Active', value: 1 },
-  { title: 'inActive', value: 0 },
-
-]
+  { title: "Active", value: 1 },
+  { title: "inActive", value: 0 },
+];
 
 // Navigate to Add New Vendor page
 const goToAddVendorPage = () => {
-  router.push('/management/vendors/add-vendor') // Navigates to /add-vendor
-}
+  router.push("/management/vendors/add-vendor"); // Navigates to /add-vendor
+};
 
 const detailsVendor = (vendorId: string) => {
   router.push({
     path: `/management/vendors/${vendorId}`,
-    query: { mode: 'details' },
-  })
-}
+    query: { mode: "details" },
+  });
+};
 
 const editVendor = (vendorId: string) => {
   router.push({
     path: `/management/vendors/${vendorId}`,
-    query: { mode: 'edit' },
-  })
-}
+    query: { mode: "edit" },
+  });
+};
 
 // Fetch vendors from the API
 const fetchVendors = async () => {
-  loaderStore.showLoader()
+  loaderStore.showLoader();
 
   try {
     const response = await apiRequestObj.makeRequest(
-      'haier/vendor/list',
-      'get',
-      '',
+      "haier/vendor/list",
+      "get",
+      "",
       {
         page: page.value,
         itemsPerPage: itemsPerPage.value,
         query: searchQuery.value,
-        ...((selectedVendorStatus.value == 0 || selectedVendorStatus.value == 1) && { status: selectedVendorStatus.value }),
+        ...(phoneQuery.value && { phone: phoneQuery.value }),
+        ...((selectedVendorStatus.value == 0 ||
+          selectedVendorStatus.value == 1) && {
+          status: selectedVendorStatus.value,
+        }),
       },
-    )
+    );
 
     if (response?.success) {
       vendorsData.value = {
         total: response.data.total,
         vendors: response.data.vendors,
-      }
+      };
     }
+  } catch (error) {
+    console.error("Error fetching vendors:", error);
   }
-  catch (error) {
-    console.error('Error fetching vendors:', error)
-  }
-  loaderStore.hideLoader()
-}
+  loaderStore.hideLoader();
+};
 
 // Delete a customer
-const handleConfirm = async value => {
+const handleConfirm = async (value) => {
   if (value) {
-    loaderStore.showLoader()
+    loaderStore.showLoader();
     try {
       const response = await apiRequestObj.makeRequest(
         `haier/vendor/delete/${selectedVendorId.value}`,
-        'DELETE',
-      )
+        "DELETE",
+      );
 
-      if (response?.success)
-        await fetchVendors()
-      else
-        console.log('noce')
-    }
-    catch (error) {
-      console.error('Error deleting vendor:', error)
-      snackBarStore.showSnackbar('Error deleting vendor, please try again.', 'error')
+      if (response?.success) await fetchVendors();
+      else console.log("noce");
+    } catch (error) {
+      console.error("Error deleting vendor:", error);
+      snackBarStore.showSnackbar(
+        "Error deleting vendor, please try again.",
+        "error",
+      );
 
       // Re-fetch the vendor list in case of an error
       // fetchVendors();
     }
   }
-}
+};
 
 const capitalizedLabel = (label: boolean) => {
-  const convertLabelText = label.toString()
+  const convertLabelText = label.toString();
 
-  return convertLabelText.charAt(0).toUpperCase() + convertLabelText.slice(1)
-}
+  return convertLabelText.charAt(0).toUpperCase() + convertLabelText.slice(1);
+};
 
 // Delete a vendor
 const deleteVendor = async (id: string) => {
-  selectedVendorId.value = id
-  isConfirmDialogVisible.value = !isConfirmDialogVisible.value
-}
+  selectedVendorId.value = id;
+  isConfirmDialogVisible.value = !isConfirmDialogVisible.value;
+};
 
 const formatRelativeTime = (date: string) => {
-  return moment(date).fromNow()
-}
+  return moment(date).fromNow();
+};
 
-const handleStatusToggle = async item => {
-  loaderStore.showLoader()
+const handleStatusToggle = async (item) => {
+  loaderStore.showLoader();
 
-  const response = await apiRequestObj.makeRequest(`haier/vendor/update-status/${item.uid}`, 'get')
+  const response = await apiRequestObj.makeRequest(
+    `haier/vendor/update-status/${item.uid}`,
+    "get",
+  );
 
-  snackBarStore.showSnackbar(response.message || 'Something went wrong')
-  loaderStore.hideLoader()
-}
+  snackBarStore.showSnackbar(response.message || "Something went wrong");
+  loaderStore.hideLoader();
+};
 
-onMounted(fetchVendors)
+watch(
+  [selectedVendorStatus],
+  () => {
+    page.value = 1;
+      fetchVendors();
+  },
+  { deep: true },
+);
+
+onMounted(fetchVendors);
 </script>
 
 <template>
   <section>
     <!-- Header Section with Add New Vendor Button -->
-    <VRow
-      justify="space-between"
-      class="mb-6 align-center"
-    >
-      <VCol
-        cols="12"
-        sm="6"
-      />
-      <VCol
-        cols="12"
-        sm="6"
-        class="text-end"
-      >
+    <VRow justify="space-between" class="mb-6 align-center">
+      <VCol cols="12" sm="6" />
+      <VCol cols="12" sm="6" class="text-end">
         <VBtn
           prepend-icon="tabler-plus"
           color="primary"
@@ -182,56 +184,69 @@ onMounted(fetchVendors)
     <!-- Filters Section -->
     <VCard class="mb-6">
       <VCardText>
-        <VRow
-          cols="12"
-          sm="8"
-        >
+        <VRow cols="12" sm="8">
           <!-- Search Vendors -->
-          <VCol
-            cols="12"
-            sm="3"
-          >
+          <VCol cols="12" sm="3">
             <AppTextField
               v-model="searchQuery"
-              placeholder="Search by name or number"
+              @keypress.enter="
+                () => {
+                  page = 1;
+                  fetchVendors();
+                }
+              "
+              placeholder="Search by name "
+            />
+
+          </VCol>
+          <VCol cols="12" sm="3">
+            <AppTextField
+              v-model="phoneQuery"
+              @keypress.enter="
+                () => {
+                  page = 1;
+                  fetchVendors();
+                }
+              "
+              placeholder="Search by  number"
             />
           </VCol>
-          <VCol
-            cols="12"
-            sm="3"
-          >
+          <VCol cols="12" sm="3">
             <AppSelect
               v-model="selectedVendorStatus"
               placeholder="Select Vendor Status"
               :items="vendorStatus"
+
               clearable
               clear-icon="tabler-x"
             />
           </VCol>
-          <VCol
-            cols="12"
-            sm="3"
-          >
+          <VCol cols="12" sm="3">
             <div class="d-flex">
               <VBtn
                 class="me-2"
                 variant="outlined"
                 color="secondary"
-                @click="() => {
-                  searchQuery = '';
-                  selectedVendorStatus = null;
-                  page = 1;
-                  fetchVendors();
-                }"
+                @click="
+                  () => {
+                    searchQuery = '';
+                    phoneQuery  = ''
+                    selectedVendorStatus = null;
+                    page = 1;
+                    fetchVendors();
+                  }
+                "
               >
                 Reset
               </VBtn>
               <VBtn
                 variant="flat"
-                @click="() => {
-                  page = 1;
-                  fetchVendors();
-                }"
+                @click="
+                  () => {
+                    page = 1;
+                    fetchVendors();
+                  }
+                "
               >
                 Search
               </VBtn>
@@ -260,12 +275,16 @@ onMounted(fetchVendors)
         </NuxtLink>
       </template>
       <template #item.vendor="{ item }">
-        <small>{{ item.city }}</small><br>
+        <small>{{ item.name }}</small
+        ><br />
+        <small>{{ item.city }}</small
+        ><br />
         <small>{{ item.address }}</small>
       </template>
 
       <template #item.contact="{ item }">
-        <small>{{ item.telephone }}</small><br>
+        <small>{{ item.telephone }}</small
+        ><br />
         <small>{{ item.email }}</small>
       </template>
 
@@ -281,7 +300,7 @@ onMounted(fetchVendors)
           label
           class="text-capitalize"
         >
-          {{ item.confirmed == 1 ? 'Active' : 'Inactive' }}
+          {{ item.confirmed == 1 ? "Active" : "Inactive" }}
         </VChip>
       </template>
 

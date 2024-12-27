@@ -43,3 +43,42 @@ onMounted(() => {
     </VApp>
   </VLocaleProvider>
 </template>
+<style lang="scss">
+.v-theme--light {
+  .app-text-field {
+    label {
+      color: rgba(
+        var(--v-theme-on-surface),
+        var(--v-high-emphasis-opacity)
+      ) !important;
+    }
+  }
+  .app-select {
+    label {
+      color: rgba(
+        var(--v-theme-on-surface),
+        var(--v-high-emphasis-opacity)
+      ) !important;
+    }
+  }
+}
+
+.v-theme--dark {
+  .app-text-field {
+    label {
+      color: rgba(
+        var(--v-theme-on-surface),
+        var(--v-high-emphasis-opacity)
+      ) !important;
+    }
+  }
+  .app-select {
+    label {
+      color: rgba(
+        var(--v-theme-on-surface),
+        var(--v-high-emphasis-opacity)
+      ) !important;
+    }
+  }
+}
+</style>

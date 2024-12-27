@@ -1,21 +1,21 @@
 // src/stores/loader.ts
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { defineStore } from "pinia";
+import { ref } from "vue";
 
-export const useLoaderStore = defineStore('loader', () => {
-  const isLoading = ref(false)
+export const useLoaderStore = defineStore("loader", () => {
+  const isLoading = ref(false);
 
   const showLoader = () => {
-    isLoading.value = true
-  }
+    isLoading.value = true;
+  };
 
   const hideLoader = () => {
-    isLoading.value = false
-  }
+    isLoading.value = false;
+  };
 
   return {
     isLoading,
     showLoader,
     hideLoader,
-  }
-})
+  };
+});

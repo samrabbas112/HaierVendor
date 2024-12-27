@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import type { Notification } from "@layouts/types";
-import {orderStatusCodes} from "@/libs/order/order-status";
+import { orderStatusCodes } from "@/libs/order/order-status";
 
 const apiRequestObj = useApi();
 const snackBar = useSnackbarStore();
-const isConfirmDialogVisible = ref(false)
-const dialogMsg = ref('Are you sure you want to clear all notifications?')
+const isConfirmDialogVisible = ref(false);
+const dialogMsg = ref("Are you sure you want to clear all notifications?");
 interface Props {
   notifications: Notification[];
   badgeProps?: object;
@@ -44,12 +44,12 @@ const toggleReadUnread = (isSeen: boolean, Id: number) => {
 };
 const markAsRead = () => {
   emit("read", [1]);
-}
-const handleConfirm = async value => {
+};
+const handleConfirm = async (value) => {
   if (value) {
-    emit('remove',1);
+    emit("remove", 1);
   }
-}
+};
 </script>
 
 <template>
@@ -62,8 +62,7 @@ const handleConfirm = async value => {
       :content="totalUnseenNotifications"
       offset-x="2"
       offset-y="3"
-      style="bottom: calc(100% - 10px);
-      left: calc(100% - 14px);"
+      style="bottom: calc(100% - 10px); left: calc(100% - 14px)"
     >
       <VIcon icon="tabler-bell" />
     </VBadge>
@@ -82,7 +81,7 @@ const handleConfirm = async value => {
           <template #append>
             <VCardTitle
               v-show="props.notifications.length"
-              style="font-size: 14px;cursor:pointer"
+              style="font-size: 14px; cursor: pointer"
               class="list-item-hover-class"
               @click="markAllReadOrUnread"
             >
@@ -114,20 +113,20 @@ const handleConfirm = async value => {
                 <!-- Slot: Prepend -->
                 <!-- Handles Avatar: Image, Icon, Text -->
                 <div class="d-flex align-start gap-3">
-<!--                  <VAvatar-->
-<!--                    :color="-->
-<!--                      notification.color && !notification.img-->
-<!--                        ? notification.color-->
-<!--                        : undefined-->
-<!--                    "-->
-<!--                    :variant="notification.img ? undefined : 'tonal'"-->
-<!--                  >-->
-<!--                    <span v-if="notification.text">{{-->
-<!--                      avatarText(notification.text)-->
-<!--                    }}</span>-->
-<!--                    <VImg v-if="notification.img" :src="notification.img" />-->
-<!--                    <VIcon v-if="notification.icon" :icon="notification.icon" />-->
-<!--                  </VAvatar>-->
+                  <!--                  <VAvatar-->
+                  <!--                    :color="-->
+                  <!--                      notification.color && !notification.img-->
+                  <!--                        ? notification.color-->
+                  <!--                        : undefined-->
+                  <!--                    "-->
+                  <!--                    :variant="notification.img ? undefined : 'tonal'"-->
+                  <!--                  >-->
+                  <!--                    <span v-if="notification.text">{{-->
+                  <!--                      avatarText(notification.text)-->
+                  <!--                    }}</span>-->
+                  <!--                    <VImg v-if="notification.img" :src="notification.img" />-->
+                  <!--                    <VIcon v-if="notification.icon" :icon="notification.icon" />-->
+                  <!--                  </VAvatar>-->
 
                   <div>
                     <p class="text-sm font-weight-medium mb-1">
@@ -166,12 +165,12 @@ const handleConfirm = async value => {
                       "
                     />
 
-<!--                    <VIcon-->
-<!--                      size="20"-->
-<!--                      icon="tabler-x"-->
-<!--                      class="visible-in-hover"-->
-<!--                      @click="$emit('remove', notification.id)"-->
-<!--                    />-->
+                    <!--                    <VIcon-->
+                    <!--                      size="20"-->
+                    <!--                      icon="tabler-x"-->
+                    <!--                      class="visible-in-hover"-->
+                    <!--                      @click="$emit('remove', notification.id)"-->
+                    <!--                    />-->
                   </div>
                 </div>
               </VListItem>
@@ -190,13 +189,11 @@ const handleConfirm = async value => {
         <VDivider />
 
         <!-- 👉 Footer -->
-        <VCardText v-show="props.notifications.length" class="pa-4">
-          <VBtn block size="small"> View All Notifications </VBtn>
-        </VCardText>
+<!--        <VCardText v-show="props.notifications.length" class="pa-4">-->
+<!--          <VBtn block size="small"> View All Notifications </VBtn>-->
+<!--        </VCardText>-->
       </VCard>
     </VMenu>
-
-
   </IconBtn>
 
   <ConfirmDialog
@@ -258,5 +255,4 @@ const handleConfirm = async value => {
     }
   }
 }
-
 </style>

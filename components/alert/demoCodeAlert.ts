@@ -91,4 +91,4 @@ export const tonal = {
   </div>
 </template>
 `,
-}
+};

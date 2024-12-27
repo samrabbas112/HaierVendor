@@ -4,13 +4,11 @@ definePageMeta({
 });
 const router = useRouter();
 
-router.push('/dashboard')
-
+router.push("/dashboard");
 </script>
 
 <template>
   <div>
-    <VCard class="mb-6" title="Redirecting To Dashboard...">
-    </VCard>
+    <VCard class="mb-6" title="Redirecting To Dashboard..."> </VCard>
   </div>
 </template>

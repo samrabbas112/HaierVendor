@@ -1,85 +1,89 @@
 <script setup lang="ts">
-import type { Invoice } from '@db/apps/invoice/types'
+import type { Invoice } from "@db/apps/invoice/types";
 
-const searchQuery = ref('')
-const selectedStatus = ref()
+const searchQuery = ref("");
+const selectedStatus = ref();
 
 // Data table options
-const itemsPerPage = ref(10)
-const page = ref(1)
-const sortBy = ref()
-const orderBy = ref()
+const itemsPerPage = ref(10);
+const page = ref(1);
+const sortBy = ref();
+const orderBy = ref();
 
 // Update data table options
 const updateOptions = (options: any) => {
-  sortBy.value = options.sortBy[0]?.key
-  orderBy.value = options.sortBy[0]?.order
-}
+  sortBy.value = options.sortBy[0]?.key;
+  orderBy.value = options.sortBy[0]?.order;
+};
 
-const isLoading = ref(false)
+const isLoading = ref(false);
 
 // 👉 headers
 const headers = [
-  { title: '#', key: 'id' },
-  { title: 'Status', key: 'trending', sortable: false },
-  { title: 'Total', key: 'total' },
-  { title: 'Issued Date', key: 'date' },
-  { title: 'Actions', key: 'actions', sortable: false },
-]
+  { title: "#", key: "id" },
+  { title: "Status", key: "trending", sortable: false },
+  { title: "Total", key: "total" },
+  { title: "Issued Date", key: "date" },
+  { title: "Actions", key: "actions", sortable: false },
+];
 
 // 👉 Fetch Invoices
-const { data: invoiceData, execute: fetchInvoices } = await useApi<any>(createUrl('/apps/invoice', {
-  query: {
-    q: searchQuery,
-    status: selectedStatus,
-    itemsPerPage,
-    page,
-    sortBy,
-    orderBy,
-  },
-}))
+const { data: invoiceData, execute: fetchInvoices } = await useApi<any>(
+  createUrl("/apps/invoice", {
+    query: {
+      q: searchQuery,
+      status: selectedStatus,
+      itemsPerPage,
+      page,
+      sortBy,
+      orderBy,
+    },
+  }),
+);
 
-const invoices = computed((): Invoice[] => invoiceData.value?.invoices)
-const totalInvoices = computed(() => invoiceData.value?.totalInvoices)
+const invoices = computed((): Invoice[] => invoiceData.value?.invoices);
+const totalInvoices = computed(() => invoiceData.value?.totalInvoices);
 
 // 👉 Invoice status variant resolver
 const resolveInvoiceStatusVariantAndIcon = (status: string) => {
-  if (status === 'Partial Payment')
-    return { variant: 'success', icon: 'tabler-check' }
-  if (status === 'Paid')
-    return { variant: 'warning', icon: 'tabler-chart-pie' }
-  if (status === 'Downloaded')
-    return { variant: 'info', icon: 'tabler-arrow-down' }
-  if (status === 'Draft')
-    return { variant: 'primary', icon: 'tabler-folder' }
-  if (status === 'Sent')
-    return { variant: 'secondary', icon: 'tabler-mail' }
-  if (status === 'Past Due')
-    return { variant: 'error', icon: 'tabler-info-circle' }
+  if (status === "Partial Payment")
+    return { variant: "success", icon: "tabler-check" };
+  if (status === "Paid")
+    return { variant: "warning", icon: "tabler-chart-pie" };
+  if (status === "Downloaded")
+    return { variant: "info", icon: "tabler-arrow-down" };
+  if (status === "Draft") return { variant: "primary", icon: "tabler-folder" };
+  if (status === "Sent") return { variant: "secondary", icon: "tabler-mail" };
+  if (status === "Past Due")
+    return { variant: "error", icon: "tabler-info-circle" };
 
-  return { variant: 'secondary', icon: 'tabler-x' }
-}
+  return { variant: "secondary", icon: "tabler-x" };
+};
 
 const computedMoreList = computed(() => {
-  return (paramId: number) => ([
-    { title: 'Download', value: 'download', prependIcon: 'tabler-download' },
+  return (paramId: number) => [
+    { title: "Download", value: "download", prependIcon: "tabler-download" },
     {
-      title: 'Edit',
-      value: 'edit',
-      prependIcon: 'tabler-pencil',
-      to: { name: 'apps-invoice-edit-id', params: { id: paramId } },
+      title: "Edit",
+      value: "edit",
+      prependIcon: "tabler-pencil",
+      to: { name: "apps-invoice-edit-id", params: { id: paramId } },
     },
-    { title: 'Duplicate', value: 'duplicate', prependIcon: 'tabler-layers-intersect' },
-  ])
-})
+    {
+      title: "Duplicate",
+      value: "duplicate",
+      prependIcon: "tabler-layers-intersect",
+    },
+  ];
+});
 
 // 👉 Delete Invoice
 // 👉 Delete Invoice
 const deleteInvoice = async (id: number) => {
-  await $api(`/apps/invoice/${id}`, { method: 'DELETE' })
+  await $api(`/apps/invoice/${id}`, { method: "DELETE" });
 
-  fetchInvoices()
-}
+  fetchInvoices();
+};
 </script>
 
 <template>
@@ -87,9 +91,7 @@ const deleteInvoice = async (id: number) => {
     <VCard id="invoice-list">
       <VCardText>
         <div class="d-flex align-center justify-space-between flex-wrap gap-4">
-          <div class="text-h5">
-            Invoice List
-          </div>
+          <div class="text-h5">Invoice List</div>
           <div class="d-flex align-center gap-x-4">
             <AppSelect
               :model-value="itemsPerPage"
@@ -100,16 +102,12 @@ const deleteInvoice = async (id: number) => {
                 { value: 100, title: '100' },
                 { value: -1, title: 'All' },
               ]"
-              style="inline-size: 6.25rem;"
+              style="inline-size: 6.25rem"
               @update:model-value="itemsPerPage = parseInt($event, 10)"
             />
 
             <!-- 👉 Export invoice -->
-            <VBtn
-              append-icon="tabler-upload"
-              variant="tonal"
-              color="secondary"
-            >
+            <VBtn append-icon="tabler-upload" variant="tonal" color="secondary">
               Export
             </VBtn>
           </div>
@@ -132,7 +130,9 @@ const deleteInvoice = async (id: number) => {
       >
         <!-- id -->
         <template #item.id="{ item }">
-          <NuxtLink :to="{ name: 'apps-invoice-preview-id', params: { id: item.id } }">
+          <NuxtLink
+            :to="{ name: 'apps-invoice-preview-id', params: { id: item.id } }"
+          >
             #{{ item.id }}
           </NuxtLink>
         </template>
@@ -144,31 +144,29 @@ const deleteInvoice = async (id: number) => {
               <VAvatar
                 :size="28"
                 v-bind="props"
-                :color="resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).variant"
+                :color="
+                  resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).variant
+                "
                 variant="tonal"
               >
                 <VIcon
                   :size="16"
-                  :icon="resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).icon"
+                  :icon="
+                    resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).icon
+                  "
                 />
               </VAvatar>
             </template>
             <p class="mb-0">
               {{ item.invoiceStatus }}
             </p>
-            <p class="mb-0">
-              Balance: {{ item.balance }}
-            </p>
-            <p class="mb-0">
-              Due date: {{ item.dueDate }}
-            </p>
+            <p class="mb-0">Balance: {{ item.balance }}</p>
+            <p class="mb-0">Due date: {{ item.dueDate }}</p>
           </VTooltip>
         </template>
 
         <!-- Total -->
-        <template #item.total="{ item }">
-          ${{ item.total }}
-        </template>
+        <template #item.total="{ item }"> ${{ item.total }} </template>
 
         <!-- issued Date -->
         <template #item.date="{ item }">
@@ -181,7 +179,9 @@ const deleteInvoice = async (id: number) => {
             <VIcon icon="tabler-trash" />
           </IconBtn>
 
-          <IconBtn :to="{ name: 'apps-invoice-preview-id', params: { id: item.id } }">
+          <IconBtn
+            :to="{ name: 'apps-invoice-preview-id', params: { id: item.id } }"
+          >
             <VIcon icon="tabler-eye" />
           </IconBtn>
 

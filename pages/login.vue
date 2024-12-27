@@ -44,7 +44,24 @@ const authThemeImg = useGenerateImageVariant(
 
 const isLoading = ref(false)
 
-const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
+
+function setInputCursor(event) {
+  setTimeout(() => {
+    const inputElement = event.target
+      .closest(".v-input")
+      .querySelector("input");
+    if (inputElement) {
+      const length = inputElement.value.length; // Get the length of the input value
+      inputElement.focus(); // Focus the input
+      inputElement.setSelectionRange(length, length); // Set cursor to the end
+    }
+  }, 1);
+}
+
+const togglePassword = (event) => {
+  isPasswordVisible.value = !isPasswordVisible.value;
+  setInputCursor(event);
+}
 
 const submitForm = async () => {
   isLoading.value = true
@@ -70,7 +87,6 @@ const submitForm = async () => {
     'post',
     payload,
   )
-
   if (response && response.success) {
     console.log('response success', response.data)
     authStore.login({ user: response.data, token: response.data.authToken })
@@ -102,26 +118,31 @@ const submitForm = async () => {
         { action: 'read', subject: 'Order' },
       ])
       ability.update([
-        { action: 'read', subject: 'Customer' },
-        { action: 'read', subject: 'Management' },
-        { action: 'read', subject: 'Dashboard' },
-        { action: 'read', subject: 'Admin' },
-        { action: 'read', subject: 'Order' },
-      ])
-      console.log('Vendor cookie set:', userAbilityRules.value)
+        { action: "read", subject: "Customer" },
+        { action: "read", subject: "Management" },
+        { action: "read", subject: "Dashboard" },
+        { action: "read", subject: "Admin" },
+        { action: "read", subject: "Order" },
+      ]);
+      console.log("Vendor cookie set:", userAbilityRules.value);
     }
     snackbarStore.showSnackbar('Logged in successfully', 'success')
-    await nextTick(() => {
+    setTimeout(() => {
       window.location.href = '/dashboard';
-      // router.push('/dashboard')
-    })
+    },3000)
+  } else if(response && response.message == 'Please Accept Terms and conditions.') {
+    termsStore.showTerms();
   }
   else {
+    if(response?.message){
+      snackbarStore.showSnackbar(response.message, 'error')
+    }
+    else
     snackbarStore.showSnackbar('Incorrect Email or Password', 'error')
     console.error('Login failed')
   }
-  isLoading.value = false
-}
+  isLoading.value = false;
+};
 </script>
 
 <template>
@@ -135,14 +156,8 @@ const submitForm = async () => {
     </div>
   </a>
 
-  <VRow
-    no-gutters
-    class="auth-wrapper bg-surface"
-  >
-    <VCol
-      md="8"
-      class="d-none d-md-flex"
-    >
+  <VRow no-gutters class="auth-wrapper bg-surface">
+    <VCol md="8" class="d-none d-md-flex">
       <div class="position-relative bg-background w-100 me-0">
         <div
           class="d-flex align-center justify-center w-100 h-100"
@@ -155,13 +170,6 @@ const submitForm = async () => {
           />
         </div>
 
-        <img
-          class="auth-footer-mask flip-in-rtl"
-          :src="authThemeMask"
-          alt="auth-footer-mask"
-          height="280"
-          width="100"
-        >
       </div>
     </VCol>
 
@@ -170,11 +178,7 @@ const submitForm = async () => {
       md="4"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VCard
-        flat
-        :max-width="500"
-        class="mt-12 mt-sm-0 pa-6"
-      >
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-6">
         <VCardText>
           <h4 class="text-h4 mb-1">
             Welcome to
@@ -208,14 +212,11 @@ const submitForm = async () => {
                   :append-inner-icon="
                     isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
                   "
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                  @click:append-inner="togglePassword"
                 />
 
                 <div class="d-flex align-center flex-wrap justify-space-between my-6">
-                  <VCheckbox
-                    v-model="form.remember"
-                    label="Remember me"
-                  />
+                  <div></div> <!-- Empty div to maintain alignment -->
                   <NuxtLink
                     class="text-primary"
                     :to="{ name: 'authentication-forgot-password' }"
@@ -224,31 +225,17 @@ const submitForm = async () => {
                   </NuxtLink>
                 </div>
 
-                <VBtn
-                  block
-                  @click="!isLoading && submitForm()"
-                >
+
+                <VBtn block @click="!isLoading && submitForm()">
                   <VProgressCircular
                     v-if="isLoading"
                     indeterminate
                     color="white"
                   />
-                  <template v-else>
-                    Login
-                  </template>
+                  <template v-else> Login </template>
                 </VBtn>
               </VCol>
-              <VCol
-                cols="12"
-                class="text-body-1 text-right"
-              >
-                <span>By signing up, you agree to the </span><a
-                  class="text-primary ms-1 d-inline-block text-body-1"
-                  href="javascript:void(0)"
-                  @click="termsStore.showTerms()"
-                >Haier terms of service
-                </a>
-              </VCol>
+
               <!--
                 <VCol
                 cols="12"
@@ -281,7 +268,7 @@ const submitForm = async () => {
       </VCard>
     </VCol>
   </VRow>
-  <DemoDialogFullscreen />
+  <DemoDialogFullscreen :userEmail="form.email" :password="form.password" :remember="true"/>
 </template>
 
 <style lang="scss">

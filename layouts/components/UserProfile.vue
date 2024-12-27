@@ -2,14 +2,17 @@
 import avatar1 from "@images/avatars/avatar-1.png";
 const authStore = useAuthStore();
 const router = useRouter();
-const snackBarStore = useSnackbarStore()
-const termsStore = useTermsStore()
+const snackBarStore = useSnackbarStore();
+const termsStore = useTermsStore();
 
-const authUser =  useCookie('auth');
+const authUser = useCookie("auth");
 
 const logOut = () => {
   authStore.logout();
-  snackBarStore.showSnackbar("Goodbye! You have been successfully logged out.", 'primary')
+  snackBarStore.showSnackbar(
+    "Goodbye! You have been successfully logged out.",
+    "primary",
+  );
   router.push("/login");
 };
 
@@ -67,7 +70,6 @@ const profile = () => {
 
             <VListItemTitle>Profile</VListItemTitle>
           </VListItem>
-
 
           <!-- 👉 FAQ -->
           <VListItem link @click="termsStore.showTerms()">

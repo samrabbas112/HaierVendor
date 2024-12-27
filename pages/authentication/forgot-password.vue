@@ -1,180 +1,172 @@
 <script setup lang="ts">
-import { useSnackbarStore } from '@/stores/snackbar'
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import authV2ForgotPasswordIllustrationDark from '@images/pages/auth-v2-forgot-password-illustration-dark.png'
-import authV2ForgotPasswordIllustrationLight from '@images/pages/auth-v2-forgot-password-illustration-light.png'
-import authV2MaskDark from '@images/pages/misc-mask-dark.png'
-import authV2MaskLight from '@images/pages/misc-mask-light.png'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
+import { useSnackbarStore } from "@/stores/snackbar";
+import { useGenerateImageVariant } from "@core/composable/useGenerateImageVariant";
+import authV2ForgotPasswordIllustrationDark from "@images/pages/auth-v2-forgot-password-illustration-dark.png";
+import authV2ForgotPasswordIllustrationLight from "@images/pages/auth-v2-forgot-password-illustration-light.png";
+import authV2MaskDark from "@images/pages/misc-mask-dark.png";
+import authV2MaskLight from "@images/pages/misc-mask-light.png";
+import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
+import { themeConfig } from "@themeConfig";
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
   public: true,
-})
+});
 
 const form = ref({
-  telephone: '',
-  code: '',
-  password: '',
-  password_confirmation: '',
+  telephone: "",
+  code: "",
+  password: "",
+  password_confirmation: "",
   is_otp_verified: false,
-})
+});
 
-const snackbarStore = useSnackbarStore()
-const isPasswordVisible = ref(false)
-const isConfirmPasswordVisible = ref(false)
-const formRef = ref()
-const isOtpInserted = ref(false)
-const isCodeSent = ref(false)
-const totalSeconds = 60 // 1 minute
-const secondsRemaining = ref(totalSeconds)
-const progressValue = ref(100)
-const isCountdownActive = ref(false)
-const isLoading = ref(false)
-const isOtpLoading = ref(false)
-const inValidOtp = ref(false)
-const router = useRouter()
+const snackbarStore = useSnackbarStore();
+const isPasswordVisible = ref(false);
+const isConfirmPasswordVisible = ref(false);
+const formRef = ref();
+const isOtpInserted = ref(false);
+const isCodeSent = ref(false);
+const totalSeconds = 60; // 1 minute
+const secondsRemaining = ref(totalSeconds);
+const progressValue = ref(100);
+const isCountdownActive = ref(false);
+const isLoading = ref(false);
+const isOtpLoading = ref(false);
+const inValidOtp = ref(false);
+const router = useRouter();
 
-const apiRequestObj = useApi()
+const apiRequestObj = useApi();
 
 const authThemeImg = useGenerateImageVariant(
   authV2ForgotPasswordIllustrationLight,
   authV2ForgotPasswordIllustrationDark,
-)
+);
 
-const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
+const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark);
 
 const onFinish = () => {
-  isOtpInserted.value = true
-  console.log('otp entered')
+  isOtpInserted.value = true;
+  console.log("otp entered");
 
   // setTimeout(() => {
   //   isOtpInserted.value = false
   //   router.push('/')
   // }, 2000)
-}
+};
 
 const onSubmit = async () => {
-  console.log('payload', form?.value)
+  console.log("payload", form?.value);
 
-  const validated = await formRef.value.validate()
+  const validated = await formRef.value.validate();
 
-  isLoading.value = true
+  isLoading.value = true;
   if (validated.valid === true) {
     try {
       const response = await apiRequestObj.makeRequest(
-        'common/authentication/password/forget',
-        'post',
+        "common/authentication/password/forget",
+        "post",
         form?.value,
-      )
+      );
 
       if (response && response.success) {
         snackbarStore.showSnackbar(
-          'Password has been changed successfully',
-          'success',
-        )
-        await router.push('/login')
+          "Password has been changed successfully",
+          "success",
+        );
+        await router.push("/login");
+      } else {
+        snackbarStore.showSnackbar(
+          "An error occurred. Please try again.",
+          "error",
+        );
       }
-      else {
-        snackbarStore.showSnackbar('An error occurred. Please try again.', 'error')
-      }
+    } catch (error) {
+      snackbarStore.showSnackbar(
+        "An error occurred. Please try again.",
+        "error",
+      );
+    } finally {
+      isLoading.value = false;
     }
-    catch (error) {
-      snackbarStore.showSnackbar('An error occurred. Please try again.', 'error')
-    }
-    finally {
-      isLoading.value = false
-    }
+  } else {
+    isLoading.value = false;
   }
-  else {
-    isLoading.value = false
-  }
-}
+};
 
 const startCountdown = () => {
-  isCountdownActive.value = true
+  isCountdownActive.value = true;
 
   const interval = setInterval(() => {
     if (secondsRemaining.value > 0) {
-      secondsRemaining.value -= 1
-      progressValue.value = (secondsRemaining.value / totalSeconds) * 100
+      secondsRemaining.value -= 1;
+      progressValue.value = (secondsRemaining.value / totalSeconds) * 100;
+    } else {
+      clearInterval(interval); // Stop when time is up
+      isCountdownActive.value = false;
+      secondsRemaining.value = totalSeconds; // Reset for next use
+      progressValue.value = 100;
     }
-    else {
-      clearInterval(interval) // Stop when time is up
-      isCountdownActive.value = false
-      secondsRemaining.value = totalSeconds // Reset for next use
-      progressValue.value = 100
-    }
-  }, 1000) // Update every second
-}
+  }, 1000); // Update every second
+};
 
 const getCode = async () => {
   try {
-    isLoading.value = true
-    console.log('getCode function invoked')
+    isLoading.value = true;
+    console.log("getCode function invoked");
 
     if (phoneValidator(form?.value?.telephone)) {
       const response = await apiRequestObj.makeRequest(
-        'common/authentication/get-code',
-        'post',
+        "common/authentication/get-code",
+        "post",
         form?.value,
-      )
+      );
 
       if (response?.success) {
-        if (response?.data?.status !== 'error') {
-          isCodeSent.value = true
+        if (response?.data?.status !== "error") {
+          isCodeSent.value = true;
 
-          snackbarStore.showSnackbar(
-            response?.message,
-            'success',
-          )
-          startCountdown()
+          snackbarStore.showSnackbar(response?.message, "success");
+          startCountdown();
+        } else if (response?.data?.status == "error") {
+          snackbarStore.showSnackbar(response?.data?.message, "error");
         }
-        else if (response?.data?.status == 'error') {
-          snackbarStore.showSnackbar(
-            response?.data?.message,
-            'error',
-          )
-        }
-      }
-      else {
+      } else {
         snackbarStore.showSnackbar(
-          response?.message || 'Failed to get OTP',
-          'error',
-        )
+          response?.message || "Failed to get OTP",
+          "error",
+        );
       }
+    } else {
+      snackbarStore.showSnackbar("Please enter a valid phone number", "error");
     }
-    else {
-      snackbarStore.showSnackbar('Please enter a valid phone number', 'error')
-    }
+  } catch (error) {
+    snackbarStore.showSnackbar("An error occurred. Please try again.", "error");
+  } finally {
+    isLoading.value = false;
   }
-  catch (error) {
-    snackbarStore.showSnackbar('An error occurred. Please try again.', 'error')
-  }
-  finally {
-    isLoading.value = false
-  }
-}
+};
 
 const verifyCode = async () => {
-  isOtpLoading.value = true
+  isOtpLoading.value = true;
   if (form.value.code.length === 6) {
-    inValidOtp.value = false
-    const response = await apiRequestObj.makeRequest('common/authentication/verify-code', 'post', form?.value)
+    inValidOtp.value = false;
+    const response = await apiRequestObj.makeRequest(
+      "common/authentication/verify-code",
+      "post",
+      form?.value,
+    );
     if (response && response.success) {
-      form.value.is_otp_verified = true
-      snackbarStore.showSnackbar('Code verified', 'success')
+      form.value.is_otp_verified = true;
+      snackbarStore.showSnackbar("Code verified", "success");
+    } else {
+      snackbarStore.showSnackbar("Invalid/Expired Code", "error");
     }
-    else {
-      snackbarStore.showSnackbar('Invalid/Expired Code', 'error')
-    }
+  } else {
+    inValidOtp.value = true;
   }
-  else {
-    inValidOtp.value = true
-  }
-  isOtpLoading.value = false
-}
+  isOtpLoading.value = false;
+};
 </script>
 
 <template>
@@ -188,14 +180,8 @@ const verifyCode = async () => {
     </div>
   </NuxtLink>
 
-  <VRow
-    class="auth-wrapper bg-surface"
-    no-gutters
-  >
-    <VCol
-      md="8"
-      class="d-none d-md-flex"
-    >
+  <VRow class="auth-wrapper bg-surface" no-gutters>
+    <VCol md="8" class="d-none d-md-flex">
       <div class="position-relative bg-background w-100 me-0">
         <div
           class="d-flex align-center justify-center w-100 h-100"
@@ -214,7 +200,7 @@ const verifyCode = async () => {
           alt="auth-footer-mask"
           height="280"
           width="100"
-        >
+        />
       </div>
     </VCol>
 
@@ -223,15 +209,9 @@ const verifyCode = async () => {
       md="4"
       class="auth-card-v2 d-flex align-center justify-center"
     >
-      <VCard
-        flat
-        :max-width="500"
-        class="mt-12 mt-sm-0 pa-6"
-      >
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-6">
         <VCardText>
-          <h4 class="text-h4 mb-1">
-            Forgot Password? 🔒
-          </h4>
+          <h4 class="text-h4 mb-1">Forgot Password? 🔒</h4>
           <p class="mb-0">
             Enter your phone number and we'll send you code to reset your
             password
@@ -239,10 +219,7 @@ const verifyCode = async () => {
         </VCardText>
 
         <VCardText>
-          <VForm
-            ref="formRef"
-            lazy-validation
-          >
+          <VForm ref="formRef" lazy-validation>
             <VRow>
               <!-- phone number -->
               <VCol cols="12">
@@ -254,20 +231,22 @@ const verifyCode = async () => {
                   required
                   type="number"
                   :disabled="form.is_otp_verified"
-                  @input="() => {
-                    form.telephone = onInputRestrictLength(form.telephone, 11)
-                  }"
+                  @input="
+                    () => {
+                      form.telephone = onInputRestrictLength(
+                        form.telephone,
+                        11,
+                      );
+                    }
+                  "
                 />
               </VCol>
               <!-- otp -->
-              <VCol
-                v-if="isCodeSent"
-                cols="12"
-              >
-                <div class="d-flex align-center flex-wrap justify-space-between">
-                  <h6 class="text-body-1">
-                    Type your 6 digit security code
-                  </h6>
+              <VCol v-if="isCodeSent" cols="12">
+                <div
+                  class="d-flex align-center flex-wrap justify-space-between"
+                >
+                  <h6 class="text-body-1">Type your 6 digit security code</h6>
                   <h6
                     v-if="!form.is_otp_verified"
                     :class="{
@@ -301,32 +280,28 @@ const verifyCode = async () => {
                 <!-- @finish="onFinish" -->
               </VCol>
               <!-- new password -->
-              <VCol
-                v-if="form?.is_otp_verified"
-                cols="12"
-              >
+              <VCol v-if="form?.is_otp_verified" cols="12">
                 <AppTextField
                   v-model="form.password"
                   label="New Password"
                   placeholder="Enter new password"
                   :type="isPasswordVisible ? 'text' : 'password'"
-                  :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
+                  :append-inner-icon="
+                    isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
                   "
                   :rules="[requiredValidator, passwordValidator]"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
               </VCol>
               <!-- confirm password -->
-              <VCol
-                v-if="form?.is_otp_verified"
-                cols="12"
-              >
+              <VCol v-if="form?.is_otp_verified" cols="12">
                 <AppTextField
                   v-model="form.password_confirmation"
                   label="Confirm Password"
                   :type="isConfirmPasswordVisible ? 'text' : 'password'"
                   placeholder="Confirm Password"
-                  :append-inner-icon="isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
+                  :append-inner-icon="
+                    isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'
                   "
                   :rules="[
                     requiredValidator,

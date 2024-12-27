@@ -1,25 +1,25 @@
-export type EmailFolder = 'inbox' | 'sent' | 'draft' | 'spam'
-export type EmailFilter = EmailFolder | 'trashed' | 'starred'
-export type EmailLabel = 'personal' | 'company' | 'important' | 'private'
+export type EmailFolder = "inbox" | "sent" | "draft" | "spam";
+export type EmailFilter = EmailFolder | "trashed" | "starred";
+export type EmailLabel = "personal" | "company" | "important" | "private";
 
 export interface EmailTo {
-  email: string
-  name: string
+  email: string;
+  name: string;
 }
 
 export interface EmailFrom {
-  email: string
-  name: string
+  email: string;
+  name: string;
 
-  avatar: any
+  avatar: any;
 }
 
 export interface EmailAttachment {
-  fileName: string
+  fileName: string;
 
-  thumbnail: any
-  url: string
-  size: string
+  thumbnail: any;
+  url: string;
+  size: string;
 }
 
 /*
@@ -46,29 +46,29 @@ export interface EmailAttachment {
 */
 
 export interface Email {
-  id: number
-  to: EmailTo[]
-  from: EmailFrom
-  subject: string
-  cc: string[]
-  bcc: string[]
-  message: string
-  attachments: EmailAttachment[]
-  time: string
-  replies: Email[]
+  id: number;
+  to: EmailTo[];
+  from: EmailFrom;
+  subject: string;
+  cc: string[];
+  bcc: string[];
+  message: string;
+  attachments: EmailAttachment[];
+  time: string;
+  replies: Email[];
 
-  labels: EmailLabel[]
+  labels: EmailLabel[];
 
-  folder: EmailFolder
+  folder: EmailFolder;
 
   // Flags 🚩
-  isRead: boolean
-  isStarred: boolean
-  isDeleted: boolean
+  isRead: boolean;
+  isStarred: boolean;
+  isDeleted: boolean;
 }
 
 export interface FetchEmailsPayload {
-  q?: string
-  filter?: EmailFilter
-  label?: EmailLabel
+  q?: string;
+  filter?: EmailFilter;
+  label?: EmailLabel;
 }

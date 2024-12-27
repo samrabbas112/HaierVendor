@@ -6,14 +6,15 @@ const props = defineProps<{
     price: number;
     paymentMethod: string;
     status: string;
-  }>
-}>()
+  }>;
+}>();
 
 const page = ref(1);
 const sortBy = ref();
 const orderBy = ref();
 const authStore = useAuthStore();
-const path  = authStore.user?.user_type === 'vendor' ? 'order/my' : 'order/admin/haier';
+const path =
+  authStore.user?.user_type === "vendor" ? "order/my" : "order/admin/haier";
 
 // const vehiclesData = {
 //   totalVehicles: 25,
@@ -78,30 +79,27 @@ const resolveChipColor = (warning: string) => {
   if (warning === "Ready_To_Ship") return "warning";
   if (warning === "Rejected") return "error";
   return "info";
-}
+};
 
-const formattedDate = unFormattedDate => {
-  return new Date(unFormattedDate).toLocaleDateString(
-    'en-US',
-    {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    },
-  )
-}
+const formattedDate = (unFormattedDate) => {
+  return new Date(unFormattedDate).toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+};
 </script>
 
 <template>
   <VCard>
     <VCardItem title="My Orders">
       <template #append>
-      <nuxt-link :to="path">  View All</nuxt-link>
+        <nuxt-link :to="path"> View All</nuxt-link>
       </template>
     </VCardItem>
     <VDivider />

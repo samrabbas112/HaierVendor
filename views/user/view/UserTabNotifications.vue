@@ -1,30 +1,30 @@
 <script lang="ts" setup>
 const notifications = ref([
   {
-    type: 'New for you',
+    type: "New for you",
     email: true,
     browser: false,
     app: false,
   },
   {
-    type: 'Account activity',
+    type: "Account activity",
     email: false,
     browser: true,
     app: true,
   },
   {
-    type: 'A new browser used to sign in',
+    type: "A new browser used to sign in",
     email: true,
     browser: true,
     app: true,
   },
   {
-    type: 'A new device is linked',
+    type: "A new device is linked",
     email: false,
     browser: true,
     app: false,
   },
-])
+]);
 </script>
 
 <template>
@@ -38,26 +38,15 @@ const notifications = ref([
       <VTable class="text-no-wrap">
         <thead>
           <tr>
-            <th scope="col">
-              TYPE
-            </th>
-            <th scope="col">
-              EMAIL
-            </th>
-            <th scope="col">
-              BROWSER
-            </th>
-            <th scope="col">
-              APP
-            </th>
+            <th scope="col">TYPE</th>
+            <th scope="col">EMAIL</th>
+            <th scope="col">BROWSER</th>
+            <th scope="col">APP</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr
-            v-for="notification in notifications"
-            :key="notification.type"
-          >
+          <tr v-for="notification in notifications" :key="notification.type">
             <td class="text-high-emphasis">
               {{ notification.type }}
             </td>
@@ -78,12 +67,7 @@ const notifications = ref([
 
     <VCardText class="d-flex flex-wrap gap-4">
       <VBtn>Save changes</VBtn>
-      <VBtn
-        color="secondary"
-        variant="tonal"
-      >
-        Discard
-      </VBtn>
+      <VBtn color="secondary" variant="tonal"> Discard </VBtn>
     </VCardText>
   </VCard>
 </template>
