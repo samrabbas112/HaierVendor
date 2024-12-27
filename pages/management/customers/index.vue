@@ -193,6 +193,7 @@ onMounted(fetchCustomers);
                   () => {
                     searchQuery = '';
                     page = 1;
+                    selectedVendorStatus = null;
                     fetchCustomers();
                   }
                 "
