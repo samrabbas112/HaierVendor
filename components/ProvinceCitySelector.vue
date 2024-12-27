@@ -94,6 +94,7 @@ onMounted(() => {
       v-model="props.selectedCityId"
       label="City"
       placeholder="Select City"
+      :rules="[requiredValidator]"
       :disabled="!props.selectedProvinceId"
       :items="cities"
       clearable

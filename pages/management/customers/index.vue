@@ -160,6 +160,12 @@ onMounted(fetchCustomers);
             <AppTextField
               v-model="searchQuery"
               placeholder="Search by contact no"
+              @keypress.enter="
+                () => {
+                  page = 1;
+                  fetchCustomers();
+                }
+              "
             />
           </VCol>
           <VCol cols="12" sm="3">
@@ -168,6 +174,12 @@ onMounted(fetchCustomers);
               placeholder="Select  Status"
               :items="vendorStatus"
               clearable
+              @keypress.enter="
+                () => {
+                  page = 1;
+                  fetchCustomers();
+                }
+              "
               clear-icon="tabler-x"
             />
           </VCol>
@@ -181,6 +193,7 @@ onMounted(fetchCustomers);
                   () => {
                     searchQuery = '';
                     page = 1;
+                    selectedVendorStatus = null;
                     fetchCustomers();
                   }
                 "
@@ -244,7 +257,7 @@ onMounted(fetchCustomers);
         >
           {{
             item.confirmed == 1
-              ? "Approved"
+              ? "Confirmed"
               : item.confirmed == 0
                 ? "Pending"
                 : "Declined"

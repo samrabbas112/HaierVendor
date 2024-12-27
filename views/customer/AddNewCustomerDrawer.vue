@@ -166,8 +166,8 @@ watch(address, (newValue) => {
                   v-model="name"
                   :rules="[
                     requiredValidator,
+                     alphabetValidator,
                     minLengthValidator(3),
-                    alphabetValidator,
                   ]"
                   label="Name"
                   placeholder="Enter name"

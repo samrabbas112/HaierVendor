@@ -124,13 +124,17 @@ export const phoneValidator = (value: unknown) => {
   phoneNumber = phoneNumber.replace(/\D/g, "");
 
   // Regular expression to check if the phone number starts with 03 and is followed by 9 digits
-  const phoneNumberRegex = /^03\d{9}$/;
 
-  if (!phoneNumberRegex.test(phoneNumber)) {
-    return "Phone number should start with 03 and must be exactly 11 digits long.";
+  const phoneRegex = /^03[0-9]{9}$/;
+  const startPhoneRegex = /^03/;
+  if (!startPhoneRegex.test(phoneNumber)) {
+    return "Phone number must start with 03.";
   }
+  return (
+    phoneRegex.test(phoneNumber) ||
+    "Phone number must be exactly 11 digits long."
+  );
 
-  return true; // Return true if validation passes
 };
 
 export const maxFiveFilesValidator = (value: unknown) => {

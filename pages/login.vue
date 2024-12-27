@@ -127,9 +127,9 @@ const submitForm = async () => {
       console.log("Vendor cookie set:", userAbilityRules.value);
     }
     snackbarStore.showSnackbar('Logged in successfully', 'success')
-    await nextTick(() => {
+    setTimeout(() => {
       window.location.href = '/dashboard';
-    })
+    },3000)
   } else if(response && response.message == 'Please Accept Terms and conditions.') {
     termsStore.showTerms();
   }
