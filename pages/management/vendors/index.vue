@@ -45,7 +45,7 @@ const headers = [
 
 const vendorStatus = [
   { title: "Active", value: 1 },
-  { title: "inActive", value: 0 },
+  { title: "InActive", value: 0 },
 ];
 
 // Navigate to Add New Vendor page
