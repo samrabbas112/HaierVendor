@@ -1,12 +1,15 @@
 import { RequestStatusCode } from "@/utils/constants";
+import { useSnackbarStore } from '@/stores/snackbar'
 
 const aes = new Aes();
 export const useApi = () => {
   const handleError = (error: any) => {
+    const snackbarStore = useSnackbarStore()
     if (error.status === RequestStatusCode.HTTP_UNAUTHORIZED) {
       console.log("status", RequestStatusCode.HTTP_UNAUTHORIZED);
       useAuthStore().logout();
       useRouter().push("/login").then();
+      snackbarStore.showSnackbar("Login session expired", "error");
     }
     log("<-", {
       method: "error",

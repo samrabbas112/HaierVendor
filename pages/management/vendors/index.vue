@@ -8,6 +8,7 @@ const snackBarStore = useSnackbarStore();
 
 // State
 const searchQuery = ref("");
+const phoneQuery = ref("");
 const vendorsData = ref({ total: 0, vendors: [] });
 const selectedRows = ref([]);
 const router = useRouter();
@@ -79,6 +80,7 @@ const fetchVendors = async () => {
         page: page.value,
         itemsPerPage: itemsPerPage.value,
         query: searchQuery.value,
+        ...(phoneQuery.value && { phone: phoneQuery.value }),
         ...((selectedVendorStatus.value == 0 ||
           selectedVendorStatus.value == 1) && {
           status: selectedVendorStatus.value,
@@ -151,6 +153,15 @@ const handleStatusToggle = async (item) => {
   loaderStore.hideLoader();
 };
 
+watch(
+  [selectedVendorStatus],
+  () => {
+    page.value = 1;
+      fetchVendors();
+  },
+  { deep: true },
+);
+
 onMounted(fetchVendors);
 </script>
 
@@ -184,7 +195,20 @@ onMounted(fetchVendors);
                   fetchVendors();
                 }
               "
-              placeholder="Search by name or number"
+              placeholder="Search by name "
+            />
+
+          </VCol>
+          <VCol cols="12" sm="3">
+            <AppTextField
+              v-model="phoneQuery"
+              @keypress.enter="
+                () => {
+                  page = 1;
+                  fetchVendors();
+                }
+              "
+              placeholder="Search by  number"
             />
           </VCol>
           <VCol cols="12" sm="3">
@@ -192,12 +216,7 @@ onMounted(fetchVendors);
               v-model="selectedVendorStatus"
               placeholder="Select Vendor Status"
               :items="vendorStatus"
-              @keypress.enter="
-                () => {
-                  page = 1;
-                  fetchVendors();
-                }
-              "
+
               clearable
               clear-icon="tabler-x"
             />
@@ -211,6 +230,7 @@ onMounted(fetchVendors);
                 @click="
                   () => {
                     searchQuery = '';
+                    phoneQuery  = ''
                     selectedVendorStatus = null;
                     page = 1;
                     fetchVendors();
@@ -255,6 +275,8 @@ onMounted(fetchVendors);
         </NuxtLink>
       </template>
       <template #item.vendor="{ item }">
+        <small>{{ item.name }}</small
+        ><br />
         <small>{{ item.city }}</small
         ><br />
         <small>{{ item.address }}</small>
