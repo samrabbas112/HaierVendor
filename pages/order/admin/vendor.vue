@@ -24,11 +24,12 @@ const ordersData = ref({
 
 // Data table Headers
 const headers = [
-  { title: "Order#", key: "order", sortable: false },
+  { title: "Sr. No.", key: "id", sortable: false },
+  { title: "Order Info", key: "order", sortable: false },
   { title: "Total Price", key: "payment", sortable: false },
   { title: "Customers", key: "customer", sortable: false },
   { title: "Payment Method", key: "method", sortable: false },
-  { title: "Placed At", key: "date", sortable: false },
+  // { title: "Placed At", key: "date", sortable: false },
   { title: "Assigned To", key: "vendors", sortable: false },
   { title: "Status", key: "status", sortable: false },
   { title: "Action", key: "actions", sortable: false },
