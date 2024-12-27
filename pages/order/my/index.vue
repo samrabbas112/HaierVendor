@@ -58,6 +58,8 @@ const transformData = (apiResponse) => {
 
 let previousSearchQuery = "";
 
+console.log("ahmad",authUser.value)
+
 const makeSearch = async (page) => {
   // return console.log("search api hit", typeof page, searchQuery.value, page);
   console.log("search function hit", searchQuery.value);
@@ -69,7 +71,7 @@ const makeSearch = async (page) => {
     order_no: searchQuery.value,
     order_status: selectedOrderStatus.value,
     payment_status: selectedPaymentMethod.value,
-    vendor_id: authUser.value.user.id,
+    vendor_id: authUser.value.user.user_id,
     order_type: "my_orders",
   };
 

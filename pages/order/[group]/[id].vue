@@ -440,7 +440,7 @@ const headers = [
             color="warning"
             @click="
               handleClick(
-                orderStatusCodes.isRejected,
+                orderStatusCodes.isHaier,
                 'Do you confirm you want to Reject Order?',
               )
             "
@@ -476,7 +476,7 @@ const headers = [
         </VBtn>
 
         <VBtn
-          v-if="orderData?.status == orderStatusCodes.isOutForDelivery"
+          v-if="orderData?.status == orderStatusCodes.isOutForDelivery || orderData?.status == orderStatusCodes.isReadyToShip"
           variant="tonal"
           color="primary"
           @click="
@@ -490,7 +490,7 @@ const headers = [
         </VBtn>
 
         <VBtn
-          v-if="orderData?.status == orderStatusCodes.isOutForDelivery"
+          v-if="orderData?.status == orderStatusCodes.isOutForDelivery || orderData?.status == orderStatusCodes.isReadyToShip"
           variant="tonal"
           color="error"
           @click="
