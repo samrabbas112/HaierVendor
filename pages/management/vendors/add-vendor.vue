@@ -195,11 +195,13 @@ const ntnRegex = /^\d{7}-\d$/;
             <VCol cols="12" sm="6">
               <AppTextField
                 v-model="form.telephone"
-                :rules="[requiredValidator, phoneValidator]"
+                :rules="[requiredValidator, phoneValidator, numberValidator]"
                 label="Telephone"
-                type="number"
+                type="text"
                 placeholder="03xxxxxxxxx"
-                @input="() => onInputRestrictLength('telephone', 11)"
+                @input="() => {
+                  form.telephone = onInputRestrictAlphabets(form.telephone)
+                  onInputRestrictLength('telephone', 11)}"
               />
             </VCol>
 
@@ -207,7 +209,7 @@ const ntnRegex = /^\d{7}-\d$/;
             <VCol cols="12" sm="6">
               <AppTextField
                 v-model="form.cnic"
-                type="number"
+                type="text"
                 :rules="[
                   requiredValidator,
                   exactLengthValidator(13),
