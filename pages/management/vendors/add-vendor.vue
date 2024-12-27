@@ -108,12 +108,36 @@ const resetForm = () => {
 };
 
 const onInputRestrictLength = (field, maxLength) => {
-  if (form.value[field].length > maxLength)
+  // Restrict length to maxLength
+  if (form.value[field].length > maxLength) {
     form.value[field] = form.value[field].slice(0, maxLength);
+  }
+
+  // For 'ntn' field (custom handling for NTN format)
+  if (field === 'ntn') {
+    // Remove any non-numeric characters (excluding the hyphen for formatting)
+    let rawValue = form.value[field].replace(/\D/g, ''); // \D removes anything that is not a digit
+    if (rawValue.length > 7) {
+      form.value[field] = rawValue.slice(0, 7) + '-' + rawValue.slice(7, 8); // First 7 digits, then hyphen and the last digit
+    } else {
+      form.value[field] = rawValue; // Only the numeric digits (no hyphen if not enough digits)
+    }
+  }
+
+  // For 'cnic' or 'number' (disable non-numeric characters)
+  if (field === 'cnic' || field === 'number') {
+    // Replace non-digit characters with an empty string
+    form.value[field] = form.value[field].replace(/\D/g, ''); // \D matches anything that is not a digit
+  }
 };
+
+
+
+
 
 const ibanRegex = /^[A-Z]{2}\d{2}[A-Z\d]{1,30}$/;
 const ntnRegex = /^\d{7}-\d$/;
+
 </script>
 
 <template>
