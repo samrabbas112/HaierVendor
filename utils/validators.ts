@@ -30,7 +30,18 @@ export const exactLengthValidator =
   };
 
 export const emailValidator = (value: string) => {
-  /^\S+@\S+\.\S+$/.test(value) || "Invalid email address";
+  if (isEmpty(value)) return true;
+  
+    const re =
+      /^(?:[^<>()[\]\\.,;:\s@"]+(?:\.[^<>()[\]\\.,;:\s@"]+)*|".+")@(?:\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\]|(?:[a-z\-\d]+\.)+[a-z]{2,})$/i;
+  
+    if (Array.isArray(value))
+      return (
+        value.every((val) => re.test(String(val))) ||
+        "The Email field must be a valid email"
+      );
+  
+    return re.test(String(value)) || "The Email field must be a valid email";
 };
 
 export const passwordValidator = (value: string) =>

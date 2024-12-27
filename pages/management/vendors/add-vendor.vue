@@ -131,8 +131,9 @@ const onInputRestrictLength = (field, maxLength) => {
   }
 };
 
-
-
+const restrictSpaces = () => {
+  form.value.email = form.value.email.replace(/\s/g, '');
+}
 
 
 const ibanRegex = /^[A-Z]{2}\d{2}[A-Z\d]{1,30}$/;
@@ -170,6 +171,8 @@ const ntnRegex = /^\d{7}-\d$/;
                 :rules="[requiredValidator, emailValidator]"
                 label="Email"
                 placeholder="example@example.com"
+                @input="restrictSpaces"
+
               />
             </VCol>
 
@@ -178,7 +181,7 @@ const ntnRegex = /^\d{7}-\d$/;
               <AppTextField
                 v-model="form.password"
                 label="Password"
-                placeholder="············"
+                placeholder="Enter Password"
                 :type="isPasswordVisible ? 'text' : 'password'"
                 :append-inner-icon="
                   isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'

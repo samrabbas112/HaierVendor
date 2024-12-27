@@ -48,6 +48,7 @@ const statuses = [
   { text: "InActive", value: "Inactive" },
 ];
 
+
 // Fetch Vendor Details
 const fetchVendor = async () => {
   loaderStore.showLoader();
@@ -138,6 +139,37 @@ const submitForm = async () => {
 onMounted(() => {
   fetchVendor();
 });
+
+const onInputRestrictLength = (field, maxLength) => {
+  // Restrict length to maxLength
+  if (form.value[field].length > maxLength) {
+    form.value[field] = form.value[field].slice(0, maxLength);
+  }
+
+  // For 'ntn' field (custom handling for NTN format)
+  if (field === 'ntn') {
+    // Remove any non-numeric characters (excluding the hyphen for formatting)
+    let rawValue = form.value[field].replace(/\D/g, ''); // \D removes anything that is not a digit
+    if (rawValue.length > 7) {
+      form.value[field] = rawValue.slice(0, 7) + '-' + rawValue.slice(7, 8); // First 7 digits, then hyphen and the last digit
+    } else {
+      form.value[field] = rawValue; // Only the numeric digits (no hyphen if not enough digits)
+    }
+  }
+
+  // For 'cnic' or 'number' (disable non-numeric characters)
+  if (field === 'cnic' || field === 'telephone') {
+    // Replace non-digit characters with an empty string
+    form.value[field] = form.value[field].replace(/\D/g, ''); // \D matches anything that is not a digit
+  }
+};
+
+const restrictSpaces = () => {
+  form.value.email = form.value.email.replace(/\s/g, '');
+}
+
+const ibanRegex = /^[A-Z]{2}\d{2}[A-Z\d]{1,30}$/;
+const ntnRegex = /^\d{7}-\d$/;
 </script>
 
 <template>
@@ -170,6 +202,7 @@ onMounted(() => {
                 :rules="[requiredValidator, emailValidator]"
                 label="Email"
                 :readonly="isDetailsMode"
+                 @input="restrictSpaces"
               />
             </VCol>
 
@@ -180,6 +213,7 @@ onMounted(() => {
                 :rules="[requiredValidator, phoneValidator]"
                 label="Telephone"
                 :readonly="isDetailsMode"
+                 @input="() => onInputRestrictLength('telephone', 11)"
               />
             </VCol>
 
@@ -194,6 +228,7 @@ onMounted(() => {
                 ]"
                 label="CNIC"
                 :readonly="isDetailsMode"
+                @input="() => onInputRestrictLength('cnic', 13)"
               />
             </VCol>
 
@@ -213,6 +248,8 @@ onMounted(() => {
                 v-model="form.iban"
                 label="IBAN"
                 :readonly="isDetailsMode"
+                :rules="[regexValidator(form.iban, ibanRegex, 'Invalid IBAN')]"
+                @input="onInputRestrictLength('iban', 24)"
               />
             </VCol>
 
@@ -222,6 +259,14 @@ onMounted(() => {
                 v-model="form.ntn"
                 label="NTN"
                 :readonly="isDetailsMode"
+                :rules="[
+                  regexValidator(
+                    form.ntn,
+                    ntnRegex,
+                    'Invalid NTN format. Correct format: 1234567-8',
+                  ),
+                ]"
+                @input="onInputRestrictLength('ntn', 9)"
               />
             </VCol>
 
