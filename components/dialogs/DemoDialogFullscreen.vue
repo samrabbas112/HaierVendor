@@ -4,6 +4,7 @@ import { useTermsStore } from '@/stores/terms';
 import { defineProps, ref, nextTick } from 'vue';
 import { ability } from '@/plugins/casl/ability';
 import { useAuthStore } from '@/stores/auth';
+import { useRoute } from 'vue-router';
 
 const authStore = useAuthStore();
 const isLoading = ref(false)
@@ -26,8 +27,17 @@ const props = defineProps({
   remember: {
     type: Boolean,
     required: true
-  }
+  },
+ 
 });
+
+
+// Get the current route
+const route = useRoute();
+
+// Check if the current route's name or path matches 'dashboard'
+const isLoginRoute = computed(() => route.name === 'login' || route.path === '/login');
+
 
 // Reactive state
 const acceptTerm = ref(false);
@@ -195,9 +205,36 @@ const handleSubmit = async () => {
           </li>
           <li>
             All onboarded dealers are required to conduct social media marketing
-            from their social media pages, and Haier may also support them in
-            providing the material and a marketing plan.
+            from their social media pages, and Haier may also support them in providing of the material and a percentage of the budget time to time or as decided which will be adjusted in their ledgers.
           </li>
+          <li>
+            The Haier ECommerce representative will inform the dealers about the campaign dates, budget, when to start the campaigns, and all other relevant details.
+          </li>
+          <li>
+            After the campaign ends, dealers will share all relevant details and evidence in the form of screenshots, along with traffic data and actual spending or as asked by Haier during the campaign.
+          </li>
+          <li>
+            Prepaid order amounts will be adjusted into the dealer's ledger on a weekly basis.
+          </li>
+          <li>
+            In case of a return, the product will be returned to the dealer. Training and support will be provided to dealers by Haier Teams. In case of misconduct by a dealer, Haier has the authority to cancel its contract.
+          </li>
+          <li>
+            Haier reserves the right to change Terms & Conditions at any time without prior notice.
+          </li>
+          <li>
+            Customer data is the property of Haier, and dealers cannot misuse it.
+          </li>
+          <li>
+            In case of a dispute between customers, dealers, and Haier, Haier's decision or statement will be considered final.
+          </li>
+          <li>
+            All warranties for products sold online will start from the purchasing date.
+          </li>
+          <li>
+            Dealers will call all customers whose orders they picked to confirm order details and delivery addresses.
+          </li>
+          
         </ul>
 
         <h3>Order Mechanism:</h3>
@@ -224,26 +261,34 @@ const handleSubmit = async () => {
         </ul>
       </div>
 
-
+ 
       <!-- Accept Terms -->
-      <div class="accept-terms">
-        <VCheckbox v-model="acceptTerm" label="Accept & agree to our Terms and Conditions" color="primary" />
+      <div class="accept-terms" v-if="isLoginRoute">
+        <!-- Checkbox for terms -->
+        <VCheckbox
+          v-model="acceptTerm"
+          label="Accept & agree to our Terms and Conditions"
+          color="primary"
+        />
+      
+        <!-- Button for submission -->
         <VBtn
-        :disabled="!acceptTerm"
-                  
-                  @click="!isLoading && handleSubmit()"
-                >
-                  <VProgressCircular
-                    v-if="isLoading"
-                    indeterminate
-                    color="white"
-                  />
-                  <template v-else>
-                    Accept
-                  </template>
-                </VBtn>
-       
+          :disabled="!acceptTerm" 
+          @click="!isLoading && handleSubmit()"
+        >
+          <!-- Loading indicator -->
+          <VProgressCircular
+            v-if="isLoading"
+            indeterminate
+            color="white"
+          />
+          <!-- Button label -->
+          <template v-else>
+            Accept
+          </template>
+        </VBtn>
       </div>
+      
     </VCard>
   </VDialog>
 </template>
