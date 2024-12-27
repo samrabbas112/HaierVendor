@@ -1,59 +1,61 @@
 <script setup lang="ts">
-import { PerfectScrollbar } from "vue3-perfect-scrollbar";
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
-import type { VForm } from "vuetify/components/VForm";
-import { useSnackbarStore } from "@/stores/snackbar";
+import type { VForm } from 'vuetify/components/VForm'
+import { useSnackbarStore } from '@/stores/snackbar'
 
 interface Emit {
-  (e: "update:isDrawerOpen", value: boolean): void;
+  (e: 'update:isDrawerOpen', value: boolean): void
 }
 
 interface Props {
-  isDrawerOpen: boolean;
-  customer: Record<string, any>;
+  isDrawerOpen: boolean
+  customer: Record<string, any>
 }
 
-const snackBarStore = useSnackbarStore();
-const props = defineProps<Props>();
-const emit = defineEmits<Emit>();
-const customer = toRef(props, "customer");
+const props = defineProps<Props>()
+const emit = defineEmits<Emit>()
+const snackBarStore = useSnackbarStore()
+const customer = toRef(props, 'customer')
 
-const isFormValid = ref(false);
-const refForm = ref<VForm>();
-const name = ref("");
-const phoneNumber = ref("");
-const address = ref("");
-const province = ref("");
-const city = ref("");
-const apiRequestObj = useApi();
-const isLoading = ref(false);
-const selectedProvinceId = ref<number | undefined>(undefined);
-const selectedCityId = ref<number | undefined>(undefined);
+const isFormValid = ref(false)
+const refForm = ref<VForm>()
+const name = ref('')
+const phoneNumber = ref('')
+const address = ref('')
+const province = ref('')
+const city = ref('')
+const apiRequestObj = useApi()
+const isLoading = ref(false)
+const selectedProvinceId = ref<number | undefined>(undefined)
+const selectedCityId = ref<number | undefined>(undefined)
+
 watch(
   customer,
-  (newCustomer) => {
+  newCustomer => {
     if (newCustomer) {
-      name.value = newCustomer.name || "";
-      phoneNumber.value = newCustomer.phone_number || "";
-      address.value = newCustomer.address || "";
-      province.value = newCustomer.province || "";
-      city.value = newCustomer.city || "";
-      selectedProvinceId.value = newCustomer.provinceId;
-      selectedCityId.value = newCustomer.cityId;
+      name.value = newCustomer.name || ''
+      phoneNumber.value = newCustomer.phone_number || ''
+      address.value = newCustomer.address || ''
+      province.value = newCustomer.province || ''
+      city.value = newCustomer.city || ''
+      selectedProvinceId.value = newCustomer.provinceId
+      selectedCityId.value = newCustomer.cityId
     }
   },
   { immediate: true, deep: true },
-);
+)
 
 // 👉 Drawer close
 const closeNavigationDrawer = () => {
-  emit("update:isDrawerOpen", false);
-  refForm.value?.reset();
-  refForm.value?.resetValidation();
-};
+  emit('update:isDrawerOpen', false)
+  refForm.value?.reset()
+  refForm.value?.resetValidation()
+}
 
 const onSubmit = async () => {
-  if (isLoading.value) return;
+  if (isLoading.value)
+    return
   refForm.value?.validate().then(async ({ valid }) => {
     if (valid) {
       const formData = {
@@ -63,78 +65,86 @@ const onSubmit = async () => {
         city: selectedCityId.value,
         province: selectedProvinceId.value,
         address: address.value,
-      };
+      }
 
       try {
-        isLoading.value = true;
-        let response;
+        isLoading.value = true
+        let response
         if (props.customer?.id) {
           response = await apiRequestObj.makeRequest(
             `common/customer/update/${props.customer.uid}`,
-            "put",
+            'put',
             formData,
-          );
-        } else {
+          )
+        }
+        else {
           response = await apiRequestObj.makeRequest(
-            "common/customer/store",
-            "post",
+            'common/customer/store',
+            'post',
             formData,
-          );
+          )
         }
         if (response?.success) {
-          emit("customer-updated");
-          emit("update:isDrawerOpen", false);
-          if (props.customer?.id)
+          emit('customer-updated')
+          emit('update:isDrawerOpen', false)
+          if (props.customer?.id) {
             snackBarStore.showSnackbar(
-              "Customer Updated Successfully.",
-              "success",
-            );
-          else
+              'Customer Updated Successfully.',
+              'success',
+            )
+          }
+          else {
             snackBarStore.showSnackbar(
-              "Customer Created Successfully.",
-              "success",
-            );
+              'Customer Created Successfully.',
+              'success',
+            )
+          }
 
           nextTick(() => {
-            refForm.value?.reset();
-            refForm.value?.resetValidation();
-          });
-        } else {
-          const messages = response?.message;
-          let allErrors = [];
+            refForm.value?.reset()
+            refForm.value?.resetValidation()
+          })
+        }
+        else {
+          const messages = response?.message
+          let allErrors = []
 
           // Check if the message array exists
           if (Array.isArray(messages)) {
             allErrors = messages
-              .map((msg) => msg?.errors)
-              .filter((error) => error); // Extract 'errors' field
+              .map(msg => msg?.errors)
+              .filter(error => error) // Extract 'errors' field
           }
 
           // Join all errors into a single string
-          const errorMessage =
-            allErrors.length > 0 ? allErrors.join("\n") : "Unknown Error";
+          const errorMessage
+            = allErrors.length > 0 ? allErrors.join('\n') : 'Unknown Error'
 
           // Show snackbar with all errors
-          snackBarStore.showSnackbar(errorMessage, "error");
+          // snackBarStore.showSnackbar(errorMessage, "error");
+          snackBarStore.showSnackbar(allErrors.length > 0 ? 'User already registered.' : errorMessage, 'error')
         }
-      } catch (error) {
-        snackBarStore.showSnackbar("Something went wrong", "error");
-      } finally {
-        isLoading.value = false;
+      }
+      catch (error) {
+        snackBarStore.showSnackbar('Something went wrong', 'error')
+      }
+      finally {
+        isLoading.value = false
       }
     }
-  });
-};
+  })
+}
 
 const handleDrawerModelValueUpdate = (val: boolean) => {
-  emit("update:isDrawerOpen", val);
-  refForm.value?.reset();
-  refForm.value?.resetValidation();
-};
+  emit('update:isDrawerOpen', val)
+  refForm.value?.reset()
+  refForm.value?.resetValidation()
+}
 
-watch(address, (newValue) => {
-  if (newValue) address.value = newValue.trimStart();
-});
+watch(address, newValue => {
+  if (newValue)
+    address.value = newValue.trimStart()
+})
 </script>
 
 <template>
@@ -158,7 +168,11 @@ watch(address, (newValue) => {
       <VCard flat>
         <VCardText>
           <!-- 👉 Form -->
-          <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
+          <VForm
+            ref="refForm"
+            v-model="isFormValid"
+            @submit.prevent="onSubmit"
+          >
             <VRow>
               <!-- 👉 Name -->
               <VCol cols="12">
@@ -166,7 +180,7 @@ watch(address, (newValue) => {
                   v-model="name"
                   :rules="[
                     requiredValidator,
-                     alphabetValidator,
+                    alphabetValidator,
                     minLengthValidator(3),
                   ]"
                   label="Name"
@@ -201,20 +215,25 @@ watch(address, (newValue) => {
               </VCol>
 
               <ProvinceCitySelector
-                :addClass="true"
                 v-model:selectedProvinceId="selectedProvinceId"
                 v-model:selectedCityId="selectedCityId"
+                :add-class="true"
               />
 
               <!-- 👉 Submit and Cancel -->
               <VCol cols="12">
-                <VBtn type="submit" class="me-3">
+                <VBtn
+                  type="submit"
+                  class="me-3"
+                >
                   <VProgressCircular
                     v-if="isLoading"
                     indeterminate
                     color="white"
                   />
-                  <template v-else> Submit </template>
+                  <template v-else>
+                    Submit
+                  </template>
                 </VBtn>
                 <VBtn
                   type="reset"
