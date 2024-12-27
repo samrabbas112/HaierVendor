@@ -130,6 +130,9 @@ watch([page], () => {
 const handleCustomerUpdated = () => {
   fetchCustomers();
 };
+watch([selectedVendorStatus], () => {
+  fetchCustomers();
+});
 
 onMounted(fetchCustomers);
 </script>
@@ -174,12 +177,6 @@ onMounted(fetchCustomers);
               placeholder="Select  Status"
               :items="vendorStatus"
               clearable
-              @keypress.enter="
-                () => {
-                  page = 1;
-                  fetchCustomers();
-                }
-              "
               clear-icon="tabler-x"
             />
           </VCol>
