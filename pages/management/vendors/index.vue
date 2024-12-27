@@ -192,6 +192,12 @@ onMounted(fetchVendors);
               v-model="selectedVendorStatus"
               placeholder="Select Vendor Status"
               :items="vendorStatus"
+              @keypress.enter="
+                () => {
+                  page = 1;
+                  fetchVendors();
+                }
+              "
               clearable
               clear-icon="tabler-x"
             />

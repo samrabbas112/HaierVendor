@@ -154,9 +154,9 @@ onMounted(() => {
               <AppTextField
                 v-model="form.name"
                 :rules="[
+                  alphabetValidator,
                   requiredValidator,
                   minLengthValidator(3),
-                  alphabetValidator,
                 ]"
                 label="Name"
                 :readonly="isDetailsMode"
