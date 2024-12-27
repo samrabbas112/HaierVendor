@@ -51,14 +51,12 @@ const transformData = (apiResponse) => {
       status: item.pick_status.id || 1,
       method: item.payment_method || "COD", // Payment method
       date: item.created_at,
-      time: item.pick_before,
+      time: item.deliver_before,
     };
   });
 };
 
 let previousSearchQuery = "";
-
-console.log("ahmad",authUser.value)
 
 const makeSearch = async (page) => {
   // return console.log("search api hit", typeof page, searchQuery.value, page);
