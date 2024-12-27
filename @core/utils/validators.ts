@@ -175,4 +175,18 @@ export const onInputRestrictLength = (value, maxLength) => {
 
   return value;
 };
+export const onInputRestrictAlphabets = (value) => {
+  if (typeof value === 'string') {
+    // Remove all non-numeric characters
+    return value.replace(/[^0-9]/g, '');
+  }
+
+  if (typeof value === 'number') {
+    // Return the number directly
+    return value.toString(); // Convert to string if needed
+  }
+
+  // Default return for unsupported types
+  return '';
+};
 
