@@ -32,7 +32,6 @@ const secondsRemaining = ref(totalSeconds);
 const progressValue = ref(100);
 const isCountdownActive = ref(false);
 const isLoading = ref(false);
-const isOtpLoading = ref(false);
 const inValidOtp = ref(false);
 const router = useRouter();
 
@@ -113,9 +112,8 @@ const startCountdown = () => {
 const getCode = async () => {
   try {
     isLoading.value = true;
-    console.log("getCode function invoked");
 
-    if (phoneValidator(form?.value?.telephone)) {
+    if (phoneValidator(form?.value?.telephone) == true) {
       const response = await apiRequestObj.makeRequest(
         "common/authentication/get-code",
         "post",
@@ -148,7 +146,7 @@ const getCode = async () => {
 };
 
 const verifyCode = async () => {
-  isOtpLoading.value = true;
+  isLoading.value = true;
   if (form.value.code.length === 6) {
     inValidOtp.value = false;
     const response = await apiRequestObj.makeRequest(
@@ -165,7 +163,7 @@ const verifyCode = async () => {
   } else {
     inValidOtp.value = true;
   }
-  isOtpLoading.value = false;
+  isLoading.value = false;
 };
 </script>
 
@@ -229,10 +227,11 @@ const verifyCode = async () => {
                   label="Phone Number*"
                   placeholder="03XXXXXXXXX"
                   required
-                  type="number"
+                  type="text"
                   :disabled="form.is_otp_verified"
                   @input="
                     () => {
+                      form.telephone = onInputRestrictAlphabets(form.telephone)
                       form.telephone = onInputRestrictLength(
                         form.telephone,
                         11,
