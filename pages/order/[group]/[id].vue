@@ -43,7 +43,7 @@ const deliveryRefusedReasons = [
   'Customer refused to accept at door step',
   'Cusotmer has already generated the canacel request',
   'No one is at home/ or opened the door',
-  'Other Reasons',
+  'Other',
 ]
 
 const rejectOrderReasons = [
@@ -52,7 +52,7 @@ const rejectOrderReasons = [
   'Customer ask to cancel',
   'wrong customer information',
   'Delivery location mismatch',
-  'other',
+  'Other',
 ]
 
 const transformOrderDetail = (orderProduct, singleProductTotal) => {
@@ -186,7 +186,7 @@ const updateStatus = async () => {
     const requestData = {
       status: selectedStatus.value,
       reason:
-        selectedReason.value === 'other'
+        selectedReason.value === 'Other'
           ? customReason.value
           : selectedReason.value,
       files: selectedPics.value,
@@ -248,7 +248,7 @@ const handleReasonDialog = async () => {
     selectedStatus.value == orderStatusCodes.isRejected
     || selectedStatus.value == orderStatusCodes.isDeliveryRefused
   ) {
-    if (selectedReason.value === 'other') {
+    if (selectedReason.value === 'Other') {
       if (customReason.value == null) {
         snackbarStore.showSnackbar('Please Enter Reason', 'error')
 
@@ -742,7 +742,7 @@ const headers = [
             </VCol>
 
             <VCol
-              v-if="selectedReason == 'other'"
+              v-if="selectedReason == 'Other'"
               cols="12"
             >
               <AppTextarea
