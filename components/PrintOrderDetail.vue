@@ -107,7 +107,7 @@ const handlePrint = async e => {
                 <td style="padding: 8px;">
                   <div style="display: flex; gap: 12px; align-items: center;">
                     <img
-                      src=""
+                      :src="item.productImage"
                       alt="Product Image"
                       style="width: 34px; height: 34px; border-radius: 4px;"
                     >
