@@ -65,12 +65,12 @@ const deleteData = async (id: number) => {
         <template #item.id="{ index }">
           <NuxtLink>
             <!-- {{ item.id }} -->
-            {{ (page - 1) * data.per_page + index + 1 }}
+            {{ (data.current_page - 1) * data.per_page + index + 1 }}
           </NuxtLink>
         </template>
         <template #item.order="{ item }">
           <NuxtLink> {{ item.order }} </NuxtLink>
-          <span>{{ new Date(item.date).toLocaleString() }}</span>
+          <p>{{ new Date(item.date).toLocaleString() }}</p>
         </template>
 
         <!-- Date -->

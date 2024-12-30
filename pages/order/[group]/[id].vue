@@ -387,19 +387,18 @@ const headers = [
           </div>
         </div>
       </div>
-      <!--
-        <PrintOrderDetail
-        :order-data="orderData"
-        :order-detail="orderDetail"
-        :subtotal="subtotal"
-        :Total="Total"
-        :user-data="userData"
-        />
-      -->
+
       <div
         v-if="(authUser.user_type === 'haier' && route.params.group !== 'vendor') || authUser.user_type === 'vendor'"
         class="d-flex gap-x-2"
       >
+        <PrintOrderDetail
+          :order-data="orderData"
+          :order-detail="orderDetail"
+          :subtotal="subtotal"
+          :Total="Total"
+          :user-data="userData"
+        />
         <div
           v-if="authUser.user_type == 'vendor'"
           class="d-flex gap-x-2"
