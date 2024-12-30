@@ -507,7 +507,7 @@ const headers = [
     <VRow>
       <VCol
         cols="12"
-        md="8"
+        md="12"
       >
         <!-- 👉 Order Details -->
         <VCard class="mb-6">
@@ -534,7 +534,7 @@ const headers = [
                   :rounded="0"
                 />
 
-                <div class="d-flex flex-column align-start">
+                <div class="d-flex flex-column align-start text-wrap w-100">
                   <h6 class="text-h6">
                     {{ item.productName }}
                   </h6>
@@ -556,7 +556,7 @@ const headers = [
               <div
                 v-for="(variation, index) in item.variations"
                 :key="index"
-                class="text-body-1"
+                class="text-body-1 text-wrap w-100"
               >
                 {{ variation.name }}
               </div>
@@ -600,7 +600,7 @@ const headers = [
 
       <VCol
         cols="12"
-        md="4"
+        md="12"
       >
         <!-- 👉 Customer Details  -->
         <VCard class="mb-6">
