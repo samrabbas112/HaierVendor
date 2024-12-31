@@ -201,6 +201,8 @@ watch(address, newValue => {
                   ]"
                   label="Phone Number"
                   placeholder="03xxxxxxxxx"
+                  :disabled="customer && customer.id ? true : false"
+
                 />
               </VCol>
 
