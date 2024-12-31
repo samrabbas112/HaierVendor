@@ -22,12 +22,9 @@ const ordersData = ref({
 const headers = [
   { title: "Sr. No.", key: "id", sortable: false },
   { title: "Order Info", key: "order", sortable: false },
+  { title: "Product Info", key: "product", sortable: false },
   { title: "Total Price", key: "payment", sortable: false },
-  // { title: "Customers", key: "customer", sortable: false },
-  // { title: "Payment Method", key: "method", sortable: false },
-  // { title: "Placed At", key: "date", sortable: false },
   { title: "Deliver Before", key: "time", sortable: false },
-  // { title: "Status", key: "status", sortable: false },
   { title: "Action", key: "actions", sortable: false },
 ];
 
@@ -41,7 +38,6 @@ const orderStatus = [
 const transformData = (apiResponse) => {
   return apiResponse.map((item) => {
     const customer = item.customer;
-
     return {
       id: item.id,
       uid: item.uid,
@@ -53,6 +49,7 @@ const transformData = (apiResponse) => {
       method: item.payment_method || "COD", // Payment method
       date: item.created_at,
       time: item.deliver_before,
+      products: item.orderProduct,
     };
   });
 };

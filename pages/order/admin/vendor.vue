@@ -26,6 +26,7 @@ const ordersData = ref({
 const headers = [
   { title: "Sr. No.", key: "id", sortable: false },
   { title: "Order Info", key: "order", sortable: false },
+  { title: "Product Info", key: "product", sortable: false },
   { title: "Total Price", key: "payment", sortable: false },
   { title: "Customers", key: "customer", sortable: false },
   { title: "Payment Method", key: "method", sortable: false },
@@ -76,6 +77,7 @@ const transformData = (apiResponse) => {
       time: item.pick_before,
       vendor_name: item.vendor_name,
       vendor_email: item.vendor_email,
+      products: item.orderProduct,
     };
   });
 };

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { orderCodeStatus } from '@/libs/order/order-status'
+
 // Props for passing data to the component
 defineProps(['orderData', 'orderDetail', 'subtotal', 'Total', 'userData'])
 
@@ -54,7 +56,7 @@ const handlePrint = async e => {
           Order #{{ orderData?.order }}:
         </h5>
         <div style="margin-left: 2px;">
-          {{ orderData?.status }}
+          {{ orderCodeStatus[orderData?.status].text }}
         </div>
       </div>
 
@@ -89,13 +91,13 @@ const handlePrint = async e => {
                   Product Name
                 </th>
                 <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e0e0e0;">
-                  Price
-                </th>
-                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e0e0e0;">
                   Variations
                 </th>
                 <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e0e0e0;">
                   Quantity
+                </th>
+                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #e0e0e0;">
+                  Price
                 </th>
               </tr>
             </thead>
@@ -120,9 +122,6 @@ const handlePrint = async e => {
                   </div>
                 </td>
                 <td style="padding: 8px; font-size: 1rem;">
-                  {{ item.total }}
-                </td>
-                <td style="padding: 8px; font-size: 1rem;">
                   <div
                     v-for="variation in item.variations"
                     style="margin-bottom: 4px;"
@@ -137,6 +136,9 @@ const handlePrint = async e => {
                   >
                     {{ variation.quantity }}
                   </div>
+                </td>
+                <td style="padding: 8px; font-size: 1rem;">
+                  {{ item.total }}
                 </td>
               </tr>
             </tbody>

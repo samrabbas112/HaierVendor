@@ -31,7 +31,9 @@ const resolveMethod = (status: string) => {
     return { text: 'jazzCash', color: 'info' }
 }
 
-console.log({ data })
+const calculateQuantity = specInfo => {
+  return specInfo.reduce((total, variation) => total + (variation.purchaseNum || 0), 0)
+}
 
 const updatePage = value => {
   emit('update:page', value)
@@ -71,6 +73,41 @@ const deleteData = async (id: number) => {
         <template #item.order="{ item }">
           <NuxtLink> {{ item.order }} </NuxtLink>
           <p>{{ new Date(item.date).toLocaleString() }}</p>
+        </template>
+
+        <template #item.product="{ item }">
+          <div
+            v-for="(product, index) in item.products"
+            :key="index"
+            class="text-body-1 text-wrap w-100"
+          >
+            <div class="d-flex gap-x-3 align-center">
+              <VAvatar
+                size="34"
+                :image="product.productCoverImg"
+                :rounded="0"
+              />
+
+              <div class="d-flex flex-column align-start text-wrap w-100">
+                <h6 class="text-h6">
+                  {{ product.productName }}
+                </h6>
+                <div
+                  v-for="(variation, index) in product.specInfo"
+                  :key="index"
+                  class="text-body-1 text-wrap w-100"
+                >
+                  <span class="text-body-2">
+                    {{ variation.specName }}
+                  </span>
+                </div>
+                <div class="text-body-2">
+                  <strong>Quantity:</strong> <span>{{ calculateQuantity(product.specInfo) }}</span>
+                  <strong>, Price:</strong> <span>{{ product.productPrice }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </template>
 
         <!-- Date -->
