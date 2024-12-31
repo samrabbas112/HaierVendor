@@ -22,6 +22,7 @@ const authUser = useCookie("auth");
 const headers = [
   { title: "Sr. No.", key: "id", sortable: false },
   { title: "Order Info", key: "order", sortable: false },
+  { title: "Product Info", key: "product", sortable: false },
   { title: "Total Price", key: "payment", sortable: false },
   { title: "Customers", key: "customer", sortable: false },
   { title: "Payment Method", key: "method", sortable: false },
@@ -65,6 +66,7 @@ const transformData = (apiResponse) => {
       date: item.created_at,
       time: item.pick_before,
       city: item.city,
+      products: item.orderProduct,
     };
   });
 };
