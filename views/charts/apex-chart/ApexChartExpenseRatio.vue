@@ -34,7 +34,7 @@ const expenseRationChartConfig = computed(() => {
   config.labels = props.labels;
 
   // Apply gray color if all series values are zero
-  config.colors = isSeriesZero.value ? ["#D3D3D3"] :  [
+  config.colors = isSeriesZero.value ? ["#D3D3D3"] : [
   "#1E90FF", // Blue - Haier Operations
   "#32CD32", // Green - Picked
   "#FFA500", // Orange - Out For Delivery
