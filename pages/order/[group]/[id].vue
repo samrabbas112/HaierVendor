@@ -677,6 +677,7 @@ const headers = [
                   <VFileInput
                     id="pod-files"
                     ref="fileInput"
+                    :disabled="selectedPics.length == 5"
                     v-model="inputPics"
                     show-size
                     accept="image/png, image/jpeg, image/bmp"
@@ -695,6 +696,7 @@ const headers = [
                     icon="tabler-plus"
                     size="24"
                     color="primary"
+                    :disabled="selectedPics.length == 5"
                     @click="
                       () => $refs.fileInput.$el.querySelector('input').click()
                     "
@@ -704,7 +706,7 @@ const headers = [
                 <!-- Updated Preview Section -->
                 <VCol
                   v-if="imagePreviews.length > 0"
-                  class="d-flex justify-center flex-wrap gap-x-3"
+                  class="d-flex justify-center flex-wrap gap-3"
                 >
                   <div
                     v-for="(preview, index) in imagePreviews"
@@ -713,15 +715,17 @@ const headers = [
                   >
                     <VImg
                       :src="preview"
-                      height="175"
-                      width="175"
+                      height="150"
+                      width="150"
                       alt="Preview"
+                      :cover="true"
                     />
                     <VBtn
                       icon="tabler-x"
                       size="20"
                       color="error"
                       class="remove-btn"
+                      :rounded=0
                       @click="removeFile(index)"
                     />
                   </div>
@@ -787,7 +791,7 @@ const headers = [
 <style scoped>
 .remove-btn {
   position: absolute;
-  top: 30px;
+  top: 0px;
   right: 0px;
 }
 .preview-container {
