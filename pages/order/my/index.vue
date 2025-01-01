@@ -48,7 +48,7 @@ const transformData = (apiResponse) => {
       status: item.pick_status.id || 1,
       method: item.payment_method || "COD", // Payment method
       date: item.created_at,
-      time: item.deliver_before,
+      time: item.deliver_before || null,
       products: item.orderProduct,
     };
   });
