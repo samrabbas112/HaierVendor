@@ -34,7 +34,16 @@ const expenseRationChartConfig = computed(() => {
   config.labels = props.labels;
 
   // Apply gray color if all series values are zero
-  config.colors = isSeriesZero.value ? ["#D3D3D3"] : undefined; // Gray color for zero values
+  config.colors = isSeriesZero.value ? ["#D3D3D3"] :  [
+  "#1E90FF", // Blue - Haier Operations
+  "#32CD32", // Green - Picked
+  "#FFA500", // Orange - Out For Delivery
+  "#FF6347", // Red - Delivery Refused
+  "#800080", // Purple - Closed
+  "#FF4500", // Dark Orange - Delivery Timeout
+  "#20B2AA", // Teal - Ready To Ship
+  "#FFD700", // Gold - Rejected
+]; // Gray color for zero values
 
   // Customize the center label to show 0% if series is zero
   config.plotOptions = {
@@ -42,6 +51,9 @@ const expenseRationChartConfig = computed(() => {
       donut: {
         labels: {
           show: true,
+          name:{
+            show:false
+          },
           total: {
             show: true,
             label: "Total",
