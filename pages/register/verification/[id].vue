@@ -5,6 +5,8 @@ import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw";
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
 import type { VForm } from "vuetify/components/VForm";
+import { useRouter } from "vue-router";
+
 import {
   requiredValidator,
   minLengthValidator,
@@ -16,6 +18,7 @@ import ProvinceCitySelector from "@/components/ProvinceCitySelector.vue";
 import { useRoute } from "vue-router";
 import { ref, onMounted } from "vue";
 
+const router = useRouter();
 const selectedProvinceId = ref<number | undefined>(undefined);
 const selectedCityId = ref<number | undefined>(undefined);
   const isLinkExpired = ref(false);
@@ -46,18 +49,25 @@ const userData = ref({
   phone_number: "",
 });
 
-const validateLinkExpiration = () => {
-  const { expires, signature } = route.query;
-
-  if (expires && signature) {
-    const expirationTime = parseInt(expires as string, 10);
-    const currentTime = Date.now() / 1000; // Current time in seconds
-
-    if (currentTime > expirationTime) {
+const validateLinkExpiration = async (id: string) => {
+  try {
+    const fullUrl = window.location.href;
+    const requestData = {
+      'id' : id,
+      'link' : fullUrl,
+    };
+    const response = await apiRequestObj.makeRequest(`common/customer/linkVerify`, "post",requestData);
+    if (response.data) {
+      snackBarStore.showSnackbar(response.message, "error");
       isLinkExpired.value = true;
-      snackBarStore.showSnackbar("This link has expired.", "error");
+      console.log('samr',isLinkExpired.value);
     }
+  } catch (error) {
+    console.error("Error verifying customer Link:", error);
+    snackBarStore.showSnackbar("Failed to fetch data.", "error");
   }
+
+  
 };
 
 
@@ -80,10 +90,11 @@ const fetchCustomerData = async (id: string) => {
 };
 
 const handleFormAction = async (action: boolean) => {
-  if (!action)
+  if (!action) {
     isDeclineLoading.value = true;
-  else
+  } else {
     isConfirmLoading.value = true;
+  }
 
   try {
     const customerId = route.params.id as string;
@@ -99,32 +110,45 @@ const handleFormAction = async (action: boolean) => {
       updatedFields: payload,
     };
 
-
     const response = await apiRequestObj.makeRequest("common/customer/verify", "post", data);
     if (response.success) {
-      if (!action)
+      if (!action) {
         snackBarStore.showSnackbar("Customer Registration Declined!", "success");
-      else
+
+        router.push({
+          path: `/Thankyou`,
+          query: { mode: "decline" },
+        });
+      } else {
         snackBarStore.showSnackbar("Customer verified successfully!", "success");
 
-    } else {
+        router.push({
+          path: `/Thankyou`,
+          query: { mode: "confirm" },
+        });
+      }
+    } 
+    else {
       snackBarStore.showSnackbar("Action failed, please try again.", "error");
     }
-  } catch (error) {
+  }
+   catch (error) {
     snackBarStore.showSnackbar("An error occurred: " + error.message, "error");
   } finally {
-    if (!action)
+    if (!action) {
       isDeclineLoading.value = false;
-    else
+    } else {
       isConfirmLoading.value = false;
+    }
   }
 };
 
+
 onMounted(() => {
-
-  validateLinkExpiration();
-
   const customerId = route.params.id as string;
+
+  validateLinkExpiration(customerId);
+
   if (customerId) {
     fetchCustomerData(customerId);
   }
