@@ -288,9 +288,10 @@ const ntnRegex = /^\d{7}-\d$/;
             </VCol>
 
             <ProvinceCitySelector
-              v-model:selectedProvinceId="selectedProvinceId"
-              v-model:selectedCityId="selectedCityId"
-            />
+            v-model:selectedProvinceId="selectedProvinceId"
+            v-model:selectedCityId="selectedCityId"
+            :mode="mode"
+          />
           </VRow>
 
           <!-- Actions -->

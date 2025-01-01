@@ -12,6 +12,10 @@ const props = defineProps({
   selectedProvinceId: Number,
   selectedCityId: Number,
   addClass: Boolean,
+  mode: {
+    type: String,
+    default: null, // Default mode is null
+  },
 });
 
 const emit = defineEmits([
@@ -85,6 +89,7 @@ onMounted(() => {
       :items="provinces"
       :rules="[requiredValidator]"
       clearable
+      :disabled="props.mode === 'details'"
       clear-icon="tabler-x"
       @update:model-value="(value) => emit('update:selectedProvinceId', value)"
     />
@@ -95,8 +100,8 @@ onMounted(() => {
       label="City"
       placeholder="Select City"
       :rules="[requiredValidator]"
-      :disabled="!props.selectedProvinceId"
       :items="cities"
+      :disabled="props.mode === 'details' || !props.selectedProvinceId"
       clearable
       clear-icon="tabler-x"
       @update:model-value="(value) => emit('update:selectedCityId', value)"

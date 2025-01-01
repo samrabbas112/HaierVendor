@@ -336,6 +336,15 @@ onMounted(fetchVendors);
               >
                 Customers
               </VListItem>
+            <VListItem
+              value="customer"
+              :to="{
+                path: `/management/vendors/${item.uid}`,
+                query: { mode: 'details' }
+              }"
+            >
+              Details
+            </VListItem>
             </VList>
           </VMenu>
         </IconBtn>
