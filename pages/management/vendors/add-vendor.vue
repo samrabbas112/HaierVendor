@@ -68,7 +68,9 @@ const submitForm = async () => {
           resetForm();
           snackBarStore.showSnackbar("Vendor created successfully!", "success");
           router.push("/management/vendors"); // Navigate to the vendor list page
-        } else {
+        } else if (response?.code === 401 || response?.message === "Unauthenticated.") {
+          snackBarStore.showSnackbar("Login session expired", "error");
+        }  else {
           const messages = response?.message;
 
           console.log(messages);

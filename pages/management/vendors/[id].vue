@@ -64,7 +64,10 @@ const fetchVendor = async () => {
       form.value.status = response.data.status ? "active" : "Inactive";
       selectedProvinceId.value = response.data.provinceId;
       selectedCityId.value = response.data.cityId;
-    } else {
+    } else if (response?.code === 401 || response?.message === "Unauthenticated.") {
+      snackBarStore.showSnackbar("Login session expired", "error");
+    } 
+    else {
       snackBarStore.showSnackbar("Failed to load vendor data", "error");
     }
   } catch (error) {

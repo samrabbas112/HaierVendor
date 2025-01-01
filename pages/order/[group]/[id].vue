@@ -125,7 +125,9 @@ const fetchData = async () => {
 
       orderData.value = transformData(singleOrder)
       Total.value = singleOrder.paymentAmount || 0 // Update total with the subtotal
-    }
+    } else if (response?.code === 401 || response?.message === "Unauthenticated.") {
+      snackbarStore.showSnackbar("Login session expired", "error");
+    } 
     else {
       snackbarStore.showSnackbar(
         'An error occurred. Please try again.',

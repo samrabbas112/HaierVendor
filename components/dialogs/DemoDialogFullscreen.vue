@@ -71,7 +71,14 @@ const handleSubmit = async () => {
       );
       console.error('API Response Error:', termsResponse);
       return;
+    } 
+    else if (termsResponse?.code === 401 || termsResponse?.message === "Unauthenticated.") {
+      snackbarStore.showSnackbar("Login session expired", "error");
+
+    } else {
+      snackbarStore.showSnackbar("An unexpected error occurred.", "error");
     }
+
 
     // Step 3: Send login request after terms are accepted
     const loginPayload = {
@@ -132,7 +139,10 @@ const handleSubmit = async () => {
       window.location.href = '/dashboard';
       // router.push('/dashboard')
     })
-  } else {
+  } else if (loginResponse?.code === 401 || loginResponse?.message === "Unauthenticated.") {
+      snackbarStore.showSnackbar("Login session expired", "error");
+
+    } else {
       snackbarStore.showSnackbar(
         loginResponse?.message || 'Incorrect Email or Password',
         'error'

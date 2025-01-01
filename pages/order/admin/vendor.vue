@@ -120,7 +120,10 @@ const makeSearch = async (page) => {
         selectedVendor.value = route.query.user;
         router.replace({ path: route.path, query: {} });
       }
-    } else {
+    } else if (response?.code === 401 || response?.message === "Unauthenticated.") {
+      snackbarStore.showSnackbar("Login session expired", "error");
+        }  
+    else {
       snackbarStore.showSnackbar(
         "An error occurred. Please try again.",
         "error",
@@ -145,7 +148,10 @@ const fetchVendors = async () => {
 
     if (response && response.success) {
       vendors.value = response?.data;
-    } else {
+    } 
+    else if (response?.code === 401 || response?.message === "Unauthenticated.") {
+      snackbarStore.showSnackbar("Login session expired", "error");
+    }  else {
       snackbarStore.showSnackbar(
         "An error occurred. Please try again.",
         "error",

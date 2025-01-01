@@ -105,7 +105,10 @@ const makeSearch = async (page) => {
         total: response?.data?.total, // Set total count of orders
         orders: transformData(response?.data?.orders),
       };
-    } else {
+    } else if (response?.code === 401 || response?.message === "Unauthenticated.") {
+      snackbarStore.showSnackbar("Login session expired", "error");
+    } 
+    else {
       snackbarStore.showSnackbar(
         "An error occurred. Please try again.",
         "error",
