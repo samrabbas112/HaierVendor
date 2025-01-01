@@ -116,7 +116,7 @@ const deleteData = async (id: number) => {
         </template>
         <!-- time -->
         <template #item.time="{ item }">
-          {{ new Date(item.time).toLocaleString() }}
+          {{ item.time ? new Date(item.time).toLocaleString() : '--:--:--' }}
         </template>
 
         <!-- Customers  -->
