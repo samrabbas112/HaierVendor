@@ -196,9 +196,9 @@ onMounted(() => {
                 <AppTextField v-model="userData.address" :rules="[requiredValidator, minLengthValidator(10)]"
                   label="Address" placeholder="Enter address" />
               </VCol>
-              <VCol cols="12">
+              <VCol cols="12" style="padding: 0;">
                 <ProvinceCitySelector v-model:selectedProvinceId="selectedProvinceId"
-                  v-model:selectedCityId="selectedCityId" />
+                  v-model:selectedCityId="selectedCityId" :add-class="true"/>
               </VCol>
 
               <!-- Phone Number -->
@@ -209,7 +209,7 @@ onMounted(() => {
               </VCol>
 
               <!-- Submit & Cancel -->
-              <VCol cols="12">
+              <VCol cols="12" class="d-flex justify-center align-center">
                 <VBtn type="submit" class="me-3" @click.prevent="handleFormAction(true)">
                   <VProgressCircular v-if="isConfirmLoading" indeterminate color="white" />
                   <template v-else> Confirm </template>
@@ -219,6 +219,7 @@ onMounted(() => {
                   <template v-else> Decline </template>
                 </VBtn>
               </VCol>
+              
             </VRow>
           </VForm>
         </VCardText>
