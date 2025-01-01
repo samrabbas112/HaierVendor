@@ -326,7 +326,7 @@ onMounted(fetchVendors);
             <VList>
               <VListItem
                 value="order"
-                :to="`/order/admin/vendor?user=${item.user.uid}`"
+                :to="`/order/admin/vendor?user=${item.user_id}`"
               >
                 Orders
               </VListItem>
