@@ -56,7 +56,7 @@ const handlePrint = async e => {
           Order #{{ orderData?.order }}:
         </h5>
         <div style="margin-left: 2px;">
-          {{ orderCodeStatus[orderData?.status].text }}
+          {{ orderCodeStatus[orderData?.status]?.text }}
         </div>
       </div>
 
