@@ -40,6 +40,7 @@ const isConfirmLoading = ref(false);
 const isDeclineLoading = ref(false);
 const refForm = ref<VForm>();
 const apiRequestObj = useApi();
+const isLoading = ref(true);
 
 const userData = ref({
   name: "",
@@ -65,7 +66,10 @@ const validateLinkExpiration = async (id: string) => {
   } catch (error) {
     console.error("Error verifying customer Link:", error);
     snackBarStore.showSnackbar("Failed to fetch data.", "error");
+  } finally {
+    isLoading.value = false; // Set loading to false after check
   }
+
 
   
 };
@@ -158,74 +162,81 @@ onMounted(() => {
 
 <template>
   <SnackBar />
-  <div v-if="isLinkExpired" class="auth-wrapper d-flex align-center justify-center pa-4">
-    <div class="position-relative my-sm-16">
-      <h4 class="text-h4">Link Expired</h4>
-      <p>This link has expired. Please contact support for assistance.</p>
+  <div v-if="isLoading" class="auth-wrapper d-flex align-center justify-center pa-4">
+    <!-- Loading Spinner -->
+    <VProgressCircular indeterminate color="primary" />
+  </div>
+  <div v-else>
+    <div v-if="isLinkExpired" class="auth-wrapper d-flex align-center justify-center pa-4">
+      <div class="position-relative my-sm-16">
+        <h4 class="text-h4">Link Expired</h4>
+        <p>This link has expired. Please contact support for assistance.</p>
+      </div>
+    </div>
+    <div v-else class="auth-wrapper d-flex align-center justify-center pa-4">
+      <div class="position-relative my-sm-16">
+        <!-- Shapes -->
+        <VNodeRenderer :nodes="h('div', { innerHTML: authV1TopShape })"
+          class="text-primary auth-v1-top-shape d-none d-sm-block" />
+        <VNodeRenderer :nodes="h('div', { innerHTML: authV1BottomShape })"
+          class="text-primary auth-v1-bottom-shape d-none d-sm-block" />
+  
+        <!-- Auth Card -->
+        <VCard class="auth-card" max-width="460" :class="$vuetify.display.smAndUp ? 'pa-6' : 'pa-0'">
+          <VCardText>
+            <h4 class="text-h4 mb-1">
+              Customer Registration <br /> Verification
+            </h4>
+            <p class="mb-0">
+              Please review the information below to ensure it is accurate.
+            </p>
+          </VCardText>
+          <VCardText>
+            <VForm ref="refForm" v-model="isFormValid">
+              <VRow>
+                <!-- Name -->
+                <VCol cols="12">
+                  <AppTextField v-model="userData.name" :rules="[requiredValidator, minLengthValidator(3)]" label="Name"
+                    placeholder="Enter name" />
+                </VCol>
+  
+                <!-- Address -->
+                <VCol cols="12">
+                  <AppTextField v-model="userData.address" :rules="[requiredValidator, minLengthValidator(10)]"
+                    label="Address" placeholder="Enter address" />
+                </VCol>
+                <VCol cols="12" style="padding: 0;">
+                  <ProvinceCitySelector v-model:selectedProvinceId="selectedProvinceId"
+                    v-model:selectedCityId="selectedCityId" :add-class="true"/>
+                </VCol>
+  
+                <!-- Phone Number -->
+                <VCol cols="12">
+                  <AppTextField v-model="userData.phone_number" type="tel"
+                    :rules="[requiredValidator, phoneValidator, minLengthValidator(10), numberValidator]"
+                    label="Phone Number" placeholder="+1234567890" />
+                </VCol>
+  
+                <!-- Submit & Cancel -->
+                <VCol cols="12" class="d-flex justify-center align-center">
+                  <VBtn type="submit" class="me-3" @click.prevent="handleFormAction(true)">
+                    <VProgressCircular v-if="isConfirmLoading" indeterminate color="white" />
+                    <template v-else> Confirm </template>
+                  </VBtn>
+                  <VBtn type="submit" variant="tonal" color="error" @click.prevent="handleFormAction(false)">
+                    <VProgressCircular v-if="isDeclineLoading" indeterminate color="white" />
+                    <template v-else> Decline </template>
+                  </VBtn>
+                </VCol>
+                
+              </VRow>
+            </VForm>
+          </VCardText>
+        </VCard>
+      </div>
     </div>
   </div>
-  <div v-else class="auth-wrapper d-flex align-center justify-center pa-4">
-    <div class="position-relative my-sm-16">
-      <!-- Shapes -->
-      <VNodeRenderer :nodes="h('div', { innerHTML: authV1TopShape })"
-        class="text-primary auth-v1-top-shape d-none d-sm-block" />
-      <VNodeRenderer :nodes="h('div', { innerHTML: authV1BottomShape })"
-        class="text-primary auth-v1-bottom-shape d-none d-sm-block" />
-
-      <!-- Auth Card -->
-      <VCard class="auth-card" max-width="460" :class="$vuetify.display.smAndUp ? 'pa-6' : 'pa-0'">
-        <VCardText>
-          <h4 class="text-h4 mb-1">
-            Customer Registration <br /> Verification
-          </h4>
-          <p class="mb-0">
-            Please review the information below to ensure it is accurate.
-          </p>
-        </VCardText>
-        <VCardText>
-          <VForm ref="refForm" v-model="isFormValid">
-            <VRow>
-              <!-- Name -->
-              <VCol cols="12">
-                <AppTextField v-model="userData.name" :rules="[requiredValidator, minLengthValidator(3)]" label="Name"
-                  placeholder="Enter name" />
-              </VCol>
-
-              <!-- Address -->
-              <VCol cols="12">
-                <AppTextField v-model="userData.address" :rules="[requiredValidator, minLengthValidator(10)]"
-                  label="Address" placeholder="Enter address" />
-              </VCol>
-              <VCol cols="12" style="padding: 0;">
-                <ProvinceCitySelector v-model:selectedProvinceId="selectedProvinceId"
-                  v-model:selectedCityId="selectedCityId" :add-class="true"/>
-              </VCol>
-
-              <!-- Phone Number -->
-              <VCol cols="12">
-                <AppTextField v-model="userData.phone_number" type="tel"
-                  :rules="[requiredValidator, phoneValidator, minLengthValidator(10), numberValidator]"
-                  label="Phone Number" placeholder="+1234567890" />
-              </VCol>
-
-              <!-- Submit & Cancel -->
-              <VCol cols="12" class="d-flex justify-center align-center">
-                <VBtn type="submit" class="me-3" @click.prevent="handleFormAction(true)">
-                  <VProgressCircular v-if="isConfirmLoading" indeterminate color="white" />
-                  <template v-else> Confirm </template>
-                </VBtn>
-                <VBtn type="submit" variant="tonal" color="error" @click.prevent="handleFormAction(false)">
-                  <VProgressCircular v-if="isDeclineLoading" indeterminate color="white" />
-                  <template v-else> Decline </template>
-                </VBtn>
-              </VCol>
-              
-            </VRow>
-          </VForm>
-        </VCardText>
-      </VCard>
-    </div>
-  </div>
+  
 </template>
 
 <style lang="scss">
