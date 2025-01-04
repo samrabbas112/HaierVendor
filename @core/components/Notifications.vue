@@ -35,7 +35,11 @@ const markAllReadOrUnread = () => {
 };
 
 const totalUnseenNotifications = computed(() => {
-  return props.notifications.filter((item) => item.isSeen === false).length;
+  const count = props.notifications.filter((item) => item.isSeen === false).length;
+  if(count > 1000000){
+    return '1000000+'
+  }
+  return count;
 });
 
 const toggleReadUnread = (isSeen: boolean, Id: number) => {
@@ -53,7 +57,7 @@ const handleConfirm = async (value) => {
 </script>
 
 <template>
-  <IconBtn id="notification-btn" class="notificationBadge">
+  <IconBtn id="notification-btn" class="notificationBadge" :width="totalUnseenNotifications.length > 2 ? `calc(var(--v-btn-height) + calc(${totalUnseenNotifications.length} - 1) * 1%)` : null">
     <VBadge
       v-bind="props.badgeProps"
       @click="markAsRead"
