@@ -5,14 +5,9 @@ import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw";
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
 import type { VForm } from "vuetify/components/VForm";
-import {
-  requiredValidator,
-  minLengthValidator,
-  numberValidator,
-  phoneValidator,
-} from "@/utils/validators";
 import { useSnackbarStore } from "@/stores/snackbar";
 import ProvinceCitySelector from "@/components/ProvinceCitySelector.vue";
+const router = useRouter();
 
 const selectedProvinceId = ref<number | undefined>(undefined);
 const selectedCityId = ref<number | undefined>(undefined);
@@ -20,6 +15,8 @@ const route = useRoute();
 const timer = ref<number>(60); // Countdown timer in seconds
 const timerInterval: Ref<NodeJS.Timer | null> = ref(null);
 const isResendDisabled = computed(() => timer.value > 0);
+const isLoading = ref(true);
+
 
 definePageMeta({
   layout: "blank",
@@ -41,6 +38,7 @@ const isSubmitLoading = ref(false);
 const isCodeVerified = ref(false);
 const isCodeFetched = ref(false); // Track if the code has been fetched
 const refForm = ref<VForm>();
+const isPhoneDisabled = ref(false);
 
 
 const snackBarStore = useSnackbarStore();
@@ -75,6 +73,9 @@ const startTimer = () => {
     if (timer.value > 0) {
       timer.value--;
     } else {
+      if(!isCodeVerified.value) {
+        isPhoneDisabled.value = false;
+      }
       clearInterval(timerInterval.value as NodeJS.Timer);
       timerInterval.value = null;
     }
@@ -85,6 +86,7 @@ const startTimer = () => {
 // API to get code
 const getCode = async () => {
   try {
+    
     if(code.value.length >  0) {
       code.value = '';
     }
@@ -92,6 +94,7 @@ const getCode = async () => {
       snackBarStore.showSnackbar("Invalid phone number", "error");
       return;
     }
+    isPhoneDisabled.value = true;
 
     isCodeLoading.value = true;
     const response = await apiRequestObj.makeRequest(`common/get-otp`, "post", {
@@ -123,9 +126,15 @@ const getCode = async () => {
   }
 };
 
+onMounted(() => {
+  isLoading.value = false;
+
+});
+
 const checkCodeLength = async () => {
   try {
     if (code.value.length === 6) {
+      isPhoneDisabled.value = true;
        await verifyCode();
     } 
   } catch (error) {
@@ -181,6 +190,7 @@ const onSubmit = async () => {
         address: address.value,
         vendorId: route.params.userId,
         code: "112233",
+        isPublic: true
       };
 
       try {
@@ -190,32 +200,47 @@ const onSubmit = async () => {
           "post",
           formData,
         );
-
+         console.log(response);
         if (response?.success) {
-          snackBarStore.showSnackbar(
-            "Customer registered successfully",
-            "success",
-          );
+          router.push({
+            path: `/Thankyou`,
+            query: { mode: "confirm" },
+          });
           emit("customer-updated");
           emit("update:isDrawerOpen", false);
           refForm.value?.reset();
         } else {
+            
           const messages = response?.message;
-          let allErrors = [];
+          const parsedData = JSON.parse(response.data)
 
-          // Check if the message array exists
-          if (Array.isArray(messages)) {
-            allErrors = messages
-              .map((msg) => msg?.errors)
-              .filter((error) => error); // Extract 'errors' field
+          console.log('samra');
+          console.log('Full Response Data:', parsedData);
+
+          console.log('Full Response Data:', parsedData);
+          if(messages == 'Already Registered') {
+            router.push({
+            path: `/Thankyou`,
+            query: { mode: "already_registered" , data: parsedData.created_at},
+          });
+          } else {
+            let allErrors = [];
+
+            // Check if the message array exists
+            if (Array.isArray(messages)) {
+              allErrors = messages
+                .map((msg) => msg?.errors)
+                .filter((error) => error); // Extract 'errors' field
+            }
+
+            // Join all errors into a single string
+            const errorMessage =
+              allErrors.length > 0 ? allErrors.join("\n") : "Unknown Error";
+
+            // Show snackbar with all errors
+            snackBarStore.showSnackbar(errorMessage, "error");
           }
-
-          // Join all errors into a single string
-          const errorMessage =
-            allErrors.length > 0 ? allErrors.join("\n") : "Unknown Error";
-
-          // Show snackbar with all errors
-          snackBarStore.showSnackbar(errorMessage, "error");
+         
         }
       } catch (error) {
         snackBarStore.showSnackbar(
@@ -232,7 +257,11 @@ const onSubmit = async () => {
 
 <template>
   <SnackBar />
-  <div class="auth-wrapper d-flex align-center justify-center pa-4">
+  <div v-if="isLoading" class="auth-wrapper d-flex align-center justify-center pa-4">
+    <!-- Loading Spinner -->
+    <VProgressCircular indeterminate color="primary" />
+  </div>
+  <div v-else class="auth-wrapper d-flex align-center justify-center pa-4">
     <div class="position-relative my-sm-16">
       <!-- Shapes -->
       <VNodeRenderer :nodes="h('div', { innerHTML: authV1TopShape })"
@@ -247,7 +276,7 @@ const onSubmit = async () => {
             Welcome to <span class="text-capitalize">Haier</span>! 👋🏻
           </h4>
           <p class="mb-0">
-            Please review the information below to ensure it is accurate.
+            Fill out the form to register.
           </p>
         </VCardText>
 
@@ -257,7 +286,11 @@ const onSubmit = async () => {
             <VRow>
               <!-- Name -->
               <VCol cols="12">
-                <AppTextField v-model="name" :rules="[requiredValidator, minLengthValidator(3)]" label="Name"
+                <AppTextField v-model="name" :rules="[
+                  requiredValidator,
+                  alphabetValidator,
+                  minLengthValidator(3),
+                ]" label="Name"
                   placeholder="Enter name" />
               </VCol>
 
@@ -278,7 +311,7 @@ const onSubmit = async () => {
                   phoneValidator,
                   minLengthValidator(10),
                   numberValidator,
-                ]" label="Phone Number" placeholder="+1234567890" />
+                ]"  :disabled="isPhoneDisabled" label="Phone Number" placeholder="03xxxxxxxxx" />
               </VCol>
 
               <!-- Code -->
@@ -286,24 +319,23 @@ const onSubmit = async () => {
                 <AppTextField v-model="code" :rules="[requiredValidator, minLengthValidator(6)]" label="Code"
                   placeholder="Enter code"  @input="checkCodeLength"  />
               </VCol>
-
-              <!-- Action Buttons -->
+                     <!-- Action Buttons -->
               <VCol cols="12">
-                <VBtn type="button" class="me-3" v-if="!isCodeFetched"
+                <VBtn type="button" class="me-md-3 me-1" v-if="!isCodeFetched"
                   :disabled="!phoneValidator(phoneNumber.value) || phoneNumber.length < 10" @click="getCode" full-width>
                   <VProgressCircular v-if="isCodeLoading" indeterminate color="white" />
                   <template v-else> Get Code </template>
                 </VBtn>
-                <VBtn type="button" class="me-3" v-if="isCodeFetched"
+                <VBtn type="button" class="me-md-3 me-1" v-if="isCodeFetched"
                   :disabled="isResendDisabled || !phoneValidator(phoneNumber.value) || phoneNumber.length < 10"
                   @click="getCode" full-width>
                   <VProgressCircular v-if="isCodeLoading" indeterminate color="white" />
                   <template v-else>
-                    <span style="text-transform: none;">{{ isResendDisabled ? `${timer} sec` : "Resend Code" }}</span>
+                    <span style="text-transform: none;">{{ isResendDisabled ? `${timer} sec` : "Resend" }}</span>
                   </template>
                 </VBtn>
 
-                <VBtn type="submit" class="me-3" :disabled="!isCodeFetched || !isCodeVerified" full-width>
+                <VBtn type="submit" class="me-md-3 me-1" :disabled="!isCodeFetched || !isCodeVerified" full-width>
                   <VProgressCircular v-if="isSubmitLoading" indeterminate color="white" />
                   <template v-else> Submit </template>
                 </VBtn>

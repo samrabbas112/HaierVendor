@@ -28,7 +28,7 @@ const headers = [
   { title: 'Order Info', key: 'order', sortable: false },
   { title: 'Product Info', key: 'product', sortable: false },
   { title: 'Total Price', key: 'payment', sortable: false },
-  { title: 'Customers', key: 'customer', sortable: false },
+  { title: 'Customer Info', key: 'customer', sortable: false },
   { title: 'Payment Method', key: 'method', sortable: false },
 
   // { title: "Placed At", key: "date", sortable: false },
@@ -71,6 +71,7 @@ const transformData = apiResponse => {
       order: item.order_no,
       customer: customer.name || 'N/A',
       mobile: customer.mobile || '03XXXXXXXXXX',
+      address : customer.address || "N/A",
       payment: Number.parseFloat(item.paymentAmount) || 0,
       status: item.pick_status.id || 1,
       method: item.payment_method || 'COD', // Payment method
@@ -109,8 +110,9 @@ const makeSearch = async page => {
       'post',
       formData,
     )
-
+    console.log('samra');
     if (response && response.success) {
+      console.log(response?.data?.orders);
       // Transform and set the data
       ordersData.value = {
         per_page: response?.data?.per_page,

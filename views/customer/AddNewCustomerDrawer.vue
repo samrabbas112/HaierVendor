@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
-import type { VForm } from 'vuetify/components/VForm'
 import { useSnackbarStore } from '@/stores/snackbar'
+import type { VForm } from 'vuetify/components/VForm'
 
 interface Emit {
   (e: 'update:isDrawerOpen', value: boolean): void
@@ -148,19 +148,11 @@ watch(address, newValue => {
 </script>
 
 <template>
-  <VNavigationDrawer
-    temporary
-    :width="400"
-    location="end"
-    class="scrollable-content"
-    :model-value="props.isDrawerOpen"
-    @update:model-value="handleDrawerModelValueUpdate"
-  >
+  <VNavigationDrawer temporary :width="400" location="end" class="scrollable-content" :model-value="props.isDrawerOpen"
+    @update:model-value="handleDrawerModelValueUpdate">
     <!-- 👉 Title -->
-    <AppDrawerHeaderSection
-      :title="props.customer?.id ? 'Edit Customer' : 'Add New Customer'"
-      @cancel="closeNavigationDrawer"
-    />
+    <AppDrawerHeaderSection :title="props.customer?.id ? 'Edit Customer' : 'Add New Customer'"
+      @cancel="closeNavigationDrawer" />
 
     <VDivider />
 
@@ -168,81 +160,46 @@ watch(address, newValue => {
       <VCard flat>
         <VCardText>
           <!-- 👉 Form -->
-          <VForm
-            ref="refForm"
-            v-model="isFormValid"
-            @submit.prevent="onSubmit"
-          >
+          <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
             <VRow>
               <!-- 👉 Name -->
               <VCol cols="12">
-                <AppTextField
-                  v-model="name"
-                  :rules="[
-                    requiredValidator,
-                    alphabetValidator,
-                    minLengthValidator(3),
-                  ]"
-                  label="Name"
-                  placeholder="Enter name"
-                />
+                <AppTextField v-model="name" :rules="[
+                  requiredValidator,
+                  alphabetValidator,
+                  minLengthValidator(3),
+                ]" label="Name" placeholder="Enter name" />
               </VCol>
 
               <!-- 👉 Phone Number -->
               <VCol cols="12">
-                <AppTextField
-                  v-model="phoneNumber"
-                  type="tel"
-                  :rules="[
-                    requiredValidator,
-                    phoneValidator,
-                    minLengthValidator(10),
-                    numberValidator,
-                  ]"
-                  label="Phone Number"
-                  placeholder="03xxxxxxxxx"
-                  :disabled="customer && customer.id ? true : false"
-
-                />
+                <AppTextField v-model="phoneNumber" type="tel" :rules="[
+                  requiredValidator,
+                  phoneValidator,
+                  minLengthValidator(10),
+                  numberValidator,
+                ]" label="Phone Number" placeholder="03xxxxxxxxx"
+                  :disabled="customer && customer.id ? true : false" />
               </VCol>
 
               <!-- 👉 Address -->
               <VCol cols="12">
-                <AppTextField
-                  v-model="address"
-                  :rules="[requiredValidator, minLengthValidator(10)]"
-                  label="Address"
-                  placeholder="Enter address"
-                />
+                <AppTextField v-model="address" :rules="[requiredValidator, minLengthValidator(10)]" label="Address"
+                  placeholder="Enter address" />
               </VCol>
 
-              <ProvinceCitySelector
-                v-model:selectedProvinceId="selectedProvinceId"
-                v-model:selectedCityId="selectedCityId"
-                :add-class="true"
-              />
+              <ProvinceCitySelector v-model:selectedProvinceId="selectedProvinceId"
+                v-model:selectedCityId="selectedCityId" :add-class="true" />
 
               <!-- 👉 Submit and Cancel -->
               <VCol cols="12">
-                <VBtn
-                  type="submit"
-                  class="me-3"
-                >
-                  <VProgressCircular
-                    v-if="isLoading"
-                    indeterminate
-                    color="white"
-                  />
+                <VBtn type="submit" class="me-3">
+                  <VProgressCircular v-if="isLoading" indeterminate color="white" />
                   <template v-else>
                     Submit
                   </template>
                 </VBtn>
-                <VBtn
-                  type="reset"
-                  variant="tonal"
-                  color="error"
-                  @click="closeNavigationDrawer"
-                >
+                <VBtn type="reset" variant="tonal" color="error" @click="closeNavigationDrawer">
                   Cancel
                 </VBtn>
               </VCol>

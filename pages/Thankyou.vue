@@ -10,6 +10,7 @@ import { useSnackbarStore } from "@/stores/snackbar";
 import ProvinceCitySelector from "@/components/ProvinceCitySelector.vue";
 import { ref, onMounted,watchEffect } from "vue";
 import ThankYouBackground from '~/components/ThankYouBackground.vue';
+import alreadyImage from '@images/already_svg.jpg'
 
 // Get the current route to access the query parameter
 const route = useRoute();
@@ -18,9 +19,13 @@ const event = ref('success');  // Default to success
 // Watch for changes in the `mode` query parameter and update the event accordingly
 watchEffect(() => {
   const mode = route.query.mode;
+  const data = route.query.data;
   if (mode === 'decline') {
     event.value = 'decline'; // Set to 'decline' if mode is 'decline'
-  } else {
+  } else if(mode === 'already_registered'){
+    event.value = 'already_registered'
+  }
+  else {
     event.value = 'success'; // Default to success
   }
 });
@@ -32,6 +37,17 @@ const props = defineProps<Props>();
 interface Props {
   customer: Record<string, any>;
 }
+const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
 const snackBarStore = useSnackbarStore();
 
 definePageMeta({
@@ -58,12 +74,27 @@ definePageMeta({
         <VCard class="auth-card" max-width="460" :class="$vuetify.display.smAndUp ? 'pa-6' : 'pa-0'">
           <div class="container text-center">
             <!-- Thank You Background Component -->
-            <div class="w-full text-center flex justify-center mb-24">
+            <div v-if="event === 'already_registered'" class="w-full text-center flex justify-center mb-24">
+              <img :src="alreadyImage" alt="already Image" width="500px">
+            </div>
+            <div v-else class="w-full text-center flex justify-center mb-24">
               <ThankYouBackground :event="event" />
             </div>
   
             <!-- Conditional Rendering Based on Event -->
-            <div v-if="event === 'confirm'" class="block text-center container">
+            <div v-if="event === 'already_registered'" class="block text-center container">
+              <div class="mt-10 font-bold text-[28px]">
+                <h2 class="congratulations-title text-2xl md:text-4xl lg:text-5xl">
+                  Already Registered!
+                </h2>
+              </div>
+              <div class="text-center text-1xl md:text-2xl congratulations-description">
+                You have registered on.
+              </div>
+              <span>{{ formatDate(route.query.data) }}</span>
+            </div>
+            
+            <div v-else-if="event === 'confirm'" class="block text-center container">
               <div class="mt-10 font-bold text-[28px]">
                 <h2 class="congratulations-title text-2xl md:text-4xl lg:text-5xl">
                   Congratulations!
@@ -73,7 +104,7 @@ definePageMeta({
                 on your registration success.
               </div>
             </div>
-  
+            
             <div v-else class="block text-center container">
               <div class="mt-10 font-bold text-[28px]">
                 <h2 class="congratulations-title text-2xl md:text-4xl lg:text-5xl">
@@ -84,6 +115,9 @@ definePageMeta({
                 Your response has been submitted.
               </div>
             </div>
+            
+
+            
           </div>
         </VCard>
       </div>

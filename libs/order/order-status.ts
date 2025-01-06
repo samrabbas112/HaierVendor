@@ -14,6 +14,7 @@ export const orderStatusCodes = {
   isDirect: "15",
   isIndirect: "16",
   isCancelled: "20",
+  isDelivered_Refused : "21"
 };
 export const orderCodeStatus = {
   1: { text: "Exclusive", color: "info" },

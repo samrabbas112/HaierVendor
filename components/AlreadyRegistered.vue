@@ -29,7 +29,6 @@ onMounted(() => {
 </script>
 
 <template>
-  
     <svg width="328" height="247" viewBox="0 0 328 247" :fill="svgColor" xmlns="http://www.w3.org/2000/svg">
         <g filter="url(#filter0_d_14007_2363)">
             <circle cx="164" cy="150" r="42" fill="white" />

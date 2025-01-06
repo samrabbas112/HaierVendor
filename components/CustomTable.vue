@@ -1,11 +1,50 @@
 <script setup lang="ts">
-const { headers, data, from } = defineProps({
+import { orderStatusCodes } from "@/libs/order/order-status";
+import { ref,watch, reactive } from "vue";
+
+
+const { headers, data, from, orderHaierStatus} = defineProps({
   headers: Array,
   data: [Array, Object],
   from: String,
+  orderHaierStatus: {
+    type: Array,
+    default: () => [] 
+  }
 })
 
+
+
+
 const emit = defineEmits()
+const isConfirmDialogVisible = ref(false);
+
+
+
+const selectedHaierOrderStatus = reactive<{ [key: number]: string }>({});
+
+// Watch for changes to selectedHaierOrderStatus
+watch(
+  () => ({ ...selectedHaierOrderStatus }), // Shallow copy to track reactivity
+  (newVal, oldVal) => {
+    // Iterate over keys in the new object
+    for (const key in newVal) {
+      if (newVal[key] !== oldVal[key]) {
+        console.log(`Key: ${key} changed from ${oldVal[key]} to ${newVal[key]}`);
+        
+        // Emit the specific key and new value
+        emit("update:selectedHaierOrderStatus", { key, value: newVal[key] });
+      }
+    }
+  },
+  { deep: true } // Ensure deep observation of object changes
+);
+
+
+
+
+
+
 
 const route = useRoute()
 
@@ -13,6 +52,7 @@ const route = useRoute()
 const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
+
 
 // Update data table options
 const updateOptions = (options: any) => {
@@ -131,6 +171,9 @@ const deleteData = async (id: number) => {
               <div class="text-body-2">
                 {{ item.mobile }}
               </div>
+              <div class="text-body-2">
+                {{ item.address }}
+              </div>
             </div>
           </div>
         </template>
@@ -174,6 +217,19 @@ const deleteData = async (id: number) => {
             size="small"
           />
         </template>
+
+        <template #item.haier_order_status="{ item }">
+            <AppSelect
+            v-model="selectedHaierOrderStatus[item.uid]"
+            placeholder="Select"
+            :items="orderHaierStatus"
+            clearable
+            clear-icon="tabler-x"
+            @update:modelValue="value => console.log(`Updated ID ${item.id} to ${value}`)"
+
+          />
+        </template>
+        
 
         <!-- Method -->
         <template #item.method="{ item }">
@@ -233,6 +289,15 @@ const deleteData = async (id: number) => {
         </template>
       </VDataTableServer>
     </VCard>
+    <ConfirmDialog
+      v-model:isDialogVisible="isConfirmDialogVisible"
+      confirmation-question="Are you sure to want to update status"
+      cancel-msg="Request cancelled!!"
+      cancel-title="Cancelled"
+      confirm-msg="Your order status changed successfully."
+      confirm-title="Confirmed"
+      @confirm="handleConfirm"
+    />
   </div>
 </template>
 
