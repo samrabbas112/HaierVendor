@@ -109,6 +109,7 @@ const transformData = apiResponse => {
     method: apiResponse.payment_method || 'COD',
     date: apiResponse.created_at,
     time: apiResponse.pick_before,
+    hidden: apiResponse.hidden,
   }
 }
 
@@ -409,8 +410,8 @@ const headers = [
         >
           <VBtn
             v-if="
-              orderData?.status == orderStatusCodes.isExclusive
-                || orderData?.status == orderStatusCodes.isPublic
+              (orderData?.status == orderStatusCodes.isExclusive || orderData?.status == orderStatusCodes.isPublic)
+                && (!orderData?.hidden || !orderData?.hidden?.includes(String(authUser.vendor_id)))
             "
             variant="tonal"
             color="primary"
