@@ -66,6 +66,7 @@ const transformOrderDetail = (orderProduct, singleProductTotal) => {
     })),
     price: orderProduct.productPrice,
     total: singleProductTotal,
+    type: orderProduct.newProductType,
   }
 }
 
@@ -125,9 +126,10 @@ const fetchData = async () => {
 
       orderData.value = transformData(singleOrder)
       Total.value = singleOrder.paymentAmount || 0 // Update total with the subtotal
-    } else if (response?.code === 401 || response?.message === "Unauthenticated.") {
-      snackbarStore.showSnackbar("Login session expired", "error");
-    } 
+    }
+    else if (response?.code === 401 || response?.message === 'Unauthenticated.') {
+      snackbarStore.showSnackbar('Login session expired', 'error')
+    }
     else {
       snackbarStore.showSnackbar(
         'An error occurred. Please try again.',
@@ -515,9 +517,17 @@ const headers = [
         <VCard class="mb-6">
           <VCardItem>
             <template #title>
-              <h5 class="text-h5">
-                Order Details
-              </h5>
+              <div class="d-flex gap-x-2">
+                <h5 class="text-h5">
+                  Order Details
+                </h5>
+                <VChip
+                  v-if="orderDetail[0]?.type"
+                  v-bind="{ text: orderDetail[0]?.type, color: 'info' }"
+                  label
+                  size="small"
+                />
+              </div>
             </template>
           </VCardItem>
 
@@ -679,8 +689,8 @@ const headers = [
                   <VFileInput
                     id="pod-files"
                     ref="fileInput"
-                    :disabled="selectedPics.length == 5"
                     v-model="inputPics"
+                    :disabled="selectedPics.length == 5"
                     show-size
                     accept="image/png, image/jpeg, image/bmp"
                     label="POD Files: Images must be between 1-5"
@@ -727,7 +737,7 @@ const headers = [
                       size="20"
                       color="error"
                       class="remove-btn"
-                      :rounded=0
+                      :rounded="0"
                       @click="removeFile(index)"
                     />
                   </div>
