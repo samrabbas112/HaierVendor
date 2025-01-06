@@ -33,7 +33,7 @@ const headers = [
 
   // { title: "Placed At", key: "date", sortable: false },
   { title: 'Assigned To', key: 'vendors', sortable: false },
-  { title: 'Status', key: 'status', sortable: false },
+  { title: 'Order Status', key: 'status', sortable: false },
   { title: 'Action', key: 'actions', sortable: false },
 ]
 
