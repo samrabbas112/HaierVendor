@@ -44,7 +44,7 @@ const headers = [
   { title: "Product Info", key: "product", sortable: false },
   { title: "Total Price", key: "payment", sortable: false },
   { title: "Customer Info", key: "customer", sortable: false },
-  { title: "Payment Method", key: "method", sortable: false },
+  // { title: "Payment Method", key: "method", sortable: false },
   // { title: "Placed At", key: "date", sortable: false },
   { title: "City", key: "city", sortable: false },
   { title: "Current Status", key: "status", sortable: false },
