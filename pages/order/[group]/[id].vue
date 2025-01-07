@@ -561,7 +561,7 @@ const headers = [
 
             <template #item.price="{ item }">
               <div class="text-body-1">
-                {{ item.total }}
+                {{ item.price }}
               </div>
             </template>
 
