@@ -1,27 +1,21 @@
 <script setup lang="ts">
-import { orderStatusCodes } from "@/libs/order/order-status";
-import { ref,watch, reactive } from "vue";
+import { reactive, ref, watch } from 'vue'
+import { orderStatusCodes } from '@/libs/order/order-status'
 
-
-const { headers, data, from, orderHaierStatus} = defineProps({
+const { headers, data, from, orderHaierStatus } = defineProps({
   headers: Array,
   data: [Array, Object],
   from: String,
   orderHaierStatus: {
     type: Array,
-    default: () => [] 
-  }
+    default: () => [],
+  },
 })
 
-
-
-
 const emit = defineEmits()
-const isConfirmDialogVisible = ref(false);
+const isConfirmDialogVisible = ref(false)
 
-
-
-const selectedHaierOrderStatus = reactive<{ [key: number]: string }>({});
+const selectedHaierOrderStatus = reactive<{ [key: number]: string }>({})
 
 // Watch for changes to selectedHaierOrderStatus
 watch(
@@ -30,21 +24,15 @@ watch(
     // Iterate over keys in the new object
     for (const key in newVal) {
       if (newVal[key] !== oldVal[key]) {
-        console.log(`Key: ${key} changed from ${oldVal[key]} to ${newVal[key]}`);
-        
+        console.log(`Key: ${key} changed from ${oldVal[key]} to ${newVal[key]}`)
+
         // Emit the specific key and new value
-        emit("update:selectedHaierOrderStatus", { key, value: newVal[key] });
+        emit('update:selectedHaierOrderStatus', { key, value: newVal[key] })
       }
     }
   },
-  { deep: true } // Ensure deep observation of object changes
-);
-
-
-
-
-
-
+  { deep: true }, // Ensure deep observation of object changes
+)
 
 const route = useRoute()
 
@@ -52,7 +40,6 @@ const route = useRoute()
 const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
-
 
 // Update data table options
 const updateOptions = (options: any) => {
@@ -112,7 +99,10 @@ const deleteData = async (id: number) => {
         </template>
         <template #item.order="{ item }">
           <NuxtLink> {{ item.order }} </NuxtLink>
-          <p>{{ new Date(item.date).toLocaleString() }}</p>
+          <p style="margin: 0;">{{ new Date(item.date).toLocaleString() }}</p>
+          <div class="text-body-2 text-wrap">
+            <strong>Payment Method:</strong> <span>{{ item.method }}</span>
+          </div>
         </template>
 
         <template #item.product="{ item }">
@@ -162,7 +152,7 @@ const deleteData = async (id: number) => {
         <!-- Customers  -->
         <template #item.customer="{ item }">
           <div class="d-flex align-center gap-x-3">
-            <div class="d-flex flex-column">
+            <div class="d-flex flex-column text-wrap">
               <div class="text-body-1 font-weight-medium">
                 <NuxtLink class="text-link">
                   {{ item.customer }}
@@ -219,17 +209,15 @@ const deleteData = async (id: number) => {
         </template>
 
         <template #item.haier_order_status="{ item }">
-            <AppSelect
+          <AppSelect
             v-model="selectedHaierOrderStatus[item.uid]"
             placeholder="Select"
             :items="orderHaierStatus"
             clearable
             clear-icon="tabler-x"
-            @update:modelValue="value => console.log(`Updated ID ${item.id} to ${value}`)"
-
+            @update:model-value="value => console.log(`Updated ID ${item.id} to ${value}`)"
           />
         </template>
-        
 
         <!-- Method -->
         <template #item.method="{ item }">
