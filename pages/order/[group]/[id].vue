@@ -32,6 +32,7 @@ const subtotal = ref(0)
 const Total = ref(0)
 
 const route = useRoute()
+const router = useRouter()
 const loaderStore = useLoaderStore()
 const snackbarStore = useSnackbarStore()
 const apiRequestObj = useApi()
@@ -50,7 +51,7 @@ const rejectOrderReasons = [
   'Customer is not responding',
   'Out of stock',
   'Customer ask to cancel',
-  'wrong customer information',
+  'Wrong customer information',
   'Delivery location mismatch',
   'Other',
 ]
@@ -109,6 +110,7 @@ const transformData = apiResponse => {
     method: apiResponse.payment_method || 'COD',
     date: apiResponse.created_at,
     time: apiResponse.pick_before,
+    hidden: apiResponse.hidden,
   }
 }
 
@@ -130,6 +132,10 @@ const fetchData = async () => {
     else if (response?.code === 401 || response?.message === 'Unauthenticated.') {
       snackbarStore.showSnackbar('Login session expired', 'error')
     }
+    else if (response?.code == 403 ) {
+      snackbarStore.showSnackbar(response?.message, 'error')
+      return router.back();
+    }
     else {
       snackbarStore.showSnackbar(
         'An error occurred. Please try again.',
@@ -138,6 +144,7 @@ const fetchData = async () => {
     }
   }
   catch (error) {
+    console.log("ahmad",error);
     snackbarStore.showSnackbar('An error occurred. Please try again.', 'error')
   }
   finally {
@@ -230,7 +237,7 @@ const handleConfirm = async value => {
     if (
       [
         orderStatusCodes.isDeliveryRefused,
-        orderStatusCodes.isRejected,
+        orderStatusCodes.isHaier,
       ].includes(selectedStatus.value)
     ) {
       selectedStatus.value === orderStatusCodes.isDeliveryRefused
@@ -409,8 +416,8 @@ const headers = [
         >
           <VBtn
             v-if="
-              orderData?.status == orderStatusCodes.isExclusive
-                || orderData?.status == orderStatusCodes.isPublic
+              (orderData?.status == orderStatusCodes.isExclusive || orderData?.status == orderStatusCodes.isPublic)
+                && (!orderData?.hidden || !orderData?.hidden?.includes(String(authUser.vendor_id)))
             "
             variant="tonal"
             color="primary"
@@ -560,7 +567,7 @@ const headers = [
 
             <template #item.price="{ item }">
               <div class="text-body-1">
-                {{ item.total }}
+                {{ item.price }}
               </div>
             </template>
 
