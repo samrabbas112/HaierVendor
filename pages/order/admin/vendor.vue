@@ -79,6 +79,8 @@ const transformData = apiResponse => {
       time: item.pick_before,
       vendor_name: item.vendor_name,
       vendor_email: item.vendor_email,
+      vendor_phone: item.vendor_phone,
+      vendor_address: item.vendor_address,
       products: item.orderProduct,
     }
   })
@@ -110,7 +112,7 @@ const makeSearch = async page => {
       'post',
       formData,
     )
-    console.log('samra');
+
     if (response && response.success) {
       console.log(response?.data?.orders);
       // Transform and set the data
