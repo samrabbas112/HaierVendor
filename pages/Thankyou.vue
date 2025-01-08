@@ -10,7 +10,7 @@ import { useSnackbarStore } from "@/stores/snackbar";
 import ProvinceCitySelector from "@/components/ProvinceCitySelector.vue";
 import { ref, onMounted,watchEffect } from "vue";
 import ThankYouBackground from '~/components/ThankYouBackground.vue';
-import alreadyImage from '@images/already_svg.jpg'
+import alreadyImage from '@images/already_svg.png'
 
 // Get the current route to access the query parameter
 const route = useRoute();
@@ -71,11 +71,11 @@ definePageMeta({
         />
   
         <!-- Auth Card -->
-        <VCard class="auth-card" max-width="460" :class="$vuetify.display.smAndUp ? 'pa-6' : 'pa-0'">
+        <VCard class="auth-card" max-width="460" :class="$vuetify.display.smAndUp ? 'pa-6' : 'pa-6'">
           <div class="container text-center">
             <!-- Thank You Background Component -->
             <div v-if="event === 'already_registered'" class="w-full text-center flex justify-center mb-24">
-              <img :src="alreadyImage" alt="already Image" width="500px">
+              <img :src="alreadyImage" alt="already Image" width="250px">
             </div>
             <div v-else class="w-full text-center flex justify-center mb-24">
               <ThankYouBackground :event="event" />
@@ -89,7 +89,7 @@ definePageMeta({
                 </h2>
               </div>
               <div class="text-center text-1xl md:text-2xl congratulations-description">
-                You have registered on.
+                You have already registered on
               </div>
               <span>{{ formatDate(route.query.data) }}</span>
             </div>

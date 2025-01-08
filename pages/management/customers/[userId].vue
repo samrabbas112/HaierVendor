@@ -39,6 +39,8 @@ const isCodeVerified = ref(false);
 const isCodeFetched = ref(false); // Track if the code has been fetched
 const refForm = ref<VForm>();
 const isPhoneDisabled = ref(false);
+const isCodeFieldDisabled = ref(true);
+
 
 
 const snackBarStore = useSnackbarStore();
@@ -81,15 +83,25 @@ const startTimer = () => {
     }
   }, 1000);
 };
-
+const handleCancel = async () => {
+  isCodeFetched.value = false;
+  if (timerInterval.value) clearInterval(timerInterval.value);
+  // refForm.value?.reset();
+  console.log(isCodeFetched.value);
+  timer.value = 60;
+  isPhoneDisabled.value = false;
+  isCodeFieldDisabled.value = true;
+  console.log('timer',timer.value);
+}
 
 // API to get code
 const getCode = async () => {
   try {
-    
-    if(code.value.length >  0) {
+    isCodeFieldDisabled.value = false;
+    if (code && code.value && code.value.length > 0) {
       code.value = '';
     }
+
     if (!phoneValidator(phoneNumber.value)) {
       snackBarStore.showSnackbar("Invalid phone number", "error");
       return;
@@ -97,6 +109,7 @@ const getCode = async () => {
     isPhoneDisabled.value = true;
 
     isCodeLoading.value = true;
+    console.log('phone',phoneNumber.value);
     const response = await apiRequestObj.makeRequest(`common/get-otp`, "post", {
       telephone: phoneNumber.value,
     });
@@ -115,6 +128,7 @@ const getCode = async () => {
       );
       isCodeFetched.value = false;
     }
+
   } catch (error) {
     snackBarStore.showSnackbar(
       "Something went wrong while sending the code",
@@ -228,11 +242,24 @@ const onSubmit = async () => {
 
             // Check if the message array exists
             if (Array.isArray(messages)) {
-              allErrors = messages
-                .map((msg) => msg?.errors)
-                .filter((error) => error); // Extract 'errors' field
-            }
+            allErrors = messages
+              .map((msg) => msg?.errors)
+              .filter((error) => error); // Extract 'errors' field
 
+            // Check if any error message is "NUMBER ALREADY TAKEN"
+            const numberAlreadyTakenError = allErrors.some((error) =>
+              error.includes("Phone Number Already Taken")
+            );
+
+            if (numberAlreadyTakenError) {
+              isPhoneDisabled.value = false;
+              if (code && code.value && code.value.length > 0) {
+                code.value = '';
+              }
+            }
+          }
+
+            
             // Join all errors into a single string
             const errorMessage =
               allErrors.length > 0 ? allErrors.join("\n") : "Unknown Error";
@@ -300,9 +327,10 @@ const onSubmit = async () => {
                   placeholder="Enter address" />
               </VCol>
 
+               
               <!-- Province and City Selector -->
               <ProvinceCitySelector v-model:selectedProvinceId="selectedProvinceId"
-                v-model:selectedCityId="selectedCityId" />
+              v-model:selectedCityId="selectedCityId" />
 
               <!-- Phone Number -->
               <VCol cols="12">
@@ -316,17 +344,35 @@ const onSubmit = async () => {
 
               <!-- Code -->
               <VCol cols="12">
-                <AppTextField v-model="code" :rules="[requiredValidator, minLengthValidator(6)]" label="Code"
+                <AppTextField v-model="code" :disabled="isCodeFieldDisabled" :rules                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ="[requiredValidator, minLengthValidator(6)]" label="Code"
                   placeholder="Enter code"  @input="checkCodeLength"  />
               </VCol>
                      <!-- Action Buttons -->
               <VCol cols="12">
-                <VBtn type="button" class="me-md-3 me-1" v-if="!isCodeFetched"
-                  :disabled="!phoneValidator(phoneNumber.value) || phoneNumber.length < 10" @click="getCode" full-width>
-                  <VProgressCircular v-if="isCodeLoading" indeterminate color="white" />
-                  <template v-else> Get Code </template>
-                </VBtn>
-                <VBtn type="button" class="me-md-3 me-1" v-if="isCodeFetched"
+                <!-- <VBtn 
+                type="button" 
+                class="me-md-3 btn-block me-1 btn-fixed-size" 
+                v-if="!isCodeFetched"
+                :disabled="!phoneNumber || !phoneValidator(phoneNumber.value) || phoneNumber.length < 10" 
+                @click="getCode" 
+                full-width
+              >
+                <VProgressCircular v-if="isCodeLoading" indeterminate color="white" class="spinner" />
+                <template v-else> Get Code </template>
+              </VBtn> -->
+                <VBtn 
+                type="button" 
+                class="me-md-3 btn-block me-1 custom-btn-size" 
+                v-if="!isCodeFetched"
+                :disabled="!phoneNumber || !phoneValidator(phoneNumber.value) || phoneNumber.length < 10" 
+                @click="getCode" 
+                full-width
+              >
+                <VProgressCircular v-if="isCodeLoading" indeterminate color="white" class="spinner" />
+                <template v-else> Get Code </template>
+              </VBtn>
+
+                <VBtn type="button" class="me-md-3 me-1 custom-btn-size" v-if="isCodeFetched"
                   :disabled="isResendDisabled || !phoneValidator(phoneNumber.value) || phoneNumber.length < 10"
                   @click="getCode" full-width>
                   <VProgressCircular v-if="isCodeLoading" indeterminate color="white" />
@@ -335,12 +381,12 @@ const onSubmit = async () => {
                   </template>
                 </VBtn>
 
-                <VBtn type="submit" class="me-md-3 me-1" :disabled="!isCodeFetched || !isCodeVerified" full-width>
+                <VBtn type="submit" class="me-md-3 me-1 custom-btn-size" :disabled="!isCodeFetched || !isCodeVerified" full-width>
                   <VProgressCircular v-if="isSubmitLoading" indeterminate color="white" />
                   <template v-else> Submit </template>
                 </VBtn>
 
-                <VBtn type="reset" variant="tonal" color="error" @click="refForm?.reset()" full-width>
+                <VBtn type="reset" variant="tonal" color="error" @click="handleCancel" full-width>
                   Cancel
                 </VBtn>
 
@@ -355,4 +401,20 @@ const onSubmit = async () => {
 
 <style lang="scss">
 @use "@core/scss/template/pages/page-auth";
+
+.custom-btn-size {
+  height: 50px;      /* Fix the height to a specific value */
+  min-width: 30%;  /* You can set a fixed width or full width if needed */
+  position: relative;
+}
+
+.spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+
 </style>
