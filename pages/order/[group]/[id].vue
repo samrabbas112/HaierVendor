@@ -32,7 +32,6 @@ const subtotal = ref(0)
 const Total = ref(0)
 
 const route = useRoute()
-const router = useRouter()
 const loaderStore = useLoaderStore()
 const snackbarStore = useSnackbarStore()
 const apiRequestObj = useApi()
@@ -132,9 +131,9 @@ const fetchData = async () => {
     else if (response?.code === 401 || response?.message === 'Unauthenticated.') {
       snackbarStore.showSnackbar('Login session expired', 'error')
     }
-    else if (response?.code == 403 ) {
+    else if (response?.code == 403) {
       snackbarStore.showSnackbar(response?.message, 'error')
-      return router.back();
+      return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
     }
     else {
       snackbarStore.showSnackbar(
@@ -144,7 +143,6 @@ const fetchData = async () => {
     }
   }
   catch (error) {
-    console.log("ahmad",error);
     snackbarStore.showSnackbar('An error occurred. Please try again.', 'error')
   }
   finally {
@@ -210,8 +208,17 @@ const updateStatus = async () => {
     )
 
     if (response?.success) {
+      const updatedStatus = response?.data?.pick_status?.id
+      if(updatedStatus == orderStatusCodes.isRejected || updatedStatus == orderStatusCodes.isPublic){
+        snackbarStore.showSnackbar(response.message, 'info')
+        return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
+      }
       orderData.value.status = response?.data?.pick_status?.id
       snackbarStore.showSnackbar(response.message, 'primary')
+    }
+    else if (response?.code == 403) {
+      snackbarStore.showSnackbar(response.message, 'error')
+      return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
     }
   }
   catch (error) {
@@ -237,7 +244,7 @@ const handleConfirm = async value => {
     if (
       [
         orderStatusCodes.isDeliveryRefused,
-        orderStatusCodes.isHaier,
+        orderStatusCodes.isRejected,
       ].includes(selectedStatus.value)
     ) {
       selectedStatus.value === orderStatusCodes.isDeliveryRefused
@@ -377,7 +384,7 @@ const headers = [
               v-if="orderData?.status"
               v-bind="resolveOrderStatus(orderData?.status)"
               label
-              size="small"
+              size="small"  
             />
           </div>
         </div>
@@ -398,7 +405,6 @@ const headers = [
           </div>
         </div>
       </div>
-
       <div
         v-if="(authUser.user_type === 'haier' && route.params.group !== 'vendor') || authUser.user_type === 'vendor'"
         class="d-flex gap-x-2"
@@ -450,7 +456,7 @@ const headers = [
             color="warning"
             @click="
               handleClick(
-                orderStatusCodes.isHaier,
+                orderStatusCodes.isRejected,
                 'Do you confirm you want to Reject Order?',
               )
             "
@@ -459,7 +465,7 @@ const headers = [
           </VBtn>
         </div>
         <VBtn
-          v-if="orderData?.status == orderStatusCodes.isPicked"
+          v-if="orderData?.status == orderStatusCodes.isPicked || orderData?.status == orderStatusCodes.isDeliveryTimeout || orderData?.status == orderStatusCodes.isRejected || orderData?.status == orderStatusCodes.isReadyToShip"
           variant="tonal"
           color="success"
           @click="
@@ -472,7 +478,7 @@ const headers = [
           Deliver Now
         </VBtn>
         <VBtn
-          v-if="orderData?.status == orderStatusCodes.isHaier"
+          v-if="orderData?.status == orderStatusCodes.isHaier || orderData?.status == orderStatusCodes.isDeliveryTimeout || orderData?.status == orderStatusCodes.isRejected"
           variant="tonal"
           color="success"
           @click="
@@ -486,7 +492,7 @@ const headers = [
         </VBtn>
 
         <VBtn
-          v-if="orderData?.status == orderStatusCodes.isOutForDelivery || orderData?.status == orderStatusCodes.isReadyToShip"
+          v-if="orderData?.status == orderStatusCodes.isOutForDelivery"
           variant="tonal"
           color="primary"
           @click="
@@ -500,7 +506,7 @@ const headers = [
         </VBtn>
 
         <VBtn
-          v-if="orderData?.status == orderStatusCodes.isOutForDelivery || orderData?.status == orderStatusCodes.isReadyToShip"
+          v-if="orderData?.status == orderStatusCodes.isOutForDelivery "
           variant="tonal"
           color="error"
           @click="
@@ -512,6 +518,15 @@ const headers = [
         >
           Delivery Refused
         </VBtn>
+      </div>
+      <div v-else>
+        <PrintOrderDetail
+          :order-data="orderData"
+          :order-detail="orderDetail"
+          :subtotal="subtotal"
+          :Total="Total"
+          :user-data="userData"
+        />
       </div>
     </div>
 
@@ -528,12 +543,12 @@ const headers = [
                 <h5 class="text-h5">
                   Order Details
                 </h5>
-                <VChip
+                <!-- <VChip
                   v-if="orderDetail[0]?.type"
                   v-bind="{ text: orderDetail[0]?.type, color: 'info' }"
                   label
                   size="small"
-                />
+                /> -->
               </div>
             </template>
           </VCardItem>

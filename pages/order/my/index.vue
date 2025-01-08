@@ -24,6 +24,7 @@ const headers = [
   { title: "Order Info", key: "order", sortable: false },
   { title: "Product Info", key: "product", sortable: false },
   { title: "Total Price", key: "payment", sortable: false },
+  { title: "Order Status", key: "status", sortable: false },
   { title: "Deliver Before", key: "time", sortable: false },
   { title: "Action", key: "actions", sortable: false },
 ];
