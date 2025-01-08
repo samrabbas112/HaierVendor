@@ -133,7 +133,7 @@ const fetchData = async () => {
     }
     else if (response?.code == 403) {
       snackbarStore.showSnackbar(response?.message, 'error')
-      return navigateTo(`/order/${route?.params?.group}`)
+      return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
     }
     else {
       snackbarStore.showSnackbar(
