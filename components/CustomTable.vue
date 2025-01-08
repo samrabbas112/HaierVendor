@@ -169,7 +169,7 @@ const deleteData = async (id: number) => {
         </template>
         <!-- Vendors  -->
         <template #item.vendors="{ item }">
-          <div class="d-flex align-center gap-x-3">
+          <div class="d-flex align-center gap-x-3 text-wrap">
             <div class="d-flex flex-column">
               <div class="text-body-1 font-weight-medium">
                 <NuxtLink class="text-link">
@@ -177,7 +177,10 @@ const deleteData = async (id: number) => {
                 </NuxtLink>
               </div>
               <div class="text-body-2">
-                {{ item.vendor_email }}
+                {{ item.vendor_phone }}
+              </div>
+              <div class="text-body-2">
+                {{ item.vendor_address }}
               </div>
             </div>
           </div>
