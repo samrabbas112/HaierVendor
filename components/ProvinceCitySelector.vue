@@ -59,9 +59,10 @@ const fetchCities = async (provinceId: number) => {
   }
 };
 
+
 // Watch province selection and load cities
 watch(
-  () => props.selectedProvinceId,
+   () => props.selectedProvinceId,
   async (newProvinceId, oldProvinceId) => {
     if (newProvinceId && oldProvinceId == undefined) {
       await fetchCities(newProvinceId);
@@ -73,10 +74,12 @@ watch(
   { immediate: true },
 );
 
+
 // Fetch provinces on mount
 onMounted(() => {
+  
   fetchProvinces();
-  console.log(props.selectedCityId);
+
 });
 </script>
 

@@ -85,7 +85,9 @@ const fetchCustomerData = async (id: string) => {
         province: response.data.provinceId,
       };
       selectedProvinceId.value = response.data.provinceId;
+      console.log('province',selectedProvinceId.value);
       selectedCityId.value = response.data.cityId;
+      console.log('city',selectedCityId.value);
     }
   } catch (error) {
     console.error("Error fetching customer data:", error);
@@ -206,8 +208,9 @@ onMounted(() => {
                     label="Address" placeholder="Enter address" />
                 </VCol>
                 <VCol cols="12" style="padding: 0;">
-                  <ProvinceCitySelector v-model:selectedProvinceId="selectedProvinceId"
-                    v-model:selectedCityId="selectedCityId" :add-class="true"/>
+                  <ProvinceCitySelector :selectedProvinceId="selectedProvinceId"
+                    :selectedCityId="selectedCityId" :add-class="true"
+                />
                 </VCol>
   
                 <!-- Phone Number -->
