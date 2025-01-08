@@ -126,7 +126,7 @@ watch(() => notificationStore.notifications, (newNotifications, oldNotifications
   <CustomTable
     :headers="headers"
     :data="ordersData"
-    from="lahore"
+    from="location"
     @update:page="makeSearch"
   >
     <VCardText>
