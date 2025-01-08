@@ -60,18 +60,35 @@ const fetchCities = async (provinceId: number) => {
 };
 
 
-// Watch province selection and load cities
+const selectedProvince = ref(props.selectedProvinceId);
+const selectedCity = ref(props.selectedCityId);
+
+// Sync local state with props
 watch(
-   () => props.selectedProvinceId,
+  () => props.selectedProvinceId,
+  (newVal) => {
+    selectedProvince.value = newVal;
+  }
+);
+
+watch(
+  () => props.selectedCityId,
+  (newVal) => {
+    selectedCity.value = newVal;
+  }
+);
+watch(
+  selectedProvince,
   async (newProvinceId, oldProvinceId) => {
     if (newProvinceId && oldProvinceId == undefined) {
       await fetchCities(newProvinceId);
     } else if (newProvinceId !== oldProvinceId) {
-      emit("update:selectedCityId", undefined); // Reset selected city
+      selectedCity.value = undefined; // Reset selected city
+      emit("update:selectedCityId", undefined);
       await fetchCities(newProvinceId);
     }
-  },
-  { immediate: true },
+    emit("update:selectedProvinceId", newProvinceId);
+  }
 );
 
 
@@ -86,28 +103,36 @@ onMounted(() => {
 <template>
   <VCol cols="12" :sm="props.addClass ? 12 : 6">
     <AppSelect
-      v-model="props.selectedProvinceId"
+      v-model="selectedProvince"
       label="Province"
       placeholder="Select Province"
       :items="provinces"
       :rules="[requiredValidator]"
       clearable
+      :searchable="true"
       :disabled="props.mode === 'details'"
       clear-icon="tabler-x"
-      @update:model-value="(value) => emit('update:selectedProvinceId', value)"
+      @update:model-value="(value) => {
+        selectedProvince = value;
+        emit('update:selectedProvinceId', value);
+      }"
     />
   </VCol>
   <VCol cols="12" :sm="props.addClass ? 12 : 6">
     <AppSelect
-      v-model="props.selectedCityId"
+      v-model="selectedCity"
       label="City"
       placeholder="Select City"
       :rules="[requiredValidator]"
       :items="cities"
-      :disabled="props.mode === 'details' || !props.selectedProvinceId"
+      :disabled="props.mode === 'details' || !selectedProvince"
       clearable
+      :searchable="true"
       clear-icon="tabler-x"
-      @update:model-value="(value) => emit('update:selectedCityId', value)"
+      @update:model-value="(value) => {
+        selectedCity = value;
+        emit('update:selectedCityId', value);
+      }"
     />
   </VCol>
 </template>

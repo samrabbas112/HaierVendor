@@ -209,7 +209,8 @@ onMounted(() => {
                 </VCol>
                 <VCol cols="12" style="padding: 0;">
                   <ProvinceCitySelector :selectedProvinceId="selectedProvinceId"
-                    :selectedCityId="selectedCityId" :add-class="true"
+                    :selectedCityId="selectedCityId" :add-class="true" @update:selectedProvinceId="value => console.log('Selected Province ID:', value)"
+                    @update:selectedCityId="value => console.log('Selected City ID:', value)"
                 />
                 </VCol>
   
