@@ -211,14 +211,14 @@ const updateStatus = async () => {
       const updatedStatus = response?.data?.pick_status?.id
       if(updatedStatus == orderStatusCodes.isRejected || updatedStatus == orderStatusCodes.isPublic){
         snackbarStore.showSnackbar(response.message, 'info')
-        return navigateTo(`/order/${route?.params?.group}`)
+        return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
       }
       orderData.value.status = response?.data?.pick_status?.id
       snackbarStore.showSnackbar(response.message, 'primary')
     }
     else if (response?.code == 403) {
       snackbarStore.showSnackbar(response.message, 'error')
-      return navigateTo(`/order/${route?.params?.group}`)
+      return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
     }
   }
   catch (error) {
