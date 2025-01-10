@@ -242,7 +242,8 @@ onMounted(fetchCustomers);
         </NuxtLink>
       </template>
       <template #item.created_at="{ item }">
-        {{ new Date(item.created_at).toLocaleDateString() }}
+        {{ new Date(item.created_at).toLocaleDateString() }} {{ new Date(item.created_at).toLocaleTimeString() }}
+
       </template>
       <!-- Status -->
       <template #item.confirmed="{ item }">

@@ -106,24 +106,29 @@ const onSubmit = async () => {
           })
         }
         else {
-          const messages = response?.message
-          let allErrors = []
+          const messages = response?.message;
+          console.log('messages', messages);
+          let allErrors = [];
 
           // Check if the message array exists
           if (Array.isArray(messages)) {
             allErrors = messages
-              .map(msg => msg?.errors)
-              .filter(error => error) // Extract 'errors' field
+              .flatMap(msg => msg?.errors) // Use flatMap to flatten and extract 'errors'
+              .filter(error => error); // Remove any undefined or null values
+          } else if (messages) {
+            allErrors = [messages]; // Wrap non-array message into an array
           }
 
+          console.log('error', allErrors);
+
           // Join all errors into a single string
-          const errorMessage
-            = allErrors.length > 0 ? allErrors.join('\n') : 'Unknown Error'
+          const errorMessage = allErrors.length > 0 ? allErrors.join('\n') : 'Unknown Error';
+          console.log('errorMessage', errorMessage);
 
           // Show snackbar with all errors
-          // snackBarStore.showSnackbar(errorMessage, "error");
-          snackBarStore.showSnackbar(allErrors.length > 0 ? 'User already registered.' : errorMessage, 'error')
+          snackBarStore.showSnackbar(allErrors.length > 0 ? 'User already registered.' : errorMessage, 'error');
         }
+
       }
       catch (error) {
         snackBarStore.showSnackbar('Something went wrong', 'error')

@@ -33,10 +33,21 @@ watchEffect(() => {
 const selectedProvinceId = ref<number | undefined>(undefined);
 const selectedCityId = ref<number | undefined>(undefined);
   const isLinkExpired = ref(false);
-const props = defineProps<Props>();
 interface Props {
   customer: Record<string, any>;
 }
+
+const props = defineProps({
+  mode: {
+    type: String,
+    default: null, // Default mode is null
+  },
+  registeredDate: {
+    type: String,
+    default: null,
+  }
+});
+
 const formatDate = (isoDate) => {
     const date = new Date(isoDate);
     const year = date.getFullYear();
@@ -74,15 +85,15 @@ definePageMeta({
         <VCard class="auth-card" max-width="460" :class="$vuetify.display.smAndUp ? 'pa-6' : 'pa-6'">
           <div class="container text-center">
             <!-- Thank You Background Component -->
-            <div v-if="event === 'already_registered'" class="w-full text-center flex justify-center mb-24">
+            <div v-if="props.mode === 'already_registered'" class="w-full text-center flex justify-center mb-24">
               <img :src="alreadyImage" alt="already Image" width="250px">
             </div>
             <div v-else class="w-full text-center flex justify-center mb-24">
-              <ThankYouBackground :event="event" />
+              <ThankYouBackground :event="mode" />
             </div>
   
             <!-- Conditional Rendering Based on Event -->
-            <div v-if="event === 'already_registered'" class="block text-center container">
+            <div v-if="props.mode === 'already_registered'" class="block text-center container">
               <div class="mt-10 font-bold text-[28px]">
                 <h2 class="congratulations-title text-2xl md:text-4xl lg:text-5xl">
                   Already Registered!
@@ -91,10 +102,10 @@ definePageMeta({
               <div class="text-center text-1xl md:text-2xl congratulations-description">
                 You have already registered on
               </div>
-              <span>{{ formatDate(route.query.data) }}</span>
+              <span>{{ formatDate(props.registeredDate) }}</span>
             </div>
             
-            <div v-else-if="event === 'confirm'" class="block text-center container">
+            <div v-else-if="props.mode === 'confirm'" class="block text-center container">
               <div class="mt-10 font-bold text-[28px]">
                 <h2 class="congratulations-title text-2xl md:text-4xl lg:text-5xl">
                   Congratulations!
@@ -122,7 +133,7 @@ definePageMeta({
         </VCard>
       </div>
     </div>
-  </template>
+</template>
   
 
 <style lang="scss">

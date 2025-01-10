@@ -16,6 +16,8 @@ const timer = ref<number>(60); // Countdown timer in seconds
 const timerInterval: Ref<NodeJS.Timer | null> = ref(null);
 const isResendDisabled = computed(() => timer.value > 0);
 const isLoading = ref(true);
+const showFinalScreen = ref(false);
+const mode = ref('');
 
 
 definePageMeta({
@@ -40,6 +42,7 @@ const isCodeFetched = ref(false); // Track if the code has been fetched
 const refForm = ref<VForm>();
 const isPhoneDisabled = ref(false);
 const isCodeFieldDisabled = ref(true);
+const registeredDate = ref();
 
 
 
@@ -216,10 +219,8 @@ const onSubmit = async () => {
         );
          console.log(response);
         if (response?.success) {
-          router.push({
-            path: `/Thankyou`,
-            query: { mode: "confirm" },
-          });
+          mode.value = 'confirm';
+          showFinalScreen.value = true;
           emit("customer-updated");
           emit("update:isDrawerOpen", false);
           refForm.value?.reset();
@@ -233,10 +234,9 @@ const onSubmit = async () => {
 
           console.log('Full Response Data:', parsedData);
           if(messages == 'Already Registered') {
-            router.push({
-            path: `/Thankyou`,
-            query: { mode: "already_registered" , data: parsedData.created_at},
-          });
+            mode.value = 'already_registered';
+            registeredDate.value = parsedData.created_at;
+            showFinalScreen.value = true;
           } else {
             let allErrors = [];
 
@@ -284,117 +284,120 @@ const onSubmit = async () => {
 
 <template>
   <SnackBar />
-  <div v-if="isLoading" class="auth-wrapper d-flex align-center justify-center pa-4">
-    <!-- Loading Spinner -->
-    <VProgressCircular indeterminate color="primary" />
-  </div>
-  <div v-else class="auth-wrapper d-flex align-center justify-center pa-4">
-    <div class="position-relative my-sm-16">
-      <!-- Shapes -->
-      <VNodeRenderer :nodes="h('div', { innerHTML: authV1TopShape })"
-        class="text-primary auth-v1-top-shape d-none d-sm-block" />
-      <VNodeRenderer :nodes="h('div', { innerHTML: authV1BottomShape })"
-        class="text-primary auth-v1-bottom-shape d-none d-sm-block" />
-
-      <!-- Auth Card -->
-      <VCard class="auth-card" max-width="460" :class="$vuetify.display.smAndUp ? 'pa-6' : 'pa-0'">
-        <VCardText>
-          <h4 class="text-h4 mb-1">
-            Welcome to <span class="text-capitalize">Haier</span>! 👋🏻
-          </h4>
-          <p class="mb-0">
-            Fill out the form to register.
-          </p>
-        </VCardText>
-
-        <!-- Form -->
-        <VCardText>
-          <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
-            <VRow>
-              <!-- Name -->
-              <VCol cols="12">
-                <AppTextField v-model="name" :rules="[
-                  requiredValidator,
-                  alphabetValidator,
-                  minLengthValidator(3),
-                ]" label="Name"
-                  placeholder="Enter name" />
-              </VCol>
-
-              <!-- Address -->
-              <VCol cols="12">
-                <AppTextField v-model="address" :rules="[requiredValidator, minLengthValidator(10)]" label="Address"
-                  placeholder="Enter address" />
-              </VCol>
-
-               
-              <!-- Province and City Selector -->
-              <ProvinceCitySelector v-model:selectedProvinceId="selectedProvinceId"
-              v-model:selectedCityId="selectedCityId" />
-
-              <!-- Phone Number -->
-              <VCol cols="12">
-                <AppTextField v-model="phoneNumber" type="tel" :rules="[
-                  requiredValidator,
-                  phoneValidator,
-                  minLengthValidator(10),
-                  numberValidator,
-                ]"  :disabled="isPhoneDisabled" label="Phone Number" placeholder="03xxxxxxxxx" />
-              </VCol>
-
-              <!-- Code -->
-              <VCol cols="12">
-                <AppTextField v-model="code" :disabled="isCodeFieldDisabled" :rules                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ="[requiredValidator, minLengthValidator(6)]" label="Code"
-                  placeholder="Enter code"  @input="checkCodeLength"  />
-              </VCol>
-                     <!-- Action Buttons -->
-              <VCol cols="12">
-                <!-- <VBtn 
-                type="button" 
-                class="me-md-3 btn-block me-1 btn-fixed-size" 
-                v-if="!isCodeFetched"
-                :disabled="!phoneNumber || !phoneValidator(phoneNumber.value) || phoneNumber.length < 10" 
-                @click="getCode" 
-                full-width
-              >
-                <VProgressCircular v-if="isCodeLoading" indeterminate color="white" class="spinner" />
-                <template v-else> Get Code </template>
-              </VBtn> -->
-                <VBtn 
-                type="button" 
-                class="me-md-3 btn-block me-1 custom-btn-size" 
-                v-if="!isCodeFetched"
-                :disabled="!phoneNumber || !phoneValidator(phoneNumber.value) || phoneNumber.length < 10" 
-                @click="getCode" 
-                full-width
-              >
-                <VProgressCircular v-if="isCodeLoading" indeterminate color="white" class="spinner" />
-                <template v-else> Get Code </template>
-              </VBtn>
-
-                <VBtn type="button" class="me-md-3 me-1 custom-btn-size" v-if="isCodeFetched"
-                  :disabled="isResendDisabled || !phoneValidator(phoneNumber.value) || phoneNumber.length < 10"
-                  @click="getCode" full-width>
-                  <VProgressCircular v-if="isCodeLoading" indeterminate color="white" />
-                  <template v-else>
-                    <span style="text-transform: none;">{{ isResendDisabled ? `${timer} sec` : "Resend" }}</span>
-                  </template>
+  <Thankyou v-if="showFinalScreen" :mode="mode" :registeredDate="registeredDate"/>
+  <div v-else>
+    <div v-if="isLoading" class="auth-wrapper d-flex align-center justify-center pa-4">
+      <!-- Loading Spinner -->
+      <VProgressCircular indeterminate color="primary" />
+    </div>
+    <div v-else class="auth-wrapper d-flex align-center justify-center pa-4">
+      <div class="position-relative my-sm-16">
+        <!-- Shapes -->
+        <VNodeRenderer :nodes="h('div', { innerHTML: authV1TopShape })"
+          class="text-primary auth-v1-top-shape d-none d-sm-block" />
+        <VNodeRenderer :nodes="h('div', { innerHTML: authV1BottomShape })"
+          class="text-primary auth-v1-bottom-shape d-none d-sm-block" />
+  
+        <!-- Auth Card -->
+        <VCard class="auth-card" max-width="460" :class="$vuetify.display.smAndUp ? 'pa-6' : 'pa-0'">
+          <VCardText>
+            <h4 class="text-h4 mb-1">
+              Welcome to <span class="text-capitalize">Haier</span>! 👋🏻
+            </h4>
+            <p class="mb-0">
+              Fill out the form to register.
+            </p>
+          </VCardText>
+  
+          <!-- Form -->
+          <VCardText>
+            <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
+              <VRow>
+                <!-- Name -->
+                <VCol cols="12">
+                  <AppTextField v-model="name" :rules="[
+                    requiredValidator,
+                    alphabetValidator,
+                    minLengthValidator(3),
+                  ]" label="Name"
+                    placeholder="Enter name" />
+                </VCol>
+  
+                <!-- Address -->
+                <VCol cols="12">
+                  <AppTextField v-model="address" :rules="[requiredValidator, minLengthValidator(10)]" label="Address"
+                    placeholder="Enter address" />
+                </VCol>
+  
+                 
+                <!-- Province and City Selector -->
+                <ProvinceCitySelector v-model:selectedProvinceId="selectedProvinceId"
+                v-model:selectedCityId="selectedCityId" />
+  
+                <!-- Phone Number -->
+                <VCol cols="12">
+                  <AppTextField v-model="phoneNumber" type="tel" :rules="[
+                    requiredValidator,
+                    phoneValidator,
+                    minLengthValidator(10),
+                    numberValidator,
+                  ]"  :disabled="isPhoneDisabled" label="Phone Number" placeholder="03xxxxxxxxx" />
+                </VCol>
+  
+                <!-- Code -->
+                <VCol cols="12">
+                  <AppTextField v-model="code" :disabled="isCodeFieldDisabled" :rules                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ="[requiredValidator, minLengthValidator(6)]" label="Code"
+                    placeholder="Enter code"  @input="checkCodeLength"  />
+                </VCol>
+                       <!-- Action Buttons -->
+                <VCol cols="12">
+                  <!-- <VBtn 
+                  type="button" 
+                  class="me-md-3 btn-block me-1 btn-fixed-size" 
+                  v-if="!isCodeFetched"
+                  :disabled="!phoneNumber || !phoneValidator(phoneNumber.value) || phoneNumber.length < 10" 
+                  @click="getCode" 
+                  full-width
+                >
+                  <VProgressCircular v-if="isCodeLoading" indeterminate color="white" class="spinner" />
+                  <template v-else> Get Code </template>
+                </VBtn> -->
+                  <VBtn 
+                  type="button" 
+                  class="me-md-3 btn-block me-1 custom-btn-size" 
+                  v-if="!isCodeFetched"
+                  :disabled="!phoneNumber || !phoneValidator(phoneNumber.value) || phoneNumber.length < 10" 
+                  @click="getCode" 
+                  full-width
+                >
+                  <VProgressCircular v-if="isCodeLoading" indeterminate color="white" class="spinner" />
+                  <template v-else> Get Code </template>
                 </VBtn>
-
-                <VBtn type="submit" class="me-md-3 me-1 custom-btn-size" :disabled="!isCodeFetched || !isCodeVerified" full-width>
-                  <VProgressCircular v-if="isSubmitLoading" indeterminate color="white" />
-                  <template v-else> Submit </template>
-                </VBtn>
-
-                <VBtn type="reset" variant="tonal" color="error" @click="handleCancel" full-width>
-                  Cancel
-                </VBtn>
-
-              </VCol>
-            </VRow>
-          </VForm>
-        </VCardText>
-      </VCard>
+  
+                  <VBtn type="button" class="me-md-3 me-1 custom-btn-size" v-if="isCodeFetched"
+                    :disabled="isResendDisabled || !phoneValidator(phoneNumber.value) || phoneNumber.length < 10"
+                    @click="getCode" full-width>
+                    <VProgressCircular v-if="isCodeLoading" indeterminate color="white" />
+                    <template v-else>
+                      <span style="text-transform: none;">{{ isResendDisabled ? `${timer} sec` : "Resend" }}</span>
+                    </template>
+                  </VBtn>
+  
+                  <VBtn type="submit" class="me-md-3 me-1 custom-btn-size" :disabled="!isCodeFetched || !isCodeVerified" full-width>
+                    <VProgressCircular v-if="isSubmitLoading" indeterminate color="white" />
+                    <template v-else> Submit </template>
+                  </VBtn>
+  
+                  <VBtn type="reset" variant="tonal" color="error" @click="handleCancel" full-width>
+                    Cancel
+                  </VBtn>
+  
+                </VCol>
+              </VRow>
+            </VForm>
+          </VCardText>
+        </VCard>
+      </div>
     </div>
   </div>
 </template>
