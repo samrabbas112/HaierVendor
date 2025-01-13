@@ -16,6 +16,8 @@ const customReason = ref(null)
 const dialogMsg = ref('Are you sure')
 const reasons = ref([])
 const imagePreviews = ref([])
+const isPodVisible = ref(false)
+const podUrl = ref(false)
 
 const userData = ref({
   fullName: '',
@@ -66,7 +68,7 @@ const transformOrderDetail = (orderProduct, singleProductTotal) => {
     })),
     price: orderProduct.productPrice,
     total: singleProductTotal,
-    type: orderProduct.newProductType,
+    type: orderProduct.newProductType || 'N/A',
   }
 }
 
@@ -110,6 +112,7 @@ const transformData = apiResponse => {
     date: apiResponse.created_at,
     time: apiResponse.pick_before,
     hidden: apiResponse.hidden,
+    POD: apiResponse.POD,
   }
 }
 
@@ -700,6 +703,35 @@ if (authUser.user_type === 'haier')
             </div>
           </VCardText>
         </VCard>
+        <!-- 👉  Media -->
+        <VCard
+          v-if="orderData.status == orderStatusCodes.isClosed || orderData.status == orderStatusCodes.isDelivered"
+          class="mb-6"
+        >
+          <VCardItem>
+            <VCardTitle>POD files</VCardTitle>
+          </VCardItem>
+
+          <VCardText>
+            <div
+              v-for="(pod, index) in orderData?.POD"
+              :key="index"
+              class="preview-container mr-2 cursor-pointer"
+              @click="() => {
+                podUrl = pod.media_name
+                isPodVisible = !isPodVisible
+              }"
+            >
+              <VImg
+                :src="pod.media_name"
+                height="150"
+                width="150"
+                :cover="true"
+                :alt="orderData?.order_no"
+              />
+            </div>
+          </VCardText>
+        </VCard>
       </VCol>
     </VRow>
 
@@ -831,6 +863,44 @@ if (authUser.user_type === 'haier')
               "
             >
               Cancel
+            </VBtn>
+          </VCardText>
+        </VCardText>
+      </VCard>
+    </VDialog>
+    <VDialog
+      v-model="isPodVisible"
+      max-width="600"
+    >
+      <VCard>
+        <VCardText class="text-center px-10 py-6">
+          <VRow
+            cols="12"
+            sm="8"
+          >
+            <VCol cols="12">
+              <VImg
+                :src="podUrl"
+                height="100%"
+                width="100%"
+                :cover="true"
+                alt="Image"
+              />
+            </VCol>
+          </VRow>
+
+          <VCardText class="d-flex align-center justify-end">
+            <VBtn
+              color="primary"
+              variant="tonal"
+              @click="
+                () => {
+                  podUrl = null
+                  isPodVisible = false
+                }
+              "
+            >
+              Close
             </VBtn>
           </VCardText>
         </VCardText>
