@@ -7,6 +7,8 @@ import { themeConfig } from "@themeConfig";
 import type { VForm } from "vuetify/components/VForm";
 import { useSnackbarStore } from "@/stores/snackbar";
 import ProvinceCitySelector from "@/components/ProvinceCitySelector.vue";
+import Thankyou from "@/components/Thankyou.vue";
+
 const router = useRouter();
 
 const selectedProvinceId = ref<number | undefined>(undefined);

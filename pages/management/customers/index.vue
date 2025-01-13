@@ -51,10 +51,12 @@ const headers = [
 
 // Fetch customers from the API
 const fetchCustomers = async () => {
+  console.log('hello');
+  console.log(route.query.vendor);
   loaderStore.showLoader();
   try {
     const response = await apiRequestObj.makeRequest(
-      `common/customer/list/${route.query.vendor || authUser.value.user.uid}`,
+      `common/customer/list/${route.query.vendor || authUser.value.user.vendor_uid}`,
       "post",
       {
         page: page.value,
@@ -272,7 +274,7 @@ onMounted(fetchCustomers);
 
         <IconBtn
           @click="editCustomer(item)"
-          v-if="authUser.user.uid === item.reference_vendor"
+          v-if="authUser.user.vendor_uid === item.reference_vendor"
         >
           <VIcon icon="tabler-pencil" />
         </IconBtn>

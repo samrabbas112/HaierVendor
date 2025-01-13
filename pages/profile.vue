@@ -7,7 +7,7 @@ const loaderStore = useLoaderStore();
 const snackbarStore = useSnackbarStore();
 const authStore = useAuthStore();
 console.log("authStore", authStore);
-const userId = authStore.user?.uid || "default";
+const userId = authStore.user?.vendor_uid || "default";
 const qrCodeUrl = `${useRuntimeConfig().public.qrURL}/management/customers/${userId}`;
 
 const router = useRouter();

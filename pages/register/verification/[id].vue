@@ -6,6 +6,8 @@ import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
 import type { VForm } from "vuetify/components/VForm";
 import { useRouter } from "vue-router";
+import Thankyou from "@/components/Thankyou.vue";
+
 
 
 import {
