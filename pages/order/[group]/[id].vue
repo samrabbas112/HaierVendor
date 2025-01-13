@@ -133,6 +133,7 @@ const fetchData = async () => {
     }
     else if (response?.code == 403) {
       snackbarStore.showSnackbar(response?.message, 'error')
+
       return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
     }
     else {
@@ -209,8 +210,9 @@ const updateStatus = async () => {
 
     if (response?.success) {
       const updatedStatus = response?.data?.pick_status?.id
-      if(updatedStatus == orderStatusCodes.isRejected || updatedStatus == orderStatusCodes.isPublic){
+      if (updatedStatus == orderStatusCodes.isRejected || updatedStatus == orderStatusCodes.isPublic) {
         snackbarStore.showSnackbar(response.message, 'info')
+
         return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
       }
       orderData.value.status = response?.data?.pick_status?.id
@@ -218,6 +220,7 @@ const updateStatus = async () => {
     }
     else if (response?.code == 403) {
       snackbarStore.showSnackbar(response.message, 'error')
+
       return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
     }
   }
@@ -359,6 +362,15 @@ const resolveMethod = (status: string) => {
     return { text: 'jazzCash', color: 'info' }
 }
 
+const resolveType = (type: string) => {
+  if (type === 'NORMAL')
+    return { text: 'NORMAL', color: 'info' }
+  if (type === 'EXCLUSIVE')
+    return { text: 'EXCLUSIVE', color: 'primary' }
+
+  return { text: type, color: 'warning' }
+}
+
 onMounted(async () => {
   await fetchData()
 })
@@ -369,6 +381,9 @@ const headers = [
   { title: 'Quantity', key: 'quantity' },
   { title: 'Price', key: 'price' },
 ]
+
+if (authUser.user_type === 'haier')
+  headers.push({ title: 'Product Type', key: 'type', sortable: false })
 </script>
 
 <template>
@@ -384,7 +399,7 @@ const headers = [
               v-if="orderData?.status"
               v-bind="resolveOrderStatus(orderData?.status)"
               label
-              size="small"  
+              size="small"
             />
           </div>
         </div>
@@ -543,12 +558,6 @@ const headers = [
                 <h5 class="text-h5">
                   Order Details
                 </h5>
-                <!-- <VChip
-                  v-if="orderDetail[0]?.type"
-                  v-bind="{ text: orderDetail[0]?.type, color: 'info' }"
-                  label
-                  size="small"
-                /> -->
               </div>
             </template>
           </VCardItem>
@@ -594,6 +603,14 @@ const headers = [
               >
                 {{ variation.name }}
               </div>
+            </template>
+            <template #item.type="{ item }">
+              <VChip
+                v-if="item.type && authUser.user_type === 'haier'"
+                v-bind="resolveType(item.type)"
+                label
+                size="small"
+              />
             </template>
             <template #item.quantity="{ item }">
               <div
