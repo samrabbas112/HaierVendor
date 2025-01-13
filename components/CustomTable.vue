@@ -34,6 +34,8 @@ const route = useRoute()
 const sortBy = ref()
 const orderBy = ref()
 const selectedRows = ref([])
+const authStore = useAuthStore()
+const authUser = authStore.user
 
 // Update data table options
 const updateOptions = (options: any) => {
@@ -141,6 +143,9 @@ const filteredOrderHaierStatus = status => {
                 <div class="text-body-2">
                   <strong>Quantity:</strong> <span>{{ calculateQuantity(product.specInfo) }}</span>
                   <strong>, Price:</strong> <span>{{ product.productPrice }}</span>
+                </div>
+                <div v-if="authUser.user_type === 'haier'" class="text-body-2">
+                  <strong>Product Type:</strong> <span>{{ product.newProductType || 'N/A'}}</span>
                 </div>
               </div>
             </div>
