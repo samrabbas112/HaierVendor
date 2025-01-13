@@ -2,7 +2,7 @@
 import { reactive, ref, watch } from 'vue'
 import { orderStatusCodes } from '@/libs/order/order-status'
 
-const { headers, data, from, orderHaierStatus } = defineProps({
+const { headers, data, from, orderHaierStatus, selectedHaierOrderStatus, handleSelectedOrderStatus } = defineProps({
   headers: Array,
   data: [Array, Object],
   from: String,
@@ -10,29 +10,23 @@ const { headers, data, from, orderHaierStatus } = defineProps({
     type: Array,
     default: () => [],
   },
+  selectedHaierOrderStatus: {
+    type: Object,
+    default: () => ({}),
+  },
+  handleSelectedOrderStatus: {
+    type: Function,
+    required: true,
+  },
+
 })
 
 const emit = defineEmits()
 const isConfirmDialogVisible = ref(false)
 
-const selectedHaierOrderStatus = reactive<{ [key: number]: string }>({})
+// const selectedHaierOrderStatus = reactive({})
 
 // Watch for changes to selectedHaierOrderStatus
-watch(
-  () => ({ ...selectedHaierOrderStatus }), // Shallow copy to track reactivity
-  (newVal, oldVal) => {
-    // Iterate over keys in the new object
-    for (const key in newVal) {
-      if (newVal[key] !== oldVal[key]) {
-        console.log(`Key: ${key} changed from ${oldVal[key]} to ${newVal[key]}`)
-
-        // Emit the specific key and new value
-        emit('update:selectedHaierOrderStatus', { key, value: newVal[key] })
-      }
-    }
-  },
-  { deep: true }, // Ensure deep observation of object changes
-)
 
 const route = useRoute()
 
@@ -70,6 +64,17 @@ const updatePage = value => {
 const deleteData = async (id: number) => {
   emit('delete:record', id)
 }
+
+const filteredOrderHaierStatus = status => {
+  if (status == orderStatusCodes.isReadyToShip)
+    return orderHaierStatus.filter(item => item.value != status)
+
+  else if (status == orderStatusCodes.isOutForDelivery)
+    return orderHaierStatus.filter(item => item.value == orderStatusCodes.isDelivered_Refused)
+
+  return orderHaierStatus
+}
+
 </script>
 
 <template>
@@ -99,7 +104,9 @@ const deleteData = async (id: number) => {
         </template>
         <template #item.order="{ item }">
           <NuxtLink> {{ item.order }} </NuxtLink>
-          <p style="margin: 0;">{{ new Date(item.date).toLocaleString() }}</p>
+          <p style="margin: 0;">
+            {{ new Date(item.date).toLocaleString() }}
+          </p>
           <div class="text-body-2 text-wrap">
             <strong>Payment Method:</strong> <span>{{ item.method }}</span>
           </div>
@@ -215,10 +222,11 @@ const deleteData = async (id: number) => {
           <AppSelect
             v-model="selectedHaierOrderStatus[item.uid]"
             placeholder="Select"
-            :items="orderHaierStatus"
+            :items="filteredOrderHaierStatus(item.status)"
             clearable
             clear-icon="tabler-x"
-            @update:model-value="value => console.log(`Updated ID ${item.id} to ${value}`)"
+            :disabled="item.status == orderStatusCodes.isDeliveryRefused || item.status == orderStatusCodes.isCancelled || item.status == orderStatusCodes.isClosed"
+            @update:model-value="value => handleSelectedOrderStatus(value)"
           />
         </template>
 
