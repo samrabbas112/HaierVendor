@@ -21,11 +21,8 @@ const dialogMsg = ref('Are you sure')
 const reasons = ref([])
 const imagePreviews = ref([])
 const isReasonDialogVisible = ref(false)
-const updatedStatusData = ref(); 
-
-
-
-
+const selectedHaierOrderStatus = ref({})
+const orderId = ref()
 
 
 const ordersData = ref({
@@ -112,9 +109,9 @@ const transformData = apiResponse => {
 };
 
 const orderHaierStatuses = [
+  { title: "Ready To Ship", value: orderStatusCodes.isReadyToShip},
   { title: "Out For Delivery", value: orderStatusCodes.isOutForDelivery },
   { title: "Delivered/Refused", value: orderStatusCodes.isDelivered_Refused },
-  { title: "Ready To Ship", value: orderStatusCodes.isReadyToShip },
 ];
 
 let previousSearchQuery = "";
@@ -177,31 +174,35 @@ const makeSearch = async page => {
 onMounted(() => {
   makeSearch(1);
 });
+
 watch(() => notificationStore.notifications, (newNotifications, oldNotifications) => {
   if (newNotifications.length > oldNotifications.length)
     makeSearch(1) // Call makeSearch to update the order list
 }, { deep: true });
 
 const handleSelectedOrderStatus = (newSelectedStatus) => {
-  if(newSelectedStatus.value == orderStatusCodes.isDelivered_Refused)
-  {
-    isDeliveredRefusalDialogVisible.value = !isDeliveredRefusalDialogVisible.value
-  } else if(newSelectedStatus.value == orderStatusCodes.isOutForDelivery) {
+     
+  if(newSelectedStatus == orderStatusCodes.isReadyToShip) {
+    handleClick(orderStatusCodes.isReadyToShip, 'Do you confirm that the order is ready to ship now?');
+  }
+
+  else if(newSelectedStatus == orderStatusCodes.isOutForDelivery) {
     handleClick(orderStatusCodes.isOutForDelivery, 'Do you confirm you Delivered the Order?');
 
-  } else if(newSelectedStatus.value == orderStatusCodes.isReadyToShip) {
-    handleClick(orderStatusCodes.isReadyToShip, 'Do you confirm that the order is ready to ship now?');
+  } 
 
-  }
-  updatedStatusData.value = newSelectedStatus;
-  // Handle the updated selected order status
-  console.log('kjdksd');
+ else if(newSelectedStatus == orderStatusCodes.isDelivered_Refused){
+    isDeliveredRefusalDialogVisible.value = !isDeliveredRefusalDialogVisible.value
+  } 
 };
 
 const handleClick = (status, text) => {
   dialogMsg.value = text
+  orderId.value = Object.keys(selectedHaierOrderStatus.value)[0]
+  selectedHaierOrderStatus.value = {}
   selectedStatus.value = status
   isConfirmDialogVisible.value = !isConfirmDialogVisible.value
+  isDeliveredRefusalDialogVisible.value = false
 }
 
 const handleConfirm = async value => {
@@ -223,6 +224,9 @@ const handleConfirm = async value => {
     else {
       await updateStatus()
     }
+  }
+  else{
+    selectedHaierOrderStatus.value = {}
   }
 }
 
@@ -315,7 +319,6 @@ function removeFile(index) {
 const updateStatus = async () => {
   try {
     loaderStore.showLoader()
-    console.log("Updated Order Status from Child:", updatedStatusData.value);
 
     if (
       selectedStatus.value == orderStatusCodes.isClosed
@@ -365,7 +368,7 @@ const updateStatus = async () => {
     }
 
     const response = await apiRequestObj.makeRequest(
-      `common/order/update/status/${updatedStatusData.value.key}`,
+      `common/order/update/status/${orderId.value}`,
       'post',
       requestData,
     )
@@ -384,15 +387,29 @@ const updateStatus = async () => {
   }
   finally {
     loaderStore.hideLoader()
+    makeSearch()
   }
 }
 
-
+// watch(
+//   () => ({ ...selectedHaierOrderStatus }), // Shallow copy to track reactivity
+//   (newVal, oldVal) => {
+//     // Iterate over keys in the new object
+//     for (const key in newVal) {
+//       if (newVal[key] !== oldVal[key]) {
+//         console.log("ahmad"),
+//         console.log(`Key: ${key} changed from ${oldVal[key]} to ${newVal[key]}`)
+//         handleSelectedOrderStatus
+//       }
+//     }
+//   },
+//   { deep: true }, // Ensure deep observation of object changes
+// )
 </script>
 
 <template>
-  <CustomTable :headers="headers" :data="ordersData" from="haier" :orderHaierStatus="orderHaierStatuses"
-    @update:page="makeSearch" @update:selectedHaierOrderStatus="handleSelectedOrderStatus">
+  <CustomTable :headers="headers" :data="ordersData" from="haier" :orderHaierStatus="orderHaierStatuses" :selectedHaierOrderStatus="selectedHaierOrderStatus"
+    @update:page="makeSearch"  :handleSelectedOrderStatus="handleSelectedOrderStatus">
     <VCardText>
       <VRow
         cols="12"
@@ -460,7 +477,7 @@ const updateStatus = async () => {
       <!-- Action Buttons Section -->
       <VCardText class="d-flex align-center justify-center gap-4 mt-4">
         <VBtn
-          color="success"
+          color="primary"
           @click="handleClick(orderStatusCodes.isDeliveryRefused, 'Do you confirm you want to refuse the delivery of this order?')"
           class="text-uppercase"
         >
@@ -468,7 +485,7 @@ const updateStatus = async () => {
         </VBtn>
 
         <VBtn
-          color="secondary"
+          color="info"
           variant="tonal"
           @click="handleClick(orderStatusCodes.isClosed, 'Do you confirm you Delivered the Order?')"
           class="text-uppercase"
@@ -617,4 +634,14 @@ const updateStatus = async () => {
   border-block-end: 1px solid rgba(var(--v-theme-on-surface), var(--v-border-opacity));
   padding-block-end: 1rem;
 }
+.remove-btn {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+.preview-container {
+  position: relative;
+  display: inline-block;
+}
+
 </style>
