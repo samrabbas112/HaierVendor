@@ -51,8 +51,6 @@ const headers = [
 
 // Fetch customers from the API
 const fetchCustomers = async () => {
-  console.log('hello');
-  console.log(route.query.vendor);
   loaderStore.showLoader();
   try {
     const response = await apiRequestObj.makeRequest(

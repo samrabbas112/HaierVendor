@@ -65,7 +65,6 @@ const validateLinkExpiration = async (id: string) => {
     if (response.data) {
       snackBarStore.showSnackbar(response.message, "error");
       isLinkExpired.value = true;
-      console.log('samr',isLinkExpired.value);
     }
   } catch (error) {
     console.error("Error verifying customer Link:", error);
@@ -123,10 +122,10 @@ const handleFormAction = async (action: boolean) => {
      const response = await apiRequestObj.makeRequest("common/customer/verify", "post", data);
      if (response.success) {
       if (!action) {
-        snackBarStore.showSnackbar("Customer Registration Declined!", "success");
+        // snackBarStore.showSnackbar("Customer Registration Declined!", "success");
         mode.value = 'decline';
       } else {
-        snackBarStore.showSnackbar("Customer verified successfully!", "success");
+        // snackBarStore.showSnackbar("Customer verified successfully!", "success");
         mode.value = 'confirm';
        
       }
