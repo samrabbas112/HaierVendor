@@ -173,7 +173,7 @@ const updateStatus = async () => {
 
       // Make the API request
       const { data, status, error, refresh, clear } = await useFetch(
-        'https://haiermall.jochaho.global/api/v2/common/file-upload',
+        'https://v2.jochaho.global/api/v2/common/file-upload',
         {
           method: 'POST', // Specify HTTP method
           body: formData,
@@ -219,6 +219,7 @@ const updateStatus = async () => {
         return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
       }
       orderData.value.status = response?.data?.pick_status?.id
+      orderData.value.POD =  response?.data?.POD
       snackbarStore.showSnackbar(response.message, 'primary')
     }
     else if (response?.code == 403) {
