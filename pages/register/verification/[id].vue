@@ -29,7 +29,8 @@ const route = useRoute();
 const props = defineProps<Props>();
 interface Props {
   customer: Record<string, any>;
-}
+} 
+const disabledMode = 'disabled';
 const snackBarStore = useSnackbarStore();
 
 definePageMeta({
@@ -198,25 +199,25 @@ onMounted(() => {
                 <VRow>
                   <!-- Name -->
                   <VCol cols="12">
-                    <AppTextField v-model="userData.name" :rules="[requiredValidator, minLengthValidator(3)]" label="Name"
+                    <AppTextField :disabled="true" v-model="userData.name" :rules="[requiredValidator, minLengthValidator(3)]" label="Name"
                       placeholder="Enter name" />
                   </VCol>
     
                   <!-- Address -->
                   <VCol cols="12">
-                    <AppTextField v-model="userData.address" :rules="[requiredValidator, minLengthValidator(10)]"
+                    <AppTextField :disabled="true" v-model="userData.address" :rules="[requiredValidator, minLengthValidator(10)]"
                       label="Address" placeholder="Enter address" />
                   </VCol>
                   <VCol cols="12" style="padding: 0;">
                     <ProvinceCitySelector :selectedProvinceId="selectedProvinceId"
-                      :selectedCityId="selectedCityId" :add-class="true" @update:selectedProvinceId="value => console.log('Selected Province ID:', value)"
+                      :selectedCityId="selectedCityId" :add-class="true" :mode="disabledMode" @update:selectedProvinceId="value => console.log('Selected Province ID:', value)"
                       @update:selectedCityId="value => console.log('Selected City ID:', value)"
                   />
                   </VCol>
     
                   <!-- Phone Number -->
                   <VCol cols="12">
-                    <AppTextField v-model="userData.phone_number" type="tel"
+                    <AppTextField :disabled="true" v-model="userData.phone_number" type="tel"
                       :rules="[requiredValidator, phoneValidator, minLengthValidator(10), numberValidator]"
                       label="Phone Number" placeholder="+1234567890" />
                   </VCol>
