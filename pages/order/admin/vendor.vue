@@ -188,6 +188,10 @@ const fetchData = async () => {
 onMounted(() => {
   fetchData()
 })
+
+watch([selectedVendor, selectedOrderStatus, selectedPaymentMethod, selectedOrderType], () => {
+  makeSearch();
+});
 </script>
 
 <template>
@@ -210,6 +214,7 @@ onMounted(() => {
           <AppTextField
             v-model="searchQuery"
             placeholder="Search Order#"
+            @keypress.enter="makeSearch"
           />
         </VCol>
         <VCol

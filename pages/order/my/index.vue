@@ -72,9 +72,6 @@ const makeSearch = async (page) => {
     order_type: "my_orders",
   };
 
-  console.log({
-    formData,
-  });
   try {
     loaderStore.showLoader();
 
@@ -114,6 +111,11 @@ const makeSearch = async (page) => {
 onMounted(() => {
   makeSearch(1);
 });
+
+watch([selectedOrderStatus], () => {
+  makeSearch();
+});
+
 </script>
 
 <template>
@@ -127,7 +129,7 @@ onMounted(() => {
       <VRow cols="12" sm="8">
         <!-- 👉 Select Status -->
         <VCol cols="12" sm="3">
-          <AppTextField v-model="searchQuery" placeholder="Search Order#" />
+          <AppTextField v-model="searchQuery" placeholder="Search Order#" @keypress.enter="makeSearch"/>
         </VCol>
         <VCol cols="12" sm="3">
           <AppSelect

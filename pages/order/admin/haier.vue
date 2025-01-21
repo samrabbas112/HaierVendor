@@ -391,20 +391,9 @@ const updateStatus = async () => {
   }
 }
 
-// watch(
-//   () => ({ ...selectedHaierOrderStatus }), // Shallow copy to track reactivity
-//   (newVal, oldVal) => {
-//     // Iterate over keys in the new object
-//     for (const key in newVal) {
-//       if (newVal[key] !== oldVal[key]) {
-//         console.log("ahmad"),
-//         console.log(`Key: ${key} changed from ${oldVal[key]} to ${newVal[key]}`)
-//         handleSelectedOrderStatus
-//       }
-//     }
-//   },
-//   { deep: true }, // Ensure deep observation of object changes
-// )
+watch([selectedOrderStatus, selectedPaymentMethod], () => {
+  makeSearch();
+});
 </script>
 
 <template>
@@ -423,6 +412,7 @@ const updateStatus = async () => {
           <AppTextField
             v-model="searchQuery"
             placeholder="Search Order#"
+            @keypress.enter="makeSearch"
           />
         </VCol>
         <VCol cols="12" sm="3">

@@ -61,7 +61,6 @@ const makeSearch = async page => {
     vendor_id: authUser.value.user.user_id,
   }
 
-  console.log('formData', formData)
   try {
     loaderStore.showLoader()
 
@@ -131,6 +130,7 @@ watch(() => notificationStore.notifications, (newNotifications, oldNotifications
           <AppTextField
             v-model="searchQuery"
             placeholder="Search Order#"
+            @keypress.enter="makeSearch"
           />
         </VCol>
 
