@@ -154,7 +154,7 @@ const handleStatusToggle = async (item) => {
 };
 
 watch(
-  [page],
+  [page,selectedVendorStatus],
   () => {
     // page.value = 1;
       fetchVendors();

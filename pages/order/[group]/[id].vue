@@ -173,7 +173,7 @@ const updateStatus = async () => {
 
       // Make the API request
       const { data, status, error, refresh, clear } = await useFetch(
-        'https://haiermall.jochaho.global/api/v2/common/file-upload',
+        'https://v2.jochaho.global/api/v2/common/file-upload',
         {
           method: 'POST', // Specify HTTP method
           body: formData,
@@ -219,6 +219,7 @@ const updateStatus = async () => {
         return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
       }
       orderData.value.status = response?.data?.pick_status?.id
+      orderData.value.POD =  response?.data?.POD
       snackbarStore.showSnackbar(response.message, 'primary')
     }
     else if (response?.code == 403) {
@@ -471,7 +472,7 @@ if (authUser.user_type === 'haier')
           <VBtn
             v-if="orderData?.status == orderStatusCodes.isPicked"
             variant="tonal"
-            color="warning"
+            color="error"
             @click="
               handleClick(
                 orderStatusCodes.isRejected,
@@ -483,9 +484,9 @@ if (authUser.user_type === 'haier')
           </VBtn>
         </div>
         <VBtn
-          v-if="orderData?.status == orderStatusCodes.isPicked || orderData?.status == orderStatusCodes.isDeliveryTimeout || orderData?.status == orderStatusCodes.isRejected || orderData?.status == orderStatusCodes.isReadyToShip"
+          v-if="orderData?.status == orderStatusCodes.isPicked || orderData?.status == orderStatusCodes.isReadyToShip"
           variant="tonal"
-          color="success"
+          color="primary"
           @click="
             handleClick(
               orderStatusCodes.isOutForDelivery,
@@ -498,7 +499,7 @@ if (authUser.user_type === 'haier')
         <VBtn
           v-if="orderData?.status == orderStatusCodes.isHaier || orderData?.status == orderStatusCodes.isDeliveryTimeout || orderData?.status == orderStatusCodes.isRejected"
           variant="tonal"
-          color="success"
+          color="primary"
           @click="
             handleClick(
               orderStatusCodes.isReadyToShip,

@@ -53,7 +53,7 @@ const paymentMethods = [
   { title: 'COD', value: 'COD' },
   { title: 'Card', value: 'Card' },
   { title: 'EasyPaisa', value: 'EasyPaisa' },
-  { title: 'jazzCash', value: 'jazzCash' },
+  { title: 'JazzCash', value: 'JazzCash' },
 ]
 
 const orderStatus = [
@@ -391,20 +391,9 @@ const updateStatus = async () => {
   }
 }
 
-// watch(
-//   () => ({ ...selectedHaierOrderStatus }), // Shallow copy to track reactivity
-//   (newVal, oldVal) => {
-//     // Iterate over keys in the new object
-//     for (const key in newVal) {
-//       if (newVal[key] !== oldVal[key]) {
-//         console.log("ahmad"),
-//         console.log(`Key: ${key} changed from ${oldVal[key]} to ${newVal[key]}`)
-//         handleSelectedOrderStatus
-//       }
-//     }
-//   },
-//   { deep: true }, // Ensure deep observation of object changes
-// )
+watch([selectedOrderStatus, selectedPaymentMethod], () => {
+  makeSearch();
+});
 </script>
 
 <template>
@@ -423,6 +412,7 @@ const updateStatus = async () => {
           <AppTextField
             v-model="searchQuery"
             placeholder="Search Order#"
+            @keypress.enter="makeSearch"
           />
         </VCol>
         <VCol cols="12" sm="3">
@@ -477,7 +467,7 @@ const updateStatus = async () => {
       <!-- Action Buttons Section -->
       <VCardText class="d-flex align-center justify-center gap-4 mt-4">
         <VBtn
-          color="primary"
+          color="error"
           @click="handleClick(orderStatusCodes.isDeliveryRefused, 'Do you confirm you want to refuse the delivery of this order?')"
           class="text-uppercase"
         >
@@ -485,7 +475,7 @@ const updateStatus = async () => {
         </VBtn>
 
         <VBtn
-          color="info"
+          color="success"
           variant="tonal"
           @click="handleClick(orderStatusCodes.isClosed, 'Do you confirm you Delivered the Order?')"
           class="text-uppercase"

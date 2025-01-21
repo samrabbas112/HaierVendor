@@ -40,7 +40,7 @@ const handlePrint = async e => {
 <template>
   <VBtn
     variant="tonal"
-    color="info"
+    color="Secondary"
     @click="handlePrint"
   >
     Print
