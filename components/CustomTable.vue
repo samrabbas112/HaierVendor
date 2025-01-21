@@ -69,14 +69,13 @@ const deleteData = async (id: number) => {
 
 const filteredOrderHaierStatus = status => {
   if (status == orderStatusCodes.isReadyToShip)
-    return orderHaierStatus.filter(item => item.value != status)
+    return orderHaierStatus.filter(item => item.value == orderStatusCodes.isOutForDelivery)
 
   else if (status == orderStatusCodes.isOutForDelivery)
     return orderHaierStatus.filter(item => item.value == orderStatusCodes.isDelivered_Refused)
 
-  return orderHaierStatus
+  return orderHaierStatus.filter(item => item.value ==  orderStatusCodes.isReadyToShip)
 }
-
 </script>
 
 <template>

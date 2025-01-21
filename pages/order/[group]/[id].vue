@@ -472,7 +472,7 @@ if (authUser.user_type === 'haier')
           <VBtn
             v-if="orderData?.status == orderStatusCodes.isPicked"
             variant="tonal"
-            color="warning"
+            color="error"
             @click="
               handleClick(
                 orderStatusCodes.isRejected,
@@ -484,9 +484,9 @@ if (authUser.user_type === 'haier')
           </VBtn>
         </div>
         <VBtn
-          v-if="orderData?.status == orderStatusCodes.isPicked || orderData?.status == orderStatusCodes.isDeliveryTimeout || orderData?.status == orderStatusCodes.isRejected || orderData?.status == orderStatusCodes.isReadyToShip"
+          v-if="orderData?.status == orderStatusCodes.isPicked || orderData?.status == orderStatusCodes.isReadyToShip"
           variant="tonal"
-          color="success"
+          color="primary"
           @click="
             handleClick(
               orderStatusCodes.isOutForDelivery,
@@ -499,7 +499,7 @@ if (authUser.user_type === 'haier')
         <VBtn
           v-if="orderData?.status == orderStatusCodes.isHaier || orderData?.status == orderStatusCodes.isDeliveryTimeout || orderData?.status == orderStatusCodes.isRejected"
           variant="tonal"
-          color="success"
+          color="primary"
           @click="
             handleClick(
               orderStatusCodes.isReadyToShip,

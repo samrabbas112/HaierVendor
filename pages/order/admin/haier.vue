@@ -53,7 +53,7 @@ const paymentMethods = [
   { title: 'COD', value: 'COD' },
   { title: 'Card', value: 'Card' },
   { title: 'EasyPaisa', value: 'EasyPaisa' },
-  { title: 'jazzCash', value: 'jazzCash' },
+  { title: 'JazzCash', value: 'JazzCash' },
 ]
 
 const orderStatus = [
@@ -477,7 +477,7 @@ const updateStatus = async () => {
       <!-- Action Buttons Section -->
       <VCardText class="d-flex align-center justify-center gap-4 mt-4">
         <VBtn
-          color="primary"
+          color="error"
           @click="handleClick(orderStatusCodes.isDeliveryRefused, 'Do you confirm you want to refuse the delivery of this order?')"
           class="text-uppercase"
         >
@@ -485,7 +485,7 @@ const updateStatus = async () => {
         </VBtn>
 
         <VBtn
-          color="info"
+          color="success"
           variant="tonal"
           @click="handleClick(orderStatusCodes.isClosed, 'Do you confirm you Delivered the Order?')"
           class="text-uppercase"
