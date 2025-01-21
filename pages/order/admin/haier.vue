@@ -59,7 +59,7 @@ const paymentMethods = [
 const orderStatus = [
   { title: "Out For Delivery", value: orderStatusCodes.isOutForDelivery },
   { title: "Delivery Refused", value: orderStatusCodes.isDeliveryRefused },
-  { title: "Closed", value: orderStatusCodes.isClosed },
+  { title: "Received", value: orderStatusCodes.isClosed },
   { title: "Ready To Ship", value: orderStatusCodes.isReadyToShip },
   { title: "Haier Operations", value: orderStatusCodes.isHaier },
   { title: "Delivery Timeout", value: orderStatusCodes.isDeliveryTimeout },

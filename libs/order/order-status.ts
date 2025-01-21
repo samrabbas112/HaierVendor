@@ -28,7 +28,7 @@ export const orderCodeStatus = {
   10: { text: "Delivery Refused", color: "error" },
   12: { text: "Picked", color: "primary" },
   17: { text: "Haier Operations", color: "warning" },
-  19: { text: "Closed", color: "success" },
+  19: { text: "Received", color: "success" },
   15: { text: "Direct", color: "info" },
   16: { text: "In Direct", color: "primary" },
   20: { text: "Cancelled", color: "error" },

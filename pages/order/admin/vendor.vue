@@ -53,7 +53,7 @@ const orderStatus = [
   { title: 'Picked', value: orderStatusCodes.isPicked },
   { title: 'Out for delivery', value: orderStatusCodes.isOutForDelivery },
   { title: 'Delivery Refused', value: orderStatusCodes.isDeliveryRefused },
-  { title: 'Closed', value: orderStatusCodes.isClosed },
+  { title: 'Received', value: orderStatusCodes.isClosed },
   { title: 'Ready to ship', value: orderStatusCodes.isReadyToShip },
   { title: 'haier operations', value: orderStatusCodes.isHaier },
   { title: 'Delivery timeout', value: orderStatusCodes.isDeliveryTimeout },

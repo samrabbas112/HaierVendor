@@ -45,7 +45,7 @@ const headers = [
   { title: "Phone", key: "phone_number" },
   { title: "City", key: "city" },
   { title: "Status", key: "confirmed" },
-  { title: "Registered At", key: "created_at" },
+  { title: "Registered At", key: "updated_at" },
   { title: "Actions", key: "actions", sortable: false },
 ];
 
@@ -241,8 +241,8 @@ onMounted(fetchCustomers);
           {{ (page - 1) * itemsPerPage + index + 1 }}
         </NuxtLink>
       </template>
-      <template #item.created_at="{ item }">
-        {{ new Date(item.created_at).toLocaleDateString() }} {{ new Date(item.created_at).toLocaleTimeString() }}
+      <template #item.updated_at="{ item }">
+        {{ new Date(item.updated_at).toLocaleDateString() }} {{ new Date(item.updated_at).toLocaleTimeString() }}
 
       </template>
       <!-- Status -->
