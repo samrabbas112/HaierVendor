@@ -33,12 +33,10 @@ const label = computed(() => useAttrs().label as string | undefined);
           $attrs.multiple !== undefined ? 'v-list-select-multiple' : '',
         ],
       },
-      filterable: true // Removed the extra comma here
     }">
       <template v-for="(_, name) in $slots" #[name]="slotProps">
         <slot :name="name" v-bind="slotProps || {}" />
       </template>
     </VSelect>
-
   </div>
 </template>

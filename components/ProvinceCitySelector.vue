@@ -102,38 +102,36 @@ onMounted(() => {
 
 <template>
   <VCol cols="12" :sm="props.addClass ? 12 : 6">
-    <AppSelect
-      v-model="selectedProvince"
-      label="Province"
-      placeholder="Select Province"
-      :items="provinces"
-      :rules="[requiredValidator]"
-      clearable
-      :searchable="true"
-      :disabled="props.mode === 'details' || props.mode === 'disabled'"
-      clear-icon="tabler-x"
-      @update:model-value="(value) => {
-        selectedProvince = value;
-        emit('update:selectedProvinceId', value);
-      }"
-    />
+    <v-autocomplete
+    v-model="selectedProvince"
+    label="Select Province"
+    placeholder="Select Province"
+    :items="provinces"
+    :rules="[requiredValidator]"
+    clearable
+    :searchable="true"
+    :disabled="props.mode === 'details' || props.mode === 'disabled'"
+    clear-icon="tabler-x"
+    @update:model-value="(value) => {
+      selectedProvince = value;
+      emit('update:selectedProvinceId', value);
+    }"
+  ></v-autocomplete>
   </VCol>
   <VCol cols="12" :sm="props.addClass ? 12 : 6">
-    <AppSelect
+    <v-autocomplete
       v-model="selectedCity"
-      label="City"
-      placeholder="Select City"
-      :rules="[requiredValidator]"
+      label="Select City"
       :items="cities"
       :disabled="props.mode === 'details' || !selectedProvince || props.mode === 'disabled'"
-      clearable
-      :searchable="true"
       clear-icon="tabler-x"
+       :rules="[requiredValidator]"
+      clearable
       @update:model-value="(value) => {
         selectedCity = value;
         emit('update:selectedCityId', value);
       }"
-    />
+    ></v-autocomplete>
   </VCol>
 </template>
 
