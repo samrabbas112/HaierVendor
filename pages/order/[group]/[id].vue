@@ -237,6 +237,8 @@ const updateStatus = async () => {
   }
   finally {
     loaderStore.hideLoader()
+    selectedPics.value = [];
+
   }
 }
 
@@ -764,7 +766,7 @@ if (authUser.user_type === 'haier')
                     v-model="inputPics"
                     :disabled="selectedPics.length == 5"
                     show-size
-                    accept="image/png, image/jpeg, image/bmp"
+                    accept="image/png, image/jpeg, image/bmp, .pdf"
                     label="POD Files: Images must be between 1-5"
                     prepend-icon="tabler-camera"
                     multiple

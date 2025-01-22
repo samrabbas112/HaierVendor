@@ -39,7 +39,7 @@ const totalUnseenNotifications = computed(() => {
   if(count > 1000000){
     return '1000000+'
   }
-  return count;
+  return count.toString();
 });
 
 const toggleReadUnread = (isSeen: boolean, Id: number) => {
