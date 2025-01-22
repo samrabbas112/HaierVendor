@@ -168,11 +168,12 @@ export const imageFileValidator = (value: unknown) => {
     'image/png',
     'image/gif',
     'image/webp',
+    'application/pdf',
   ]
 
   for (const file of value) {
     if (file instanceof File && !validImageTypes.includes(file.type))
-      return 'Only image files (JPEG, PNG, GIF, WebP) are allowed.'
+      return 'Only image files (JPEG, PNG, GIF, WebP, pdf) are allowed.'
   }
 
   return true
