@@ -302,7 +302,7 @@ const handleReasonDialog = async () => {
       || !imageFileValidator(selectedPics.value)
     ) {
       snackbarStore.showSnackbar(
-        'Please add between 1 to 5 images/Pdf, and each must not be more than 6MB.',
+        'Please add between 1 to 5 images/pdf, and each must not be more than 6MB.',
         'error',
       )
 
@@ -323,7 +323,7 @@ const handleFileChange = event => {
   if (files && files.length > 0) {
     if (selectedPics.value.length + files.length > 5) {
       snackbarStore.showSnackbar(
-        'Please add between 1 to 5 images, and each must not be more than 6MB.',
+        'Please add between 1 to 5 images/pdf, and each must not be more than 6MB.',
         'error',
       )
 

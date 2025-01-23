@@ -527,7 +527,7 @@ watch([selectedOrderStatus, selectedPaymentMethod], () => {
                     v-model="inputPics"
                     show-size
                     accept="image/png, image/jpeg, image/bmp, application/pdf"
-                    label="POD Files: Images must be between 1-5"
+                    label="POD Files: Images/pdf must be between 1-5"
                     prepend-icon="tabler-camera"
                     multiple
                     :rules="[
