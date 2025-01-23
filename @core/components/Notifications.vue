@@ -11,6 +11,7 @@ interface Props {
   notifications: Notification[];
   badgeProps?: object;
   location?: any;
+  isLoading?: boolean
 }
 interface Emit {
   (e: "read", value: number[]): void;
@@ -81,7 +82,9 @@ const handleConfirm = async (value) => {
       <VCard class="d-flex flex-column">
         <!-- 👉 Header -->
         <VCardItem class="notification-section">
-          <VCardTitle class="text-h6"> Notifications </VCardTitle>
+          <VCardTitle class="text-h6"> Notifications 
+            <VProgressCircular v-if="isLoading" indeterminate size="20"/>
+          </VCardTitle>
           <template #append>
             <VCardTitle
               v-show="props.notifications.length"
@@ -168,7 +171,6 @@ const handleConfirm = async (value) => {
                         toggleReadUnread(notification.isSeen, notification.id)
                       "
                     />
-
                     <!--                    <VIcon-->
                     <!--                      size="20"-->
                     <!--                      icon="tabler-x"-->

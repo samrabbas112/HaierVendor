@@ -6,6 +6,7 @@ const snackBar = useSnackbarStore();
 const notificationStore = useNotificationStore();
 const notificationsObj = computed(() => notificationStore.notifications);
 const router = useRouter();
+const verifyLoading = ref(false);
 
 const removeNotification = (notificationId: number) => {
   apiRequestObj
@@ -33,6 +34,7 @@ const markRead = (notificationId: number[]) => {
 const markUnRead = (notificationId: number[]) => {};
 
 const handleNotificationClick = (notification: Notification) => {
+  verifyLoading.value = true
   apiRequestObj
     .makeRequest(`common/dashboard/verify/order/${notification.link}`, "get")
     .then((response) => {
@@ -42,6 +44,7 @@ const handleNotificationClick = (notification: Notification) => {
         console.log("response", response);
         router.push(`/order/notification/${response.data.uid}`);
       }
+      verifyLoading.value = false
     });
 };
 </script>
@@ -53,5 +56,6 @@ const handleNotificationClick = (notification: Notification) => {
     @read="markRead"
     @unread="markUnRead"
     @click:notification="handleNotificationClick"
+    :isLoading="verifyLoading"
   />
 </template>
