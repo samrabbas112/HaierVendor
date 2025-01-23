@@ -36,7 +36,7 @@ const handleNotificationClick = (notification: Notification) => {
   apiRequestObj
     .makeRequest(`common/dashboard/verify/order/${notification.link}`, "get")
     .then((response) => {
-      if (response.code == 404) {
+      if (response.code == 404 || response.code == 403 ) {
         snackBar.showSnackbar("This order is not available to view", "error");
       } else {
         console.log("response", response);
