@@ -108,7 +108,6 @@ onMounted(() => {
     placeholder="Select Province"
     :items="provinces"
     :rules="[requiredValidator]"
-    clearable
     :searchable="true"
     :disabled="props.mode === 'details' || props.mode === 'disabled'"
     clear-icon="tabler-x"
@@ -126,7 +125,6 @@ onMounted(() => {
       :disabled="props.mode === 'details' || !selectedProvince || props.mode === 'disabled'"
       clear-icon="tabler-x"
        :rules="[requiredValidator]"
-      clearable
       @update:model-value="(value) => {
         selectedCity = value;
         emit('update:selectedCityId', value);

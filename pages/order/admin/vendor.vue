@@ -40,8 +40,8 @@ const headers = [
 const paymentMethods = [
   { title: 'COD', value: 'COD' },
   { title: 'Card', value: 'Card' },
-  { title: 'EasyPaisa', value: 'EasyPaisa' },
-  { title: 'jazzCash', value: 'jazzCash' },
+  { title: 'EasyPaisa', value: 'Easy_Paisa' },
+  { title: 'JazzCash', value: 'Jazz_Cash' },
 ]
 
 const orderTypes = [

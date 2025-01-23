@@ -219,7 +219,7 @@ onMounted(() => {
                   <VCol cols="12">
                     <AppTextField :disabled="true" v-model="userData.phone_number" type="tel"
                       :rules="[requiredValidator, phoneValidator, minLengthValidator(10), numberValidator]"
-                      label="Phone Number" placeholder="+1234567890" />
+                      label="Phone Number" placeholder="03XXXXXXXXX" />
                   </VCol>
     
                   <!-- Submit & Cancel -->
