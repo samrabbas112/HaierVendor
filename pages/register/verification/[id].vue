@@ -224,11 +224,11 @@ onMounted(() => {
     
                   <!-- Submit & Cancel -->
                   <VCol cols="12" class="d-flex justify-center align-center">
-                    <VBtn type="submit" class="me-3" @click.prevent="handleFormAction(true)">
+                    <VBtn type="submit" :disabled="isDeclineLoading" class="me-3" @click.prevent="handleFormAction(true)">
                       <VProgressCircular v-if="isConfirmLoading" indeterminate color="white" />
                       <template v-else> Confirm </template>
                     </VBtn>
-                    <VBtn type="submit" variant="tonal" color="error" @click.prevent="handleFormAction(false)">
+                    <VBtn type="submit" :disabled="isConfirmLoading" variant="tonal" color="error" @click.prevent="handleFormAction(false)">
                       <VProgressCircular v-if="isDeclineLoading" indeterminate color="white" />
                       <template v-else> Decline </template>
                     </VBtn>
