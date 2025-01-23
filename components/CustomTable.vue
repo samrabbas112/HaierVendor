@@ -48,10 +48,12 @@ const resolveMethod = (status: string) => {
     return { text: 'COD', color: 'warning' }
   if (status === 'Card')
     return { text: 'Card', color: 'success' }
-  if (status === 'EasyPaisa')
+  if (status === 'EasyPaisa' || status === 'Easy_Paisa')
     return { text: 'EasyPaisa', color: 'error' }
-  if (status === 'jazzCash')
+  if (status === 'jazzCash' || status === 'jazz_Cash')
     return { text: 'jazzCash', color: 'info' }
+
+  return { text: status.replace('_', ' '), color: 'info' }
 }
 
 const calculateQuantity = specInfo => {

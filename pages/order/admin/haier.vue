@@ -56,8 +56,8 @@ const headers = [
 const paymentMethods = [
   { title: 'COD', value: 'COD' },
   { title: 'Card', value: 'Card' },
-  { title: 'EasyPaisa', value: 'EasyPaisa' },
-  { title: 'JazzCash', value: 'JazzCash' },
+  { title: 'EasyPaisa', value: 'Easy_Paisa' },
+  { title: 'JazzCash', value: 'Jazz_Cash' },
 ]
 
 const orderStatus = [
@@ -488,7 +488,6 @@ watch([selectedOrderStatus, selectedPaymentMethod], () => {
         <VBtn
           color="error"
           @click="handleClick(orderStatusCodes.isDeliveryRefused, 'Do you confirm you want to refuse the delivery of this order?')"
-          class="text-uppercase"
         >
           Delivery Refused
         </VBtn>
@@ -497,7 +496,6 @@ watch([selectedOrderStatus, selectedPaymentMethod], () => {
           color="success"
           variant="tonal"
           @click="handleClick(orderStatusCodes.isClosed, 'Do you confirm you Delivered the Order?')"
-          class="text-uppercase"
         >
           Delivered
         </VBtn>
@@ -527,7 +525,7 @@ watch([selectedOrderStatus, selectedPaymentMethod], () => {
                     v-model="inputPics"
                     show-size
                     accept="image/png, image/jpeg, image/bmp, application/pdf"
-                    label="POD Files: Images/pdf must be between 1-5"
+                    label="POD Files: images/pdf must be between 1-5"
                     prepend-icon="tabler-camera"
                     multiple
                     :rules="[

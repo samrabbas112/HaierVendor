@@ -406,11 +406,11 @@ const headers = [
   { title: 'Product', key: 'productName' },
   { title: 'Variation', key: 'variations' },
   { title: 'Quantity', key: 'quantity' },
-  { title: 'Price', key: 'price' },
+  { title: 'Price', key: 'price', align: 'end' },
 ]
 
 if (authUser.user_type === 'haier')
-  headers.push({ title: 'Product Type', key: 'type', sortable: false })
+  headers.push({ title: 'Product Type', key: 'type', sortable: false, align: 'end' })
 </script>
 
 <template>
@@ -807,7 +807,7 @@ if (authUser.user_type === 'haier')
                     :disabled="selectedPics.length == 5"
                     show-size
                     accept="image/png, image/jpeg, image/bmp, .pdf"
-                    label="POD Files: Images/Pdf must be between 1-5"
+                    label="POD Files: images/pdf must be between 1-5"
                     prepend-icon="tabler-camera"
                     multiple
                     :rules="[
