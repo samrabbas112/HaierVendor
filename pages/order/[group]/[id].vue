@@ -343,7 +343,6 @@ const handleFileChange = event => {
 // Generate image previews
 function generateImagePreviews(files) {
   const previews = files.map(file => {
-    console.log('ahmad', file)
 
     return new Promise(resolve => {
       if (file.type === 'application/pdf') {

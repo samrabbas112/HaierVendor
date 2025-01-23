@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { orderStatusCodes } from '@/libs/order/order-status'
+import pdfLogo from '@images/pdf-logo.png'
 
 const apiRequestObj = useApi()
 const snackbarStore = useSnackbarStore()
@@ -23,6 +24,9 @@ const imagePreviews = ref([])
 const isReasonDialogVisible = ref(false)
 const selectedHaierOrderStatus = ref({})
 const orderId = ref()
+const pdfFiles = ref([])
+const podUrl = ref(false)
+
 
 
 const ordersData = ref({
@@ -296,11 +300,21 @@ const handleFileChange = event => {
 // Generate image previews
 function generateImagePreviews(files) {
   const previews = files.map(file => {
-    const reader = new FileReader()
 
     return new Promise(resolve => {
-      reader.onloadend = () => resolve(reader.result)
-      reader.readAsDataURL(file)
+      if (file.type === 'application/pdf') {
+      // Use PDF logo for the preview and store the PDF file URL
+        const pdfUrl = URL.createObjectURL(file)
+
+        pdfFiles.value.push(pdfUrl) // Store PDF URLs for later access
+        resolve(pdfLogo) // Use PDF logo as the preview
+      }
+      else {
+        const reader = new FileReader()
+
+        reader.onloadend = () => resolve(reader.result)
+        reader.readAsDataURL(file)
+      }
     })
   })
 
@@ -311,7 +325,12 @@ function generateImagePreviews(files) {
 }
 
 // Remove selected file from the list
+// Remove selected file from the list
 function removeFile(index) {
+  if (pdfFiles.value[index]) {
+    URL.revokeObjectURL(pdfFiles.value[index]) // Revoke URL for cleanup
+    pdfFiles.value.splice(index, 1)
+  }
   imagePreviews.value.splice(index, 1)
   selectedPics.value.splice(index, 1)
 }
@@ -335,7 +354,7 @@ const updateStatus = async () => {
 
       // Make the API request
       const { data, status, error, refresh, clear } = await useFetch(
-        'https://haiermall.jochaho.global/api/v2/common/file-upload',
+        'https://v2.jochaho.global/api/v2/common/file-upload',
         {
           method: 'POST', // Specify HTTP method
           body: formData,
@@ -507,7 +526,7 @@ watch([selectedOrderStatus, selectedPaymentMethod], () => {
                     :disabled="selectedPics.length == 5"
                     v-model="inputPics"
                     show-size
-                    accept="image/png, image/jpeg, image/bmp"
+                    accept="image/png, image/jpeg, image/bmp, application/pdf"
                     label="POD Files: Images must be between 1-5"
                     prepend-icon="tabler-camera"
                     multiple
