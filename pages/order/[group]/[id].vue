@@ -302,7 +302,7 @@ const handleReasonDialog = async () => {
       || !imageFileValidator(selectedPics.value)
     ) {
       snackbarStore.showSnackbar(
-        'Please add between 1 to 5 images, and each must not be more than 6MB.',
+        'Please add between 1 to 5 images/Pdf, and each must not be more than 6MB.',
         'error',
       )
 
@@ -343,7 +343,6 @@ const handleFileChange = event => {
 // Generate image previews
 function generateImagePreviews(files) {
   const previews = files.map(file => {
-
     return new Promise(resolve => {
       if (file.type === 'application/pdf') {
       // Use PDF logo for the preview and store the PDF file URL
@@ -382,10 +381,12 @@ const resolveMethod = (status: string) => {
     return { text: 'COD', color: 'warning' }
   if (status === 'Card')
     return { text: 'Card', color: 'success' }
-  if (status === 'EasyPaisa')
+  if (status === 'EasyPaisa' || status === 'Easy_Paisa')
     return { text: 'EasyPaisa', color: 'error' }
-  if (status === 'jazzCash')
+  if (status === 'jazzCash' || status === 'jazz_Cash')
     return { text: 'jazzCash', color: 'info' }
+
+  return { text: status.replace('_', ' '), color: 'info' }
 }
 
 const resolveType = (type: string) => {
@@ -806,7 +807,7 @@ if (authUser.user_type === 'haier')
                     :disabled="selectedPics.length == 5"
                     show-size
                     accept="image/png, image/jpeg, image/bmp, .pdf"
-                    label="POD Files: Images must be between 1-5"
+                    label="POD Files: Images/Pdf must be between 1-5"
                     prepend-icon="tabler-camera"
                     multiple
                     :rules="[
