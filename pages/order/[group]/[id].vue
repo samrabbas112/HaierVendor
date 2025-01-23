@@ -3,6 +3,7 @@ import {
   orderCodeStatus,
   orderStatusCodes,
 } from '../../../libs/order/order-status'
+import pdfLogo from '@images/pdf-logo.png'
 
 const orderData = ref([])
 const isConfirmDialogVisible = ref(false)
@@ -16,6 +17,10 @@ const customReason = ref(null)
 const dialogMsg = ref('Are you sure')
 const reasons = ref([])
 const imagePreviews = ref([])
+
+// Store the actual file data for PDFs
+const pdfFiles = ref([])
+
 const isPodVisible = ref(false)
 const podUrl = ref(false)
 
@@ -188,6 +193,8 @@ const updateStatus = async () => {
       if (status.value == 'success' && data?.value?.status == 200) {
         selectedPics.value = []
         selectedPics.value = data?.value?.data
+
+        // return console.log('ahmad', selectedPics.value)
       }
       else {
         snackbarStore.showSnackbar('Error in uploading files', 'error')
@@ -219,7 +226,7 @@ const updateStatus = async () => {
         return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
       }
       orderData.value.status = response?.data?.pick_status?.id
-      orderData.value.POD =  response?.data?.POD
+      orderData.value.POD = response?.data?.POD
       snackbarStore.showSnackbar(response.message, 'primary')
     }
     else if (response?.code == 403) {
@@ -237,8 +244,7 @@ const updateStatus = async () => {
   }
   finally {
     loaderStore.hideLoader()
-    selectedPics.value = [];
-
+    selectedPics.value = []
   }
 }
 
@@ -337,11 +343,22 @@ const handleFileChange = event => {
 // Generate image previews
 function generateImagePreviews(files) {
   const previews = files.map(file => {
-    const reader = new FileReader()
+    console.log('ahmad', file)
 
     return new Promise(resolve => {
-      reader.onloadend = () => resolve(reader.result)
-      reader.readAsDataURL(file)
+      if (file.type === 'application/pdf') {
+      // Use PDF logo for the preview and store the PDF file URL
+        const pdfUrl = URL.createObjectURL(file)
+
+        pdfFiles.value.push(pdfUrl) // Store PDF URLs for later access
+        resolve(pdfLogo) // Use PDF logo as the preview
+      }
+      else {
+        const reader = new FileReader()
+
+        reader.onloadend = () => resolve(reader.result)
+        reader.readAsDataURL(file)
+      }
     })
   })
 
@@ -353,6 +370,10 @@ function generateImagePreviews(files) {
 
 // Remove selected file from the list
 function removeFile(index) {
+  if (pdfFiles.value[index]) {
+    URL.revokeObjectURL(pdfFiles.value[index]) // Revoke URL for cleanup
+    pdfFiles.value.splice(index, 1)
+  }
   imagePreviews.value.splice(index, 1)
   selectedPics.value.splice(index, 1)
 }
@@ -720,12 +741,31 @@ if (authUser.user_type === 'haier')
               v-for="(pod, index) in orderData?.POD"
               :key="index"
               class="preview-container mr-2 cursor-pointer"
-              @click="() => {
-                podUrl = pod.media_name
-                isPodVisible = !isPodVisible
+              @click="async () => {
+                if (pod.media_type == 'pdf') {
+                  await navigateTo(pod.media_name, {
+                    open: {
+                      target: '_blank',
+                    },
+                  })
+                }
+                else {
+
+                  podUrl = pod.media_name
+                  isPodVisible = !isPodVisible
+                }
               }"
             >
               <VImg
+                v-if="pod.media_type == 'pdf'"
+                :src="pdfLogo"
+                height="150"
+                width="150"
+                :cover="true"
+                :alt="orderData?.order_no"
+              />
+              <VImg
+                v-else
                 :src="pod.media_name"
                 height="150"
                 width="150"
