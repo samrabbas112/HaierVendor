@@ -6,6 +6,7 @@ const snackBar = useSnackbarStore();
 const notificationStore = useNotificationStore();
 const notificationsObj = computed(() => notificationStore.notifications);
 const router = useRouter();
+const verifyLoading = ref(false);
 
 const removeNotification = (notificationId: number) => {
   apiRequestObj
@@ -33,15 +34,17 @@ const markRead = (notificationId: number[]) => {
 const markUnRead = (notificationId: number[]) => {};
 
 const handleNotificationClick = (notification: Notification) => {
+  verifyLoading.value = true
   apiRequestObj
     .makeRequest(`common/dashboard/verify/order/${notification.link}`, "get")
     .then((response) => {
-      if (response.code == 404) {
+      if (response.code == 404 || response.code == 403 ) {
         snackBar.showSnackbar("This order is not available to view", "error");
       } else {
         console.log("response", response);
         router.push(`/order/notification/${response.data.uid}`);
       }
+      verifyLoading.value = false
     });
 };
 </script>
@@ -53,5 +56,6 @@ const handleNotificationClick = (notification: Notification) => {
     @read="markRead"
     @unread="markUnRead"
     @click:notification="handleNotificationClick"
+    :isLoading="verifyLoading"
   />
 </template>
