@@ -109,8 +109,9 @@ onMounted(() => {
     :items="provinces"
     :rules="[requiredValidator]"
     :searchable="true"
+    :clearable="props.mode !== 'disabled'"
+    :clear-icon="props.mode !== 'disabled' ? 'tabler-x' : ''"
     :disabled="props.mode === 'details' || props.mode === 'disabled'"
-    clear-icon="tabler-x"
     @update:model-value="(value) => {
       selectedProvince = value;
       emit('update:selectedProvinceId', value);
@@ -123,8 +124,9 @@ onMounted(() => {
       label="Select City"
       :items="cities"
       :disabled="props.mode === 'details' || !selectedProvince || props.mode === 'disabled'"
-      clear-icon="tabler-x"
        :rules="[requiredValidator]"
+      :clearable="props.mode !== 'disabled'"
+      :clear-icon="props.mode !== 'disabled' ? 'tabler-x' : ''"
       @update:model-value="(value) => {
         selectedCity = value;
         emit('update:selectedCityId', value);

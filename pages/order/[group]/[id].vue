@@ -4,12 +4,18 @@ import {
   orderStatusCodes,
 } from '../../../libs/order/order-status'
 import pdfLogo from '@images/pdf-logo.png'
+import { requiredValidator } from "@/utils/validators";
 
 const orderData = ref([])
+const logistics = ref([])
+
 const isConfirmDialogVisible = ref(false)
+const isLogisticDialogVisible = ref(false)
 const isReasonDialogVisible = ref(false)
 const selectedStatus = ref(12)
 const selectedReason = ref()
+const selectedLogistic = ref()
+const courierVendorDnNo = ref();
 const selectedPics = ref([])
 const inputPics = ref([])
 const fileInput = ref(null)
@@ -21,8 +27,10 @@ const imagePreviews = ref([])
 // Store the actual file data for PDFs
 const pdfFiles = ref([])
 
+
 const isPodVisible = ref(false)
 const podUrl = ref(false)
+const showRejectionTable = ref(false);
 
 const userData = ref({
   fullName: '',
@@ -34,7 +42,9 @@ const userData = ref({
   clientIp: '',
 })
 
+const reasonDetail = ref([]);
 const orderDetail = ref([])
+const rejectionDetail = ref([])
 const subtotal = ref(0)
 const Total = ref(0)
 
@@ -61,6 +71,7 @@ const rejectOrderReasons = [
   'Delivery location mismatch',
   'Other',
 ]
+
 
 const transformOrderDetail = (orderProduct, singleProductTotal) => {
   return {
@@ -93,6 +104,15 @@ const transformData = apiResponse => {
     clientIp: customer.clientIp,
   }
 
+  reasonDetail.value = apiResponse.reasons.map(reason => {
+    return {
+      rejectionReason: reason.reason || 'N/A',
+      vendorName: reason.vendor?.name || 'N/A',
+      rejectedOn: reason.created_at || 'N/A', // Assuming `rejected_on` exists in the API response
+    };
+  });
+
+
   // Set order details
 
   orderDetail.value = apiResponse.orderProduct.map(orderProduct => {
@@ -102,9 +122,11 @@ const transformData = apiResponse => {
       singleProductTotal += spec.amount * spec.purchaseNum
     })
     singleProductTotal += orderProduct.logisticAmount || 0
-
+     
     return transformOrderDetail(orderProduct, singleProductTotal)
   })
+  console.log('orderDetail');
+  console.log(orderDetail.value);
 
   // Return transformed order data
   return {
@@ -118,6 +140,38 @@ const transformData = apiResponse => {
     time: apiResponse.pick_before,
     hidden: apiResponse.hidden,
     POD: apiResponse.POD,
+    logistics_company_id: apiResponse.logistics_company_id,
+    courier_vendor_no: apiResponse.courier_vendor_no,
+  }
+}
+
+const fetchLogistics = async () => {
+  try {
+    loaderStore.showLoader()
+
+    const response = await apiRequestObj.makeRequest(
+      `haier/logistics/list`,
+      'get',
+    )
+
+    if (response && response.success) {
+      console.log(response);
+      logistics.value = response.data
+     
+    }
+
+    else {
+      snackbarStore.showSnackbar(
+        'An error occurred. Please try again.',
+        'error',
+      )
+    }
+  }
+  catch (error) {
+    snackbarStore.showSnackbar('An error occurred. Please try again.', 'error')
+  }
+  finally {
+    loaderStore.hideLoader()
   }
 }
 
@@ -132,8 +186,11 @@ const fetchData = async () => {
 
     if (response && response.success) {
       const singleOrder = response.data
-
       orderData.value = transformData(singleOrder)
+
+      if (orderData.value.status == orderStatusCodes.isRejected) {
+        showRejectionTable.value = true;
+      }
       Total.value = singleOrder.paymentAmount || 0 // Update total with the subtotal
     }
     else if (response?.code === 401 || response?.message === 'Unauthenticated.') {
@@ -226,6 +283,9 @@ const updateStatus = async () => {
         return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
       }
       orderData.value.status = response?.data?.pick_status?.id
+      if (orderData.value.status !== orderStatusCodes.isReadyToShip) {
+        showRejectionTable.value = false;
+      }
       orderData.value.POD = response?.data?.POD
       snackbarStore.showSnackbar(response.message, 'primary')
     }
@@ -253,6 +313,10 @@ const handleClick = (status, text) => {
   selectedStatus.value = status
   isConfirmDialogVisible.value = !isConfirmDialogVisible.value
 }
+const handleLogisticClick = (status) => {
+  selectedStatus.value = status
+  isLogisticDialogVisible.value = !isLogisticDialogVisible.value
+}
 
 const handleConfirm = async value => {
   if (value) {
@@ -275,6 +339,46 @@ const handleConfirm = async value => {
     }
   }
 }
+
+const saveLogisticsData = async (payload) => {
+
+    const response = await apiRequestObj.makeRequest(
+      `haier/logistics/save/${orderData.value.uid}`,
+      'post',
+      payload,
+    )
+    console.log('logistic');
+    console.log(response);
+  if (response?.success) {
+    isLogisticDialogVisible.value = false;
+    showLogisticCard.value = true;
+
+       
+    }
+    
+  
+};
+
+const handleLogisticDialog = async () => {
+
+  if (!selectedLogistic.value || !courierVendorDnNo.value) {
+
+    snackbarStore.showSnackbar('Please fill in all required fields before submitting', 'error')
+    return; // Stop execution
+  }
+
+  const payload = {
+    logistic: selectedLogistic.value,
+    courierVendorDnNo: courierVendorDnNo.value 
+  }
+
+  await Promise.all([
+    updateStatus(), // First API
+    saveLogisticsData(payload), // Second API
+  ])
+  isLogisticDialogVisible.value = false;
+}
+
 
 const handleReasonDialog = async () => {
   if (
@@ -345,7 +449,7 @@ function generateImagePreviews(files) {
   const previews = files.map(file => {
     return new Promise(resolve => {
       if (file.type === 'application/pdf') {
-      // Use PDF logo for the preview and store the PDF file URL
+        // Use PDF logo for the preview and store the PDF file URL
         const pdfUrl = URL.createObjectURL(file)
 
         pdfFiles.value.push(pdfUrl) // Store PDF URLs for later access
@@ -409,6 +513,12 @@ const headers = [
   { title: 'Price', key: 'price', align: 'end' },
 ]
 
+const rejectionHeaders = [
+  { title: 'REJECTION REASON', key: 'rejectionReason' },
+  { title: 'VENDOR NAME', key: 'vendorName' },
+  { title: 'REJECTED ON', key: 'rejectedOn' },
+]
+
 if (authUser.user_type === 'haier')
   headers.push({ title: 'Product Type', key: 'type', sortable: false, align: 'end' })
 </script>
@@ -422,12 +532,7 @@ if (authUser.user_type === 'haier')
             Order #{{ orderData?.order }}
           </h5>
           <div class="d-flex gap-x-2">
-            <VChip
-              v-if="orderData?.status"
-              v-bind="resolveOrderStatus(orderData?.status)"
-              label
-              size="small"
-            />
+            <VChip v-if="orderData?.status" v-bind="resolveOrderStatus(orderData?.status)" label size="small" />
           </div>
         </div>
         <div class="text-body-1">
@@ -438,145 +543,96 @@ if (authUser.user_type === 'haier')
             Payment Method
           </h5>
           <div class="d-flex gap-x-2">
-            <VChip
-              v-if="orderData?.method"
-              v-bind="resolveMethod(orderData?.method)"
-              label
-              size="small"
-            />
+            <VChip v-if="orderData?.method" v-bind="resolveMethod(orderData?.method)" label size="small" />
           </div>
         </div>
       </div>
-      <div
-        v-if="(authUser.user_type === 'haier' && route.params.group !== 'vendor') || authUser.user_type === 'vendor'"
-        class="d-flex gap-x-2"
-      >
-        <PrintOrderDetail
-          :order-data="orderData"
-          :order-detail="orderDetail"
-          :subtotal="subtotal"
-          :Total="Total"
-          :user-data="userData"
-        />
-        <div
-          v-if="authUser.user_type == 'vendor'"
-          class="d-flex gap-x-2"
-        >
-          <VBtn
-            v-if="
-              (orderData?.status == orderStatusCodes.isExclusive || orderData?.status == orderStatusCodes.isPublic)
-                && (!orderData?.hidden || !orderData?.hidden?.includes(String(authUser.vendor_id)))
-            "
-            variant="tonal"
-            color="primary"
-            @click="
+      <div v-if="(authUser.user_type === 'haier' && route.params.group !== 'vendor') || authUser.user_type === 'vendor'"
+        class="d-flex gap-x-2">
+        <PrintOrderDetail :order-data="orderData" :order-detail="orderDetail" :subtotal="subtotal" :Total="Total"
+          :user-data="userData" />
+        <div v-if="authUser.user_type == 'vendor'" class="d-flex gap-x-2">
+          <VBtn v-if="
+            (orderData?.status == orderStatusCodes.isExclusive || orderData?.status == orderStatusCodes.isPublic)
+            && (!orderData?.hidden || !orderData?.hidden?.includes(String(authUser.vendor_id)))
+          " variant="tonal" color="primary" @click="
               handleClick(
                 orderStatusCodes.isPicked,
                 'Do you confirm you want to pick up the order?',
               )
-            "
-          >
+              ">
             Pick
           </VBtn>
 
-          <VBtn
-            v-if="orderData?.status == orderStatusCodes.isExclusive"
-            variant="tonal"
-            color="error"
-            @click="
-              handleClick(
-                orderStatusCodes.isPublic,
-                'Do you confirm you want to move the order to public?',
-              )
-            "
-          >
+          <VBtn v-if="orderData?.status == orderStatusCodes.isExclusive" variant="tonal" color="error" @click="
+            handleClick(
+              orderStatusCodes.isPublic,
+              'Do you confirm you want to move the order to public?',
+            )
+            ">
             Move to Public
           </VBtn>
-          <VBtn
-            v-if="orderData?.status == orderStatusCodes.isPicked"
-            variant="tonal"
-            color="error"
-            @click="
-              handleClick(
-                orderStatusCodes.isRejected,
-                'Do you confirm you want to Reject Order?',
-              )
-            "
-          >
+          <VBtn v-if="orderData?.status == orderStatusCodes.isPicked" variant="tonal" color="error" @click="
+            handleClick(
+              orderStatusCodes.isRejected,
+              'Do you confirm you want to Reject Order?',
+            )
+            ">
             Reject Order
           </VBtn>
         </div>
-        <VBtn
-          v-if="orderData?.status == orderStatusCodes.isPicked || orderData?.status == orderStatusCodes.isReadyToShip"
-          variant="tonal"
-          color="primary"
-          @click="
-            handleClick(
-              orderStatusCodes.isOutForDelivery,
-              'Do you confirm you want to deliver the order now?',
-            )
-          "
-        >
-          Deliver Now
-        </VBtn>
+        
+            <VBtn
+      v-if="orderData?.status == orderStatusCodes.isPicked || orderData?.status == orderStatusCodes.isReadyToShip"
+      variant="tonal"
+      color="primary"
+      @click="authUser.user_type === 'haier' && route.params.group !== 'vendor'
+        ? handleLogisticClick(orderStatusCodes.isOutForDelivery)
+        : handleClick(
+            orderStatusCodes.isOutForDelivery,
+            'Do you confirm you want to deliver the order now?'
+          )"
+    >
+      Deliver Now
+    </VBtn>
+
         <VBtn
           v-if="orderData?.status == orderStatusCodes.isHaier || orderData?.status == orderStatusCodes.isDeliveryTimeout || orderData?.status == orderStatusCodes.isRejected"
-          variant="tonal"
-          color="primary"
-          @click="
+          variant="tonal" color="primary" @click="
             handleClick(
               orderStatusCodes.isReadyToShip,
               'Do you confirm that the order is ready to ship now?',
             )
-          "
-        >
+            ">
           Ready To Ship
         </VBtn>
 
-        <VBtn
-          v-if="orderData?.status == orderStatusCodes.isOutForDelivery"
-          variant="tonal"
-          color="primary"
-          @click="
-            handleClick(
-              orderStatusCodes.isClosed,
-              'Do you confirm you Delivered the Order?',
-            )
-          "
-        >
+        <VBtn v-if="orderData?.status == orderStatusCodes.isOutForDelivery" variant="tonal" color="primary" @click="
+          handleClick(
+            orderStatusCodes.isClosed,
+            'Do you confirm you Delivered the Order?',
+          )
+          ">
           Delivered
         </VBtn>
 
-        <VBtn
-          v-if="orderData?.status == orderStatusCodes.isOutForDelivery "
-          variant="tonal"
-          color="error"
-          @click="
-            handleClick(
-              orderStatusCodes.isDeliveryRefused,
-              'Do you confirm you want to refuse the delivery of this order?',
-            )
-          "
-        >
+        <VBtn v-if="orderData?.status == orderStatusCodes.isOutForDelivery" variant="tonal" color="error" @click="
+          handleClick(
+            orderStatusCodes.isDeliveryRefused,
+            'Do you confirm you want to refuse the delivery of this order?',
+          )
+          ">
           Delivery Refused
         </VBtn>
       </div>
       <div v-else>
-        <PrintOrderDetail
-          :order-data="orderData"
-          :order-detail="orderDetail"
-          :subtotal="subtotal"
-          :Total="Total"
-          :user-data="userData"
-        />
+        <PrintOrderDetail :order-data="orderData" :order-detail="orderDetail" :subtotal="subtotal" :Total="Total"
+          :user-data="userData" />
       </div>
     </div>
 
     <VRow>
-      <VCol
-        cols="12"
-        md="12"
-      >
+      <VCol cols="12" md="12">
         <!-- 👉 Order Details -->
         <VCard class="mb-6">
           <VCardItem>
@@ -590,19 +646,10 @@ if (authUser.user_type === 'haier')
           </VCardItem>
 
           <VDivider />
-          <VDataTable
-            :headers="headers"
-            :items="orderDetail"
-            item-value="productName"
-            class="text-no-wrap"
-          >
+          <VDataTable :headers="headers" :items="orderDetail" item-value="productName" class="text-no-wrap">
             <template #item.productName="{ item }">
               <div class="d-flex gap-x-3 align-center">
-                <VAvatar
-                  size="34"
-                  :image="item.productImage"
-                  :rounded="0"
-                />
+                <VAvatar size="34" :image="item.productImage" :rounded="0" />
 
                 <div class="d-flex flex-column align-start text-wrap w-100">
                   <h6 class="text-h6">
@@ -623,28 +670,16 @@ if (authUser.user_type === 'haier')
             </template>
 
             <template #item.variations="{ item }">
-              <div
-                v-for="(variation, index) in item.variations"
-                :key="index"
-                class="text-body-1 text-wrap w-100"
-              >
+              <div v-for="(variation, index) in item.variations" :key="index" class="text-body-1 text-wrap w-100">
                 {{ variation.name }}
               </div>
             </template>
             <template #item.type="{ item }">
-              <VChip
-                v-if="item.type && authUser.user_type === 'haier'"
-                v-bind="resolveType(item.type)"
-                label
-                size="small"
-              />
+              <VChip v-if="item.type && authUser.user_type === 'haier'" v-bind="resolveType(item.type)" label
+                size="small" />
             </template>
             <template #item.quantity="{ item }">
-              <div
-                v-for="(variation, index) in item.variations"
-                :key="index"
-                class="text-body-1"
-              >
+              <div v-for="(variation, index) in item.variations" :key="index" class="text-body-1">
                 {{ variation.quantity }}
               </div>
             </template>
@@ -659,10 +694,7 @@ if (authUser.user_type === 'haier')
               <table class="text-high-emphasis">
                 <tbody>
                   <tr>
-                    <td
-                      class="text-high-emphasis font-weight-medium"
-                      width="200px"
-                    >
+                    <td class="text-high-emphasis font-weight-medium" width="200px">
                       Total:
                     </td>
                     <td class="font-weight-medium">
@@ -675,72 +707,158 @@ if (authUser.user_type === 'haier')
           </VCardText>
         </VCard>
       </VCol>
-
-      <VCol
-        cols="12"
-        md="12"
-      >
-        <!-- 👉 Customer Details  -->
-        <VCard class="mb-6">
-          <VCardText class="d-flex flex-column gap-y-6">
-            <h5 class="text-h5">
-              Customer details
-            </h5>
-
-            <div class="d-flex align-center">
+      <VRow class="d-flex align-stretch" style="margin: auto">
+        <!-- Customer Details -->
+        <VCol cols="4" md="4">
+          <VCard class="mb-6 h-100">
+            <VCardText class="d-flex flex-column gap-y-6">
+              <h5 class="text-h5">Customer Details</h5>
+              
+              <!-- Customer Name -->
               <div>
-                <h6 class="text-h6">
-                  Customer Name: {{ userData?.fullName }}
-                </h6>
+                <h6 class="text-h6">Customer Name: {{ userData?.fullName }}</h6>
               </div>
-            </div>
-
-            <div class="d-flex flex-column gap-y-1">
-              <div class="d-flex justify-space-between align-center">
-                <h6 class="text-h6">
-                  Contact Info
-                </h6>
+        
+              <!-- Contact Info -->
+              <div>
+                <h6 class="text-h6">Contact Info:</h6>
+                <div>
+                  <span v-if="
+                    orderData?.status == orderStatusCodes.isPublic ||
+                    orderData?.status == orderStatusCodes.isDeliveryTimeout
+                  ">
+                    Mobile: 03*******{{ userData?.contact.slice(-2) }}
+                  </span>
+                  <span v-else>Mobile: {{ userData?.contact }}</span>
+                </div>
               </div>
-              <span
-                v-if="
-                  orderData?.status == orderStatusCodes.isPublic
-                    || orderData?.status == orderStatusCodes.isDeliveryTimeout
-                "
-              >Mobile: 03*******{{ userData?.contact.slice(-2) }}</span>
-              <span v-else>Mobile: {{ userData?.contact }}</span>
-            </div>
-          </VCardText>
-        </VCard>
+            </VCardText>
+          </VCard>
+        </VCol>
+        
+      
+        <!-- Shipping Address -->
+        <VCol cols="4" md="4">
+          <VCard class="mb-6 h-100">
+            <VCardText class="d-flex flex-column gap-y-6">
+              <h5 class="text-h5">Shipping Address</h5>
+              <div class="text-body-1">
+                {{ userData?.address }} <br />
+                {{ userData?.city }} <br />
+                {{ userData?.province }} {{ userData?.country }}
+              </div>
+            </VCardText>
+          </VCard>
+        </VCol>
+      
+        <!-- Rejection Reason -->
+        <VCol cols="4" md="4" v-if="authUser.user_type == 'vendor' && reasonDetail[0]?.rejectionReason">
+          <VCard class="mb-6 h-100">
+            <VCardText class="d-flex flex-column gap-y-6">
+              <h5 class="text-h5">Delivery Refusal Reason</h5>
+              <div class="text-body-1">
+                {{ reasonDetail[0]?.rejectionReason || 'No reason provided' }} <br />
+              </div>
+            </VCardText>
+          </VCard>
+        </VCol>
+      
+        <!-- Logistic Card -->
+        <VCol cols="4" md="4" v-if="authUser.user_type === 'haier' && route.params.group !== 'vendor' && orderData.logistics_company_id">
+          <VCard class="mb-6 h-100">
+            <VCardText class="d-flex flex-column gap-y-6">
+              <h5 class="text-h5">Logistic Information</h5>
+              <div class="d-flex flex-column gap-y-4">
+                <!-- Logistic Type -->
+                <div>
+                  <h6 class="text-h6">Logistic Type: {{ orderData.logistics_company_id }}</h6>
+                </div>
+                <!-- Additional Info -->
+                <div>
+                  <h6 class="text-h6">
+                    <template v-if="orderData?.logistics_company_id == 'Haier Logistics'">
+                      DN No: {{ orderData?.courier_vendor_no || 'N/A' }}
+                    </template>
+                    <template v-else-if="orderData?.logistics_company_id == 'Other'">
+                      Vendor ID: {{ orderData?.courier_vendor_no || 'N/A' }}
+                    </template>
+                    <template v-else-if="orderData?.logistics_company_id == 'LCS' || orderData?.logistics_company_id == 'TCS'">
+                      Courier ID: {{ orderData?.courier_vendor_no || 'N/A' }}
+                    </template>
+                    <template v-else>
+                      No data available
+                    </template>
+                  </h6>
+                </div>
+              </div>
+            </VCardText>
+          </VCard>
+        </VCol>
+        
+      </VRow>
+      
 
-        <!-- 👉 Shipping Address -->
+
+      <VCol cols="12" md="12"
+        v-if="(authUser.user_type === 'haier' && route.params.group !== 'vendor') && showRejectionTable == true">
+        <!-- 👉 Order Details -->
         <VCard class="mb-6">
           <VCardItem>
-            <VCardTitle>Shipping Address</VCardTitle>
+            <template #title>
+              <div class="d-flex gap-x-2">
+                <h5 class="text-h5">
+                  Rejection Reasons
+                </h5>
+              </div>
+            </template>
           </VCardItem>
 
+          <VDivider />
+          <VDataTable :rejectionHeaders="rejectionHeaders" :items="reasonDetail" item-value="orderReason"
+            class="text-no-wrap">
+            <template #item.rejectionReason="{ item }">
+
+
+              <span class="text-body-1">
+                {{ item.rejectionReason }}
+              </span>
+            </template>
+
+            <template #item.vendorName="{ item }">
+              <div class="text-body-1">
+                {{ item.vendorName }}
+              </div>
+            </template>
+            <template #item.rejectedOn="{ item }">
+              <div class="text-body-1">
+                {{ item.rejectedOn }}
+              </div>
+            </template>
+
+
+            <template #bottom />
+          </VDataTable>
+          <VDivider />
+
           <VCardText>
-            <div class="text-body-1">
-              {{ userData?.address }} <br>
-              {{ userData?.city }} <br>
-              {{ userData?.province }}
-              {{ userData?.country }}
+            <div class="d-flex align-end flex-column">
+
             </div>
           </VCardText>
         </VCard>
-        <!-- 👉  Media -->
-        <VCard
-          v-if="orderData.status == orderStatusCodes.isClosed || orderData.status == orderStatusCodes.isDelivered"
-          class="mb-6"
-        >
+      </VCol>
+
+
+      <!-- 👉  Media -->
+      <VCol cols="12" md="12">
+        <VCard v-if="orderData.status == orderStatusCodes.isClosed || orderData.status == orderStatusCodes.isDelivered"
+          class="mb-6">
           <VCardItem>
             <VCardTitle>POD files</VCardTitle>
           </VCardItem>
 
           <VCardText>
-            <div
-              v-for="(pod, index) in orderData?.POD"
-              :key="index"
-              class="preview-container mr-2 cursor-pointer"
+            <div v-for="(pod, index) in orderData?.POD" :key="index" class="preview-container mr-2 cursor-pointer"
               @click="async () => {
                 if (pod.media_type == 'pdf') {
                   await navigateTo(pod.media_name, {
@@ -754,195 +872,144 @@ if (authUser.user_type === 'haier')
                   podUrl = pod.media_name
                   isPodVisible = !isPodVisible
                 }
-              }"
-            >
-              <VImg
-                v-if="pod.media_type == 'pdf'"
-                :src="pdfLogo"
-                height="150"
-                width="150"
-                :cover="true"
-                :alt="orderData?.order_no"
-              />
-              <VImg
-                v-else
-                :src="pod.media_name"
-                height="150"
-                width="150"
-                :cover="true"
-                :alt="orderData?.order_no"
-              />
+              }">
+              <VImg v-if="pod.media_type == 'pdf'" :src="pdfLogo" height="150" width="150" :cover="true"
+                :alt="orderData?.order_no" />
+              <VImg v-else :src="pod.media_name" height="150" width="150" :cover="true" :alt="orderData?.order_no" />
             </div>
           </VCardText>
         </VCard>
       </VCol>
     </VRow>
 
-    <ConfirmDialog
-      v-model:isDialogVisible="isConfirmDialogVisible"
-      :confirmation-question="dialogMsg"
-      cancel-msg="Request cancelled!!"
-      cancel-title="Cancelled"
-      confirm-msg="Your order status changed successfully."
-      confirm-title="Confirmed"
-      @confirm="handleConfirm"
-    />
-    <VDialog
-      v-model="isReasonDialogVisible"
-      max-width="500"
-    >
+    <ConfirmDialog v-model:isDialogVisible="isConfirmDialogVisible" :confirmation-question="dialogMsg"
+      cancel-msg="Request cancelled!!" cancel-title="Cancelled" confirm-msg="Your order status changed successfully."
+      confirm-title="Confirmed" @confirm="handleConfirm" />
+    <VDialog v-model="isLogisticDialogVisible" max-width="500">
       <VCard>
         <VCardText class="text-center px-10 py-6">
-          <VRow
-            cols="12"
-            sm="8"
-          >
+          <VRow cols="12" sm="8">
+            <h2>Delivery information</h2>
             <VCol cols="12">
-              <div v-if="selectedStatus === orderStatusCodes.isClosed">
-                <div class="d-flex align-center gap-x-1">
-                  <VFileInput
-                    id="pod-files"
-                    ref="fileInput"
-                    v-model="inputPics"
-                    :disabled="selectedPics.length == 5"
-                    show-size
-                    accept="image/png, image/jpeg, image/bmp, .pdf"
-                    label="POD Files: images/pdf must be between 1-5"
-                    prepend-icon="tabler-camera"
-                    multiple
-                    :rules="[
-                      maxFiveFilesValidator,
-                      max6mbValidator,
-                      imageFileValidator,
-                    ]"
-                    @change="handleFileChange"
-                    @click:clear="handleFileChange"
-                  />
-                  <VBtn
-                    icon="tabler-plus"
-                    size="24"
-                    color="primary"
-                    :disabled="selectedPics.length == 5"
-                    @click="
-                      () => $refs.fileInput.$el.querySelector('input').click()
-                    "
-                  />
-                </div>
 
-                <!-- Updated Preview Section -->
-                <VCol
-                  v-if="imagePreviews.length > 0"
-                  class="d-flex justify-center flex-wrap gap-3"
-                >
-                  <div
-                    v-for="(preview, index) in imagePreviews"
-                    :key="index"
-                    class="preview-container position-relative"
-                  >
-                    <VImg
-                      :src="preview"
-                      height="150"
-                      width="150"
-                      alt="Preview"
-                      :cover="true"
-                    />
-                    <VBtn
-                      icon="tabler-x"
-                      size="20"
-                      color="error"
-                      class="remove-btn"
-                      :rounded="0"
-                      @click="removeFile(index)"
-                    />
-                  </div>
-                </VCol>
-              </div>
-
-              <AppSelect
-                v-else
-                v-model="selectedReason"
-                label="Select Reason:"
-                placeholder="Please Select your Reason"
-                :items="reasons"
-                clearable
-                clear-icon="tabler-x"
-                class="text-left"
-                :rules="[requiredValidator]"
-              />
+              <AppSelect v-model="selectedLogistic" label="Select Logistics" placeholder="Select Logistics"
+                :items="logistics" clearable clear-icon="tabler-x" class="text-left" :rules="[ requiredValidator ]"
+                @click="fetchLogistics" />
             </VCol>
 
-            <VCol
-              v-if="selectedReason == 'Other'"
-              cols="12"
-            >
-              <AppTextarea
-                v-model="customReason"
-                placeholder="Type Reason"
-                label="Reason:"
+            <VCol v-if="selectedLogistic == 'Other'" cols="12">
+              <AppTextField v-model="courierVendorDnNo" class="text-left" label="Vendor ID" placeholder="Enter Vendor ID"
+                :rules="[ requiredValidator ]" />
+            </VCol>
+
+            <VCol v-if="selectedLogistic == 'TCS' || selectedLogistic == 'LCS'" cols="12">
+              <AppTextField v-model="courierVendorDnNo" class="text-left" label="Courier No" placeholder="Enter Courier No"
+                :rules="[ requiredValidator ]" />
+            </VCol>
+
+            <VCol v-if="selectedLogistic === 'Haier Logistics'" cols="12">
+              <AppTextField 
+                v-model="courierVendorDnNo" 
+                label="DN No" 
+                placeholder="Enter DN No" 
+                :rules="[requiredValidator]" 
                 class="text-left"
-                :rules="[requiredValidator]"
               />
             </VCol>
+            
           </VRow>
 
           <VCardText class="d-flex align-center justify-center gap-2">
-            <VBtn
-              color="success"
-              @click="handleReasonDialog"
-            >
-              Ok
+            <VBtn color="success" @click="handleLogisticDialog">
+              Confirm
             </VBtn>
 
-            <VBtn
-              color="secondary"
-              variant="tonal"
-              @click="
-                () => {
-                  selectedPics = [];
-                  selectedReason = null;
-                  customReason = null;
-                  isReasonDialogVisible = false;
-                }
-              "
-            >
+            <VBtn color="secondary" variant="tonal" @click="() => {
+                selectedPics = [];
+                selectedReason = null;
+                customReason = null;
+                isReasonDialogVisible = false;
+                isLogisticDialogVisible = false;
+              }
+              ">
               Cancel
             </VBtn>
           </VCardText>
         </VCardText>
       </VCard>
     </VDialog>
-    <VDialog
-      v-model="isPodVisible"
-      max-width="600"
-    >
+    <VDialog v-model="isReasonDialogVisible" max-width="500">
       <VCard>
         <VCardText class="text-center px-10 py-6">
-          <VRow
-            cols="12"
-            sm="8"
-          >
+          <VRow cols="12" sm="8">
             <VCol cols="12">
-              <VImg
-                :src="podUrl"
-                height="100%"
-                width="100%"
-                :cover="true"
-                alt="Image"
-              />
+              <div v-if="selectedStatus === orderStatusCodes.isClosed">
+                <div class="d-flex align-center gap-x-1">
+                  <VFileInput id="pod-files" ref="fileInput" v-model="inputPics" :disabled="selectedPics.length == 5"
+                    show-size accept="image/png, image/jpeg, image/bmp, .pdf"
+                    label="POD Files: images/pdf must be between 1-5" prepend-icon="tabler-camera" multiple :rules="[
+                      maxFiveFilesValidator,
+                      max6mbValidator,
+                      imageFileValidator,
+                    ]" @change="handleFileChange" @click:clear="handleFileChange" />
+                  <VBtn icon="tabler-plus" size="24" color="primary" :disabled="selectedPics.length == 5" @click="() => $refs.fileInput.$el.querySelector('input').click()
+                    " />
+                </div>
+
+                <!-- Updated Preview Section -->
+                <VCol v-if="imagePreviews.length > 0" class="d-flex justify-center flex-wrap gap-3">
+                  <div v-for="(preview, index) in imagePreviews" :key="index"
+                    class="preview-container position-relative">
+                    <VImg :src="preview" height="150" width="150" alt="Preview" :cover="true" />
+                    <VBtn icon="tabler-x" size="20" color="error" class="remove-btn" :rounded="0"
+                      @click="removeFile(index)" />
+                  </div>
+                </VCol>
+              </div>
+
+              <AppSelect v-else v-model="selectedReason" label="Select Reason:" placeholder="Please Select your Reason"
+                :items="reasons" clearable clear-icon="tabler-x" class="text-left" :rules="[requiredValidator]" />
+            </VCol>
+
+            <VCol v-if="selectedReason == 'Other'" cols="12">
+              <AppTextarea v-model="customReason" placeholder="Type Reason" label="Reason:" class="text-left"
+                :rules="[requiredValidator]" />
+            </VCol>
+          </VRow>
+
+          <VCardText class="d-flex align-center justify-center gap-2">
+            <VBtn color="success" @click="handleReasonDialog">
+              Ok
+            </VBtn>
+
+            <VBtn color="secondary" variant="tonal" @click="() => {
+                selectedPics = [];
+                selectedReason = null;
+                customReason = null;
+                isReasonDialogVisible = false;
+              }
+              ">
+              Cancel
+            </VBtn>
+          </VCardText>
+        </VCardText>
+      </VCard>
+    </VDialog>
+    <VDialog v-model="isPodVisible" max-width="600">
+      <VCard>
+        <VCardText class="text-center px-10 py-6">
+          <VRow cols="12" sm="8">
+            <VCol cols="12">
+              <VImg :src="podUrl" height="100%" width="100%" :cover="true" alt="Image" />
             </VCol>
           </VRow>
 
           <VCardText class="d-flex align-center justify-end">
-            <VBtn
-              color="primary"
-              variant="tonal"
-              @click="
-                () => {
-                  podUrl = null
-                  isPodVisible = false
-                }
-              "
-            >
+            <VBtn color="primary" variant="tonal" @click="() => {
+                podUrl = null
+                isPodVisible = false
+              }
+              ">
               Close
             </VBtn>
           </VCardText>
@@ -958,6 +1025,7 @@ if (authUser.user_type === 'haier')
   top: 0px;
   right: 0px;
 }
+
 .preview-container {
   position: relative;
   display: inline-block;
