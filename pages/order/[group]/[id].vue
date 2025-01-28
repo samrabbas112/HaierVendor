@@ -30,7 +30,9 @@ const pdfFiles = ref([])
 
 const isPodVisible = ref(false)
 const podUrl = ref(false)
-const showRejectionTable = ref(false);
+const showRejectionTable = ref(false)
+const showRejectionCard = ref(false)
+const showLogisticCard = ref(false)
 
 const userData = ref({
   fullName: '',
@@ -103,15 +105,21 @@ const transformData = apiResponse => {
     contact: customer.mobile.toString(),
     clientIp: customer.clientIp,
   }
+  if(apiResponse.reasons.length !== 0) {
+      showRejectionCard.value = true;
+    }
+
+    if(apiResponse.logistics_company_id) {
+        showLogisticCard.value = true;
+      }
 
   reasonDetail.value = apiResponse.reasons.map(reason => {
     return {
       rejectionReason: reason.reason || 'N/A',
       vendorName: reason.vendor?.name || 'N/A',
       rejectedOn: reason.created_at || 'N/A', // Assuming `rejected_on` exists in the API response
-    };
-  });
-
+    }
+  })
 
   // Set order details
 
@@ -191,6 +199,7 @@ const fetchData = async () => {
       if (orderData.value.status == orderStatusCodes.isRejected) {
         showRejectionTable.value = true;
       }
+     
       Total.value = singleOrder.paymentAmount || 0 // Update total with the subtotal
     }
     else if (response?.code === 401 || response?.message === 'Unauthenticated.') {
@@ -278,6 +287,9 @@ const updateStatus = async () => {
     if (response?.success) {
       const updatedStatus = response?.data?.pick_status?.id
       if (updatedStatus == orderStatusCodes.isRejected || updatedStatus == orderStatusCodes.isPublic) {
+        showRejectionCard.value = true
+      }
+      if (updatedStatus == orderStatusCodes.isRejected || updatedStatus == orderStatusCodes.isPublic) {
         snackbarStore.showSnackbar(response.message, 'info')
 
         return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
@@ -350,8 +362,10 @@ const saveLogisticsData = async (payload) => {
     console.log('logistic');
     console.log(response);
   if (response?.success) {
+    orderData.value = transformData(response.data)
     isLogisticDialogVisible.value = false;
     showLogisticCard.value = true;
+
 
        
     }
@@ -377,6 +391,7 @@ const handleLogisticDialog = async () => {
     saveLogisticsData(payload), // Second API
   ])
   isLogisticDialogVisible.value = false;
+  showLogisticCard.value = true;
 }
 
 
@@ -707,38 +722,28 @@ if (authUser.user_type === 'haier')
           </VCardText>
         </VCard>
       </VCol>
-      <VRow class="d-flex align-stretch" style="margin: auto">
+      <VRow class="d-flex align-stretch" style="margin: auto; gap: 16px;">
         <!-- Customer Details -->
-        <VCol cols="4" md="4">
+        <VCol v-show="true" :class="showRejectionCard || showLogisticCard ? 'col-4' : 'col-6'">
           <VCard class="mb-6 h-100">
             <VCardText class="d-flex flex-column gap-y-6">
               <h5 class="text-h5">Customer Details</h5>
-              
-              <!-- Customer Name -->
               <div>
                 <h6 class="text-h6">Customer Name: {{ userData?.fullName }}</h6>
               </div>
-        
-              <!-- Contact Info -->
               <div>
                 <h6 class="text-h6">Contact Info:</h6>
-                <div>
-                  <span v-if="
-                    orderData?.status == orderStatusCodes.isPublic ||
-                    orderData?.status == orderStatusCodes.isDeliveryTimeout
-                  ">
-                    Mobile: 03*******{{ userData?.contact.slice(-2) }}
-                  </span>
-                  <span v-else>Mobile: {{ userData?.contact }}</span>
-                </div>
+                <span v-if="orderData?.status === orderStatusCodes.isPublic || orderData?.status === orderStatusCodes.isDeliveryTimeout">
+                  Mobile: 03*******{{ userData?.contact.slice(-2) }}
+                </span>
+                <span v-else>Mobile: {{ userData?.contact }}</span>
               </div>
             </VCardText>
           </VCard>
         </VCol>
-        
       
         <!-- Shipping Address -->
-        <VCol cols="4" md="4">
+        <VCol v-show="true" :class="showRejectionCard || showLogisticCard ? 'col-4' : 'col-6'">
           <VCard class="mb-6 h-100">
             <VCardText class="d-flex flex-column gap-y-6">
               <h5 class="text-h5">Shipping Address</h5>
@@ -752,37 +757,35 @@ if (authUser.user_type === 'haier')
         </VCol>
       
         <!-- Rejection Reason -->
-        <VCol cols="4" md="4" v-if="authUser.user_type == 'vendor' && reasonDetail[0]?.rejectionReason">
+        <VCol v-if="authUser.user_type === 'vendor' && showRejectionCard" class="col-4">
           <VCard class="mb-6 h-100">
             <VCardText class="d-flex flex-column gap-y-6">
               <h5 class="text-h5">Delivery Refusal Reason</h5>
               <div class="text-body-1">
-                {{ reasonDetail[0]?.rejectionReason || 'No reason provided' }} <br />
+                {{ reasonDetail[0]?.rejectionReason || 'No reason provided' }}
               </div>
             </VCardText>
           </VCard>
         </VCol>
       
         <!-- Logistic Card -->
-        <VCol cols="4" md="4" v-if="authUser.user_type === 'haier' && route.params.group !== 'vendor' && orderData.logistics_company_id">
+        <VCol v-if="authUser.user_type === 'haier' && route.params.group !== 'vendor' && showLogisticCard" class="col-4">
           <VCard class="mb-6 h-100">
             <VCardText class="d-flex flex-column gap-y-6">
               <h5 class="text-h5">Logistic Information</h5>
               <div class="d-flex flex-column gap-y-4">
-                <!-- Logistic Type -->
                 <div>
                   <h6 class="text-h6">Logistic Type: {{ orderData.logistics_company_id }}</h6>
                 </div>
-                <!-- Additional Info -->
                 <div>
                   <h6 class="text-h6">
-                    <template v-if="orderData?.logistics_company_id == 'Haier Logistics'">
+                    <template v-if="orderData?.logistics_company_id === 'Haier Logistics'">
                       DN No: {{ orderData?.courier_vendor_no || 'N/A' }}
                     </template>
-                    <template v-else-if="orderData?.logistics_company_id == 'Other'">
+                    <template v-else-if="orderData?.logistics_company_id === 'Other'">
                       Vendor ID: {{ orderData?.courier_vendor_no || 'N/A' }}
                     </template>
-                    <template v-else-if="orderData?.logistics_company_id == 'LCS' || orderData?.logistics_company_id == 'TCS'">
+                    <template v-else-if="['LCS', 'TCS'].includes(orderData?.logistics_company_id)">
                       Courier ID: {{ orderData?.courier_vendor_no || 'N/A' }}
                     </template>
                     <template v-else>
@@ -794,8 +797,8 @@ if (authUser.user_type === 'haier')
             </VCardText>
           </VCard>
         </VCol>
-        
       </VRow>
+      
       
 
 
