@@ -38,6 +38,8 @@ export const useAuthStore = defineStore("auth", () => {
       user: loginData.user,
       token: loginData.token,
     };
+
+    localStorage.setItem('notification_subscribe', 'haier')
   };
 
   /**
@@ -51,6 +53,8 @@ export const useAuthStore = defineStore("auth", () => {
     authUser.value = null;
     const userAbilityRules = useCookie("userAbilityRules");
     userAbilityRules.value = null;
+    localStorage.clear('notification_subscribe')
+
   };
 
   /**
