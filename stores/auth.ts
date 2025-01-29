@@ -39,7 +39,7 @@ export const useAuthStore = defineStore("auth", () => {
       token: loginData.token,
     };
 
-    localStorage.setItem('notification_subscribe', 'haier')
+    localStorage.setItem('notification_subscribe', true)
   };
 
   /**
@@ -53,7 +53,7 @@ export const useAuthStore = defineStore("auth", () => {
     authUser.value = null;
     const userAbilityRules = useCookie("userAbilityRules");
     userAbilityRules.value = null;
-    localStorage.clear('notification_subscribe')
+    localStorage.setItem('notification_subscribe',false)
 
   };
 
