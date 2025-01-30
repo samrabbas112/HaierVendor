@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import type { Messaging } from "firebase/messaging";
+import {deleteToken, type Messaging} from "firebase/messaging";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import { useNotificationStore } from "@/stores/notification";
 
@@ -78,6 +78,15 @@ export default defineNuxtPlugin(() => {
     }
   };
 
+  const revokeToken = async () => {
+    try {
+      await deleteToken(messaging);
+      localStorage.removeItem("firebaseToken");
+    } catch (err) {
+      console.error("Error revoking token:", err);
+    }
+  }
+
   const displayNotification = (message: { title: string; body: string }) => {
     if (Notification.permission === "granted") {
       useNotificationStore().saveNotification(message);
@@ -109,6 +118,7 @@ export default defineNuxtPlugin(() => {
         requestNotificationPermission,
         createGetToken,
         messaging,
+        revokeToken,
       },
     },
   };

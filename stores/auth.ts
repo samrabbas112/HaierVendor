@@ -39,7 +39,7 @@ export const useAuthStore = defineStore("auth", () => {
       token: loginData.token,
     };
 
-    localStorage.setItem('notification_subscribe', true)
+    localStorage.setItem('notification_subscribe', 'haier')
   };
 
   /**
@@ -50,11 +50,13 @@ export const useAuthStore = defineStore("auth", () => {
     token.value = null;
 
     const authUser = useCookie("auth");
+    if(authUser.value != null) {
+      const { $firebaseMessaging } = useNuxtApp();
+      $firebaseMessaging.revokeToken();
+    }
     authUser.value = null;
     const userAbilityRules = useCookie("userAbilityRules");
     userAbilityRules.value = null;
-    localStorage.setItem('notification_subscribe',false)
-
   };
 
   /**

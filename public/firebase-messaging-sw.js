@@ -26,8 +26,6 @@ messaging.onBackgroundMessage(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload)
     console.log('notification on [firebase-messaging-sw.js]')
 
-  if(localStorage.getItem('notification_subscribe')){
-
       const notificationTitle = payload.notification.title;
       const notificationOptions = {
           body: payload.notification,
@@ -36,7 +34,6 @@ messaging.onBackgroundMessage(function(payload) {
         
         const channel = new BroadcastChannel('fcmNotificationChannel');
         channel.postMessage({ type: 'notification', data: notificationOptions });
-    }
 
     // Show notification in the service worker
     // eslint-disable-next-line no-restricted-globals
