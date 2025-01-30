@@ -203,7 +203,6 @@ const fetchData = async () => {
         `common/order/vendor-list/${response.data.city}`,
         'get',
       )
-      console.log(vendorResponse);
       if (vendorResponse && vendorResponse.success) {
         vendorsList.value = vendorResponse.data.map(vendor => ({
           title: vendor.name,
@@ -375,6 +374,7 @@ const handleTransfer = async () => {
     selectedVendor: selectedVendor.value,
     orderId: orderData.value.id
   }
+
   if(orderData?.value.order_type.toUpperCase() != 'NORMAL') {
     snackbarStore.showSnackbar('Exclusive or B-category orders cannot be assigned to vendors', 'error')
     return;
@@ -393,7 +393,7 @@ const handleTransfer = async () => {
 
   if (response?.success) {
     snackbarStore.showSnackbar('Order Transferred Successfully', 'success')
-    return navigateTo(`/order/admin/vendor/${response?.data?.uid}`)
+    return navigateTo(`/order/vendor/${response?.data?.uid}`)
   }
 
 
@@ -633,7 +633,7 @@ if (authUser.user_type === 'haier')
               ">
             Pick
           </VBtn>
-          <VBtn v-if="orderData?.status == orderStatusCodes.isPicked" variant="tonal" color="error" @click="
+          <VBtn v-if="orderData?.status == orderStatusCodes.isPicked || orderData?.status == orderStatusCodes.isAssignedByHaier" variant="tonal" color="error" @click="
             handleClick(
               orderStatusCodes.isRejected,
               'Do you confirm you want to Reject Order?',
@@ -644,7 +644,7 @@ if (authUser.user_type === 'haier')
         </div>
         
             <VBtn
-      v-if="orderData?.status == orderStatusCodes.isPicked || orderData?.status == orderStatusCodes.isReadyToShip"
+      v-if="orderData?.status == orderStatusCodes.isPicked || orderData?.status == orderStatusCodes.isReadyToShip || orderData?.status == orderStatusCodes.isAssignedByHaier"
       variant="tonal"
       color="primary"
       @click="authUser.user_type === 'haier' && route.params.group !== 'vendor'
@@ -657,7 +657,7 @@ if (authUser.user_type === 'haier')
       Deliver Now
       </VBtn>
         <VBtn
-          v-if="(orderData?.status == orderStatusCodes.isRejected || orderData?.status == orderStatusCodes.isDeliveryRefused || orderData?.status == orderStatusCodes.isHaier) && (orderData?.POD == 'COD')"
+          v-if="(orderData?.status == orderStatusCodes.isRejected || orderData?.status == orderStatusCodes.isDeliveryTimeout || orderData?.status == orderStatusCodes.isHaier) && (orderData?.POD == 'COD')"
           variant="tonal" color="error" @click="isTransferDialogVisible = !isTransferDialogVisible">
           Transfer Order
         </VBtn>
