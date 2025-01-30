@@ -34,6 +34,7 @@ const orderStatus = [
   { title: "Out for delivery", value: orderStatusCodes.isOutForDelivery },
   { title: "Delivery Refused", value: orderStatusCodes.isDeliveryRefused },
   { title: "Received", value: orderStatusCodes.isClosed },
+  { title: "Assigned By Haier", value: orderStatusCodes.isAssignedByHaier },
 ];
 
 const transformData = (apiResponse) => {

@@ -59,6 +59,8 @@ const orderStatus = [
   { title: 'Delivery timeout', value: orderStatusCodes.isDeliveryTimeout },
   { title: 'Rejected', value: orderStatusCodes.isRejected },
   { title: 'Cancelled', value: orderStatusCodes.isCancelled },
+  { title: "Assigned By Haier", value: orderStatusCodes.isAssignedByHaier },
+
 ]
 
 const transformData = apiResponse => {
