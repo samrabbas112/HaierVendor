@@ -11,9 +11,11 @@ const logistics = ref([])
 
 const isConfirmDialogVisible = ref(false)
 const isLogisticDialogVisible = ref(false)
+const isTransferDialogVisible = ref(false)
 const isReasonDialogVisible = ref(false)
 const selectedStatus = ref(12)
 const selectedReason = ref()
+const selectedVendor = ref()
 const selectedLogistic = ref()
 const courierVendorDnNo = ref();
 const selectedPics = ref([])
@@ -33,6 +35,7 @@ const podUrl = ref(false)
 const showRejectionTable = ref(false)
 const showRejectionCard = ref(false)
 const showLogisticCard = ref(false)
+const vendorsList = ref([]);
 
 const userData = ref({
   fullName: '',
@@ -122,7 +125,6 @@ const transformData = apiResponse => {
   })
 
   // Set order details
-
   orderDetail.value = apiResponse.orderProduct.map(orderProduct => {
     let singleProductTotal = 0
     orderProduct.specInfo.forEach(spec => {
@@ -147,13 +149,15 @@ const transformData = apiResponse => {
     date: apiResponse.created_at,
     time: apiResponse.pick_before,
     hidden: apiResponse.hidden,
-    POD: apiResponse.POD,
+    POD: apiResponse.payment_method,
     logistics_company_id: apiResponse.logistics_company_id,
     courier_vendor_no: apiResponse.courier_vendor_no,
+    order_type : apiResponse.order_type
   }
 }
 
-const fetchLogistics = async () => {
+
+  const fetchLogistics = async () => {
   try {
     loaderStore.showLoader()
 
@@ -194,6 +198,19 @@ const fetchData = async () => {
 
     if (response && response.success) {
       const singleOrder = response.data
+      console.log(response.data.city);
+      const vendorResponse = await apiRequestObj.makeRequest(
+        `common/order/vendor-list/${response.data.city}`,
+        'get',
+      )
+      console.log(vendorResponse);
+      if (vendorResponse && vendorResponse.success) {
+        vendorsList.value = vendorResponse.data.map(vendor => ({
+          title: vendor.name,
+          value: vendor.id,
+        }));
+
+      }
       orderData.value = transformData(singleOrder)
 
       if (orderData.value.status == orderStatusCodes.isRejected) {
@@ -350,6 +367,36 @@ const handleConfirm = async value => {
       await updateStatus()
     }
   }
+}
+
+const handleTransfer = async () => {
+
+  const payload = {
+    selectedVendor: selectedVendor.value,
+    orderId: orderData.value.id
+  }
+  if(orderData?.value.order_type.toUpperCase() != 'NORMAL') {
+    snackbarStore.showSnackbar('Exclusive or B-category orders cannot be assigned to vendors', 'error')
+    return;
+  }
+
+  if (!selectedVendor.value) {
+    snackbarStore.showSnackbar('Please select vendro before submitting', 'error')
+    return;
+  }
+  const response = await apiRequestObj.makeRequest(
+    `common/order/vendorTransfer`,
+    'post',
+    payload,
+  )
+
+
+  if (response?.success) {
+    snackbarStore.showSnackbar('Order Transferred Successfully', 'success')
+    return navigateTo(`/order/admin/vendor/${response?.data?.uid}`)
+  }
+
+
 }
 
 const saveLogisticsData = async (payload) => {
@@ -566,6 +613,14 @@ if (authUser.user_type === 'haier')
         class="d-flex gap-x-2">
         <PrintOrderDetail :order-data="orderData" :order-detail="orderDetail" :subtotal="subtotal" :Total="Total"
           :user-data="userData" />
+        <VBtn v-if="(orderData?.status == orderStatusCodes.isExclusive && authUser.user_type == 'vendor') || (orderData?.status == orderStatusCodes.isHaier && orderData?.order_type == 'NORMAL' && orderData?.POD == 'COD' )" variant="tonal" color="error" @click="
+            handleClick(
+              orderStatusCodes.isPublic,
+              'Do you confirm you want to move the order to public?',
+            )
+            ">
+          Move to Public
+        </VBtn>
         <div v-if="authUser.user_type == 'vendor'" class="d-flex gap-x-2">
           <VBtn v-if="
             (orderData?.status == orderStatusCodes.isExclusive || orderData?.status == orderStatusCodes.isPublic)
@@ -577,15 +632,6 @@ if (authUser.user_type === 'haier')
               )
               ">
             Pick
-          </VBtn>
-
-          <VBtn v-if="orderData?.status == orderStatusCodes.isExclusive" variant="tonal" color="error" @click="
-            handleClick(
-              orderStatusCodes.isPublic,
-              'Do you confirm you want to move the order to public?',
-            )
-            ">
-            Move to Public
           </VBtn>
           <VBtn v-if="orderData?.status == orderStatusCodes.isPicked" variant="tonal" color="error" @click="
             handleClick(
@@ -609,7 +655,12 @@ if (authUser.user_type === 'haier')
           )"
     >
       Deliver Now
-    </VBtn>
+      </VBtn>
+        <VBtn
+          v-if="(orderData?.status == orderStatusCodes.isRejected || orderData?.status == orderStatusCodes.isDeliveryRefused || orderData?.status == orderStatusCodes.isHaier) && (orderData?.POD == 'COD')"
+          variant="tonal" color="error" @click="isTransferDialogVisible = !isTransferDialogVisible">
+          Transfer Order
+        </VBtn>
 
         <VBtn
           v-if="orderData?.status == orderStatusCodes.isHaier || orderData?.status == orderStatusCodes.isDeliveryTimeout || orderData?.status == orderStatusCodes.isRejected"
@@ -888,6 +939,48 @@ if (authUser.user_type === 'haier')
     <ConfirmDialog v-model:isDialogVisible="isConfirmDialogVisible" :confirmation-question="dialogMsg"
       cancel-msg="Request cancelled!!" cancel-title="Cancelled" confirm-msg="Your order status changed successfully."
       confirm-title="Confirmed" @confirm="handleConfirm" />
+<!--    Transfer Order-->
+    <VDialog v-model="isTransferDialogVisible" max-width="500">
+      <VCard>
+        <VCardText class="text-center px-10 py-6">
+          <VRow cols="12" sm="8">
+            <h2>Transfer Order</h2>
+            <VCol cols="12">
+              <v-autocomplete
+                v-model="selectedVendor"
+                label="Select Vendor"
+                :items="vendorsList"
+                :rules="[requiredValidator]"
+                :clearable="disabled"
+                :clear-icon="tabler-x"
+                :class="text-left"
+              ></v-autocomplete>
+
+            </VCol>
+            
+          </VRow>
+
+          <VCardText class="d-flex align-center justify-center gap-2">
+            <VBtn color="success" @click="handleTransfer">
+              Transfer
+            </VBtn>
+
+            <VBtn color="secondary" variant="tonal" @click="() => {
+                selectedPics = [];
+                selectedReason = null;
+                customReason = null;
+                isReasonDialogVisible = false;
+                isLogisticDialogVisible = false;
+                isTransferDialogVisible = false;
+
+              }
+              ">
+              Cancel
+            </VBtn>
+          </VCardText>
+        </VCardText>
+      </VCard>
+    </VDialog>
     <VDialog v-model="isLogisticDialogVisible" max-width="500">
       <VCard>
         <VCardText class="text-center px-10 py-6">
@@ -896,30 +989,30 @@ if (authUser.user_type === 'haier')
             <VCol cols="12">
 
               <AppSelect v-model="selectedLogistic" label="Select Logistics" placeholder="Select Logistics"
-                :items="logistics" clearable clear-icon="tabler-x" class="text-left" :rules="[ requiredValidator ]"
-                @click="fetchLogistics" />
+                         :items="logistics" clearable clear-icon="tabler-x" class="text-left" :rules="[ requiredValidator ]"
+                         @click="fetchLogistics" />
             </VCol>
 
             <VCol v-if="selectedLogistic == 'Other'" cols="12">
               <AppTextField v-model="courierVendorDnNo" class="text-left" label="Vendor ID" placeholder="Enter Vendor ID"
-                :rules="[ requiredValidator ]" />
+                            :rules="[ requiredValidator ]" />
             </VCol>
 
             <VCol v-if="selectedLogistic == 'TCS' || selectedLogistic == 'LCS'" cols="12">
               <AppTextField v-model="courierVendorDnNo" class="text-left" label="Courier No" placeholder="Enter Courier No"
-                :rules="[ requiredValidator ]" />
+                            :rules="[ requiredValidator ]" />
             </VCol>
 
             <VCol v-if="selectedLogistic === 'Haier Logistics'" cols="12">
-              <AppTextField 
-                v-model="courierVendorDnNo" 
-                label="DN No" 
-                placeholder="Enter DN No" 
-                :rules="[requiredValidator]" 
+              <AppTextField
+                v-model="courierVendorDnNo"
+                label="DN No"
+                placeholder="Enter DN No"
+                :rules="[requiredValidator]"
                 class="text-left"
               />
             </VCol>
-            
+
           </VRow>
 
           <VCardText class="d-flex align-center justify-center gap-2">

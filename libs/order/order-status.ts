@@ -32,6 +32,7 @@ export const orderCodeStatus = {
   15: { text: "Direct", color: "info" },
   16: { text: "In Direct", color: "primary" },
   20: { text: "Cancelled", color: "error" },
+  21: { text: "Assigned By Haier", color: "primary" },
 };
 
 // export const orderCodeStatus = {
