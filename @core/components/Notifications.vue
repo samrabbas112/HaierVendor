@@ -36,7 +36,7 @@ const markAllReadOrUnread = () => {
 };
 
 const totalUnseenNotifications = computed(() => {
-  const count = props.notifications.filter((item) => item.isSeen === false).length;
+  let count = props.notifications.filter((item) => item.isSeen === false).length;
   if(count > 1000000){
     return '1000000+'
   }
