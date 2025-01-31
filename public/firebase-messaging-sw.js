@@ -14,7 +14,7 @@ firebase.initializeApp({
     projectId: 'haier-mall',
     storageBucket: 'haier-mall.appspot.com',
     messagingSenderId: '870746406313',
-    appId: '1:870746406313:web:fbeec57b0054007de998b8',
+    appId: "1:870746406313:web:fbeec57b0054007de998b8",
     measurementId: 'G-EKBSHX9S5Y',
 })
 

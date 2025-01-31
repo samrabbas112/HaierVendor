@@ -15,9 +15,10 @@ export default defineNuxtPlugin(() => {
     projectId: 'haier-mall',
     storageBucket: 'haier-mall.appspot.com',
     messagingSenderId: '870746406313',
-    appId: '1:870746406313:web:fbeec57b0054',
+    appId: "1:870746406313:web:fbeec57b0054007de998b8",
   }
-  const vapidKey = 'BLsZZXVCKKMPSkrHVr2UUWRE8ioL9H2exfrSVHMKXvWqtLYaC4C8Le9V33hhKieu1DBjBBEZVEZ9gGYO6yK9WVs'
+
+  const vapidKey = 'BLsZZXVCKKMPSkrHVr2UUWRE8ioL9H2exfrSVHMKXvWqtLYaC4C8Le9V33hhKieu1DBjBBEZVEZ9gGYO6yK9WVs';
   const firebaseApp = initializeApp(firebaseConfig)
   const messaging: Messaging = getMessaging(firebaseApp)
 
