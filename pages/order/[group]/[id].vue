@@ -576,9 +576,9 @@ const headers = [
 ]
 
 const rejectionHeaders = [
-  { title: 'REJECTION REASON', key: 'rejectionReason' },
-  { title: 'VENDOR NAME', key: 'vendorName' },
-  { title: 'REJECTED ON', key: 'rejectedOn' },
+  { title: 'Rejection Reason', key: 'rejectionReason' },
+  { title: 'Vendor Name', key: 'vendorName' },
+  { title: 'Rejected On', key: 'rejectedOn' },
 ]
 
 if (authUser.user_type === 'haier')
@@ -868,7 +868,7 @@ if (authUser.user_type === 'haier')
           </VCardItem>
 
           <VDivider />
-          <VDataTable :rejectionHeaders="rejectionHeaders" :items="reasonDetail" item-value="orderReason"
+          <VDataTable :headers="rejectionHeaders" :items="reasonDetail" item-value="orderReason"
             class="text-no-wrap">
             <template #item.rejectionReason="{ item }">
 
@@ -885,7 +885,7 @@ if (authUser.user_type === 'haier')
             </template>
             <template #item.rejectedOn="{ item }">
               <div class="text-body-1">
-                {{ item.rejectedOn }}
+                {{ new Date(item.rejectedOn).toLocaleDateString() }} {{  new Date(item.rejectedOn).toLocaleTimeString() }}
               </div>
             </template>
 
