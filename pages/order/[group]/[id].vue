@@ -119,7 +119,7 @@ const transformData = apiResponse => {
       reasonDetail.value = (apiResponse.reasons ?? []) // Ensure it's an array
   .filter(reason => {
     if (authUser.user_type === 'haier') {
-      return reason.vendor?.type === 'admin';
+      return reason.vendor?.type === 'haier';
     } else if (authUser.user_type === 'vendor') {
       return reason.vendor?.type === 'vendor';
     }
