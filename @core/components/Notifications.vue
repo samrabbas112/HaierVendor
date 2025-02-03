@@ -40,6 +40,7 @@ const totalUnseenNotifications = computed(() => {
   if(count > 1000000){
     return '1000000+'
   }
+  count += 100;
   return count.toString();
 });
 
