@@ -566,6 +566,7 @@ const resolveType = (type: string) => {
 
 onMounted(async () => {
   await fetchData()
+  fetchLogistics();
 })
 
 const headers = [
@@ -990,7 +991,7 @@ if (authUser.user_type === 'haier')
 
               <AppSelect v-model="selectedLogistic" label="Select Logistics" placeholder="Select Logistics"
                          :items="logistics" clearable clear-icon="tabler-x" class="text-left" :rules="[ requiredValidator ]"
-                         @click="fetchLogistics" />
+                          />
             </VCol>
 
             <VCol v-if="selectedLogistic == 'Other'" cols="12">

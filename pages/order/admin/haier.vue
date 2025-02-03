@@ -6,8 +6,10 @@ const apiRequestObj = useApi()
 const snackbarStore = useSnackbarStore()
 const loaderStore = useLoaderStore()
 const notificationStore = useNotificationStore()
+const logistics = ref([])
 
 const searchQuery = ref("");
+const isLogisticDialogVisible = ref(false)
 const selectedPaymentMethod = ref();
 const selectedOrderStatus = ref();
 const isDeliveredRefusalDialogVisible = ref(false);
@@ -26,7 +28,8 @@ const selectedHaierOrderStatus = ref({})
 const orderId = ref()
 const pdfFiles = ref([])
 const podUrl = ref(false)
-
+const selectedLogistic = ref()
+const courierVendorDnNo = ref();
 
 
 const ordersData = ref({
@@ -120,6 +123,28 @@ const orderHaierStatuses = [
 
 let previousSearchQuery = "";
 
+const handleLogisticDialog = async () => {
+
+if (!selectedLogistic.value || !courierVendorDnNo.value) {
+
+  snackbarStore.showSnackbar('Please fill in all required fields before submitting', 'error')
+  return; // Stop execution
+}
+
+orderId.value = Object.keys(selectedHaierOrderStatus.value)[0]
+
+const payload = {
+  logistic: selectedLogistic.value,
+  courierVendorDnNo: courierVendorDnNo.value 
+}
+
+await Promise.all([
+  updateStatus(), 
+  saveLogisticsData(payload), 
+])
+isLogisticDialogVisible.value = false;
+}
+
 const makeSearch = async page => {
   // return console.log("search api hit", typeof page, searchQuery.value, page);
   console.log('search function hit', searchQuery.value)
@@ -177,6 +202,7 @@ const makeSearch = async page => {
 
 onMounted(() => {
   makeSearch(1);
+  fetchLogistics();
 });
 
 watch(() => notificationStore.notifications, (newNotifications, oldNotifications) => {
@@ -184,14 +210,15 @@ watch(() => notificationStore.notifications, (newNotifications, oldNotifications
     makeSearch(1) // Call makeSearch to update the order list
 }, { deep: true });
 
-const handleSelectedOrderStatus = (newSelectedStatus) => {
-     
+const handleSelectedOrderStatus = (newSelectedStatus,city) => {
+ 
   if(newSelectedStatus == orderStatusCodes.isReadyToShip) {
     handleClick(orderStatusCodes.isReadyToShip, 'Do you confirm that the order is ready to ship now?');
   }
 
   else if(newSelectedStatus == orderStatusCodes.isOutForDelivery) {
-    handleClick(orderStatusCodes.isOutForDelivery, 'Do you confirm you Delivered the Order?');
+    handleLogisticClick(orderStatusCodes.isOutForDelivery,city);
+
 
   } 
 
@@ -208,6 +235,56 @@ const handleClick = (status, text) => {
   isConfirmDialogVisible.value = !isConfirmDialogVisible.value
   isDeliveredRefusalDialogVisible.value = false
 }
+const fetchLogistics = async () => {
+  try {
+    loaderStore.showLoader()
+
+    const response = await apiRequestObj.makeRequest(
+      `haier/logistics/list`,
+      'get',
+    )
+
+    if (response && response.success) {
+      console.log(response);
+      logistics.value = response.data
+     
+    }
+
+    else {
+      snackbarStore.showSnackbar(
+        'An error occurred. Please try again.',
+        'error',
+      )
+    }
+  }
+  catch (error) {
+    snackbarStore.showSnackbar('An error occurred. Please try again.', 'error')
+  }
+  finally {
+    loaderStore.hideLoader()
+  }
+}
+const handleLogisticClick = async (status) => { // Add "async" here
+
+    selectedStatus.value = status;
+    isLogisticDialogVisible.value = !isLogisticDialogVisible.value;
+};
+
+const saveLogisticsData = async (payload) => {
+
+    const response = await apiRequestObj.makeRequest(
+      `haier/logistics/save/${orderId.value}`,
+      'post',
+      payload,
+    )
+    console.log('logistic');
+    console.log(response);
+    if (response?.success) {
+    isLogisticDialogVisible.value = false;
+    }
+
+
+    };
 
 const handleConfirm = async value => {
   if (value) {
@@ -337,6 +414,8 @@ function removeFile(index) {
 
 const updateStatus = async () => {
   try {
+    console.log('orderID');
+    console.log(orderId.value);
     loaderStore.showLoader()
 
     if (
@@ -498,6 +577,56 @@ watch([selectedOrderStatus, selectedPaymentMethod], () => {
           @click="handleClick(orderStatusCodes.isClosed, 'Do you confirm you Delivered the Order?')"
         >
           Delivered
+        </VBtn>
+      </VCardText>
+    </VCardText>
+  </VCard>
+</VDialog>
+
+<VDialog v-model="isLogisticDialogVisible" max-width="500">
+  <VCard>
+    <VCardText class="text-center px-10 py-6">
+      <VRow cols="12" sm="8">
+        <h2>Delivery information</h2>
+        <VCol cols="12">
+
+          <AppSelect v-model="selectedLogistic" label="Select Logistics" placeholder="Select Logistics"
+                     :items="logistics" clearable clear-icon="tabler-x" class="text-left" :rules="[ requiredValidator ]"
+                      />
+        </VCol>
+
+        <VCol v-if="selectedLogistic == 'Other'" cols="12">
+          <AppTextField v-model="courierVendorDnNo" class="text-left" label="Vendor ID" placeholder="Enter Vendor ID"
+                        :rules="[ requiredValidator ]" />
+        </VCol>
+
+        <VCol v-if="selectedLogistic == 'TCS' || selectedLogistic == 'LCS'" cols="12">
+          <AppTextField v-model="courierVendorDnNo" class="text-left" label="Courier No" placeholder="Enter Courier No"
+                        :rules="[ requiredValidator ]" />
+        </VCol>
+
+        <VCol v-if="selectedLogistic === 'Haier Logistics'" cols="12">
+          <AppTextField
+            v-model="courierVendorDnNo"
+            label="DN No"
+            placeholder="Enter DN No"
+            :rules="[requiredValidator]"
+            class="text-left"
+          />
+        </VCol>
+
+      </VRow>
+
+      <VCardText class="d-flex align-center justify-center gap-2">
+        <VBtn color="success" @click="handleLogisticDialog">
+          Confirm
+        </VBtn>
+
+        <VBtn color="secondary" variant="tonal" @click="() => {
+            isLogisticDialogVisible = false;
+          }
+          ">
+          Cancel
         </VBtn>
       </VCardText>
     </VCardText>
