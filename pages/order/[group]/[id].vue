@@ -108,21 +108,33 @@ const transformData = apiResponse => {
     contact: customer.mobile.toString(),
     clientIp: customer.clientIp,
   }
-  if(apiResponse.reasons.length !== 0) {
-      showRejectionCard.value = true;
-    }
+  
 
     if(apiResponse.logistics_company_id) {
         showLogisticCard.value = true;
       }
-
-  reasonDetail.value = apiResponse.reasons.map(reason => {
-    return {
-      rejectionReason: reason.reason || 'N/A',
-      vendorName: reason.vendor?.name || 'N/A',
-      rejectedOn: reason.created_at || 'N/A', // Assuming `rejected_on` exists in the API response
+      console.log('rejection reasons');
+      console.log(apiResponse.reasons);
+      console.log(authUser.user_type);
+      reasonDetail.value = (apiResponse.reasons ?? []) // Ensure it's an array
+  .filter(reason => {
+    if (authUser.user_type === 'haier') {
+      return reason.vendor?.type === 'admin';
+    } else if (authUser.user_type === 'vendor') {
+      return reason.vendor?.type === 'vendor';
     }
+    return true; // No filtering if neither condition matches
   })
+  .map(reason => ({
+    rejectionReason: reason.reason || 'N/A',
+    vendorName: reason.vendor?.name || 'N/A',
+    rejectedOn: reason.created_at || 'N/A',
+  }));
+
+// Update showRejectionCard only if reasonDetail has values
+showRejectionCard.value = reasonDetail.value.length > 0;
+
+
 
   // Set order details
   orderDetail.value = apiResponse.orderProduct.map(orderProduct => {
@@ -809,7 +821,7 @@ if (authUser.user_type === 'haier')
         </VCol>
       
         <!-- Rejection Reason -->
-        <VCol v-if="authUser.user_type === 'vendor' && showRejectionCard" class="col-4">
+        <VCol v-if="!showRejectionTable  && showRejectionCard" class="col-4">
           <VCard class="mb-6 h-100">
             <VCardText class="d-flex flex-column gap-y-6">
               <h5 class="text-h5">Delivery Refusal Reason</h5>
