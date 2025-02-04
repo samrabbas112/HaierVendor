@@ -75,8 +75,6 @@ const handleSubmit = async () => {
     else if (termsResponse?.code === 401 || termsResponse?.message === "Unauthenticated.") {
       snackbarStore.showSnackbar("Login session expired", "error");
 
-    } else {
-      snackbarStore.showSnackbar("An unexpected error occurred.", "error");
     }
 
 
