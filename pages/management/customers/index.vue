@@ -95,12 +95,14 @@ const handleConfirm = async (value) => {
         "DELETE",
       );
       if (response?.success) {
+        snackBarStore.showSnackbar("Customer Deleted Successfully.", "success");
         await fetchCustomers();
+      }else {
+        snackBarStore.showSnackbar(response?.message, "error");
       }
     } catch (error) {
       console.error("Error deleting customer:", error);
     } finally {
-      snackBarStore.showSnackbar("Customer Deleted Successfully.", "success");
       loaderStore.hideLoader();
     }
   }
