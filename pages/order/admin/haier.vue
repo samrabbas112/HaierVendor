@@ -28,8 +28,9 @@ const selectedHaierOrderStatus = ref({})
 const orderId = ref()
 const pdfFiles = ref([])
 const podUrl = ref(false)
-const selectedLogistic = ref()
-const courierVendorDnNo = ref();
+const selectedLogistic = ref('')
+const courierVendorDnNo = ref('');
+const vendorsList = ref([]);
 
 
 const ordersData = ref({
@@ -264,8 +265,20 @@ const fetchLogistics = async () => {
     loaderStore.hideLoader()
   }
 }
-const handleLogisticClick = async (status) => { // Add "async" here
+const handleLogisticClick = async (status,city) => { // Add "async" here
+ selectedLogistic.value = null;
+ courierVendorDnNo.value = null;
+const vendorResponse = await apiRequestObj.makeRequest(
+        `common/order/vendor-list/${city}`,
+        'get',
+      )
+      if (vendorResponse && vendorResponse.success) {
+        vendorsList.value = vendorResponse.data.map(vendor => ({
+          title: vendor.name,
+          value: vendor.id,
+        }));
 
+      }
     selectedStatus.value = status;
     isLogisticDialogVisible.value = !isLogisticDialogVisible.value;
 };
@@ -277,13 +290,10 @@ const saveLogisticsData = async (payload) => {
       'post',
       payload,
     )
-    console.log('logistic');
-    console.log(response);
     if (response?.success) {
+    selectedHaierOrderStatus.value = {}
     isLogisticDialogVisible.value = false;
     }
-
-
     };
 
 const handleConfirm = async value => {
@@ -584,7 +594,7 @@ watch([selectedOrderStatus, selectedPaymentMethod], () => {
 </VDialog>
 
 <VDialog v-model="isLogisticDialogVisible" max-width="500">
-  <VCard>
+  <VCard  v-if="isLogisticDialogVisible">
     <VCardText class="text-center px-10 py-6">
       <VRow cols="12" sm="8">
         <h2>Delivery information</h2>
@@ -596,8 +606,16 @@ watch([selectedOrderStatus, selectedPaymentMethod], () => {
         </VCol>
 
         <VCol v-if="selectedLogistic == 'Other'" cols="12">
-          <AppTextField v-model="courierVendorDnNo" class="text-left" label="Vendor ID" placeholder="Enter Vendor ID"
-                        :rules="[ requiredValidator ]" />
+          <v-autocomplete
+          v-model="courierVendorDnNo"
+          label="Select Vendor"
+          :items="vendorsList"
+          :rules="[requiredValidator]"
+          :clearable="disabled"
+          :clear-icon="tabler-x"
+          :class="text-left"
+        ></v-autocomplete>
+         
         </VCol>
 
         <VCol v-if="selectedLogistic == 'TCS' || selectedLogistic == 'LCS'" cols="12">

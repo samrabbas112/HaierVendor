@@ -108,33 +108,24 @@ const transformData = apiResponse => {
     contact: customer.mobile.toString(),
     clientIp: customer.clientIp,
   }
-  
+  if(apiResponse.reasons.length !== 0) {
+      showRejectionCard.value = true;
+    }
 
     if(apiResponse.logistics_company_id) {
         showLogisticCard.value = true;
       }
-      console.log('rejection reasons');
+      console.log('samra reason');
       console.log(apiResponse.reasons);
-      console.log(authUser.user_type);
-      reasonDetail.value = (apiResponse.reasons ?? []) // Ensure it's an array
-  .filter(reason => {
-    if (authUser.user_type === 'haier') {
-      return reason.vendor?.type === 'haier';
-    } else if (authUser.user_type === 'vendor') {
-      return reason.vendor?.type === 'vendor';
+      console.log(authUser.vendor_uid);
+  reasonDetail.value = apiResponse.reasons.map(reason => {
+    return {
+      rejectionReason: reason.reason || 'N/A',
+      vendorName: reason.vendor?.name || 'N/A',
+      rejectedOn: reason.created_at || 'N/A', // Assuming `rejected_on` exists in the API response
+      vendorId: reason.vendor?.id || 'N/A'
     }
-    return true; // No filtering if neither condition matches
   })
-  .map(reason => ({
-    rejectionReason: reason.reason || 'N/A',
-    vendorName: reason.vendor?.name || 'N/A',
-    rejectedOn: reason.created_at || 'N/A',
-  }));
-
-// Update showRejectionCard only if reasonDetail has values
-showRejectionCard.value = reasonDetail.value.length > 0;
-
-
 
   // Set order details
   orderDetail.value = apiResponse.orderProduct.map(orderProduct => {
@@ -323,6 +314,14 @@ const updateStatus = async () => {
         return navigateTo(`/order/${route?.params?.group == 'notification' ? 'my' : route?.params?.group}`)
       }
       orderData.value.status = response?.data?.pick_status?.id
+      reasonDetail.value = response?.data?.reasons.map(reason => {
+        return {
+          rejectionReason: reason.reason || 'N/A',
+          vendorName: reason.vendor?.name || 'N/A',
+          rejectedOn: reason.created_at || 'N/A', // Assuming `rejected_on` exists in the API response
+          vendorId: reason.vendor?.id || 'N/A'
+        }
+      })
       if (orderData.value.status !== orderStatusCodes.isReadyToShip) {
         showRejectionTable.value = false;
       }
@@ -418,17 +417,11 @@ const saveLogisticsData = async (payload) => {
       'post',
       payload,
     )
-    console.log('logistic');
-    console.log(response);
   if (response?.success) {
     orderData.value = transformData(response.data)
     isLogisticDialogVisible.value = false;
     showLogisticCard.value = true;
-
-
-       
     }
-    
   
 };
 
@@ -444,6 +437,8 @@ const handleLogisticDialog = async () => {
     logistic: selectedLogistic.value,
     courierVendorDnNo: courierVendorDnNo.value 
   }
+  console.log('samra payload');
+  console.log(payload);
 
   await Promise.all([
     updateStatus(), // First API
@@ -821,12 +816,15 @@ if (authUser.user_type === 'haier')
         </VCol>
       
         <!-- Rejection Reason -->
-        <VCol v-if="!showRejectionTable  && showRejectionCard" class="col-4">
+        <VCol v-if="(orderData?.status == orderStatusCodes.isRejected || orderData?.status == orderStatusCodes.isDeliveryRefused) && !showRejectionTable  && showRejectionCard" class="col-4">
           <VCard class="mb-6 h-100">
             <VCardText class="d-flex flex-column gap-y-6">
               <h5 class="text-h5">Delivery Refusal Reason</h5>
-              <div class="text-body-1">
-                {{ reasonDetail[0]?.rejectionReason || 'No reason provided' }}
+                <div v-for="reason in reasonDetail.filter(r => r.vendorId == authUser.vendor_uid)" 
+                  :key="reason.rejectedOn" 
+                  class="text-body-1">
+               {{ reason.rejectionReason || 'No reason provided' }}
+             
               </div>
             </VCardText>
           </VCard>
@@ -1007,8 +1005,16 @@ if (authUser.user_type === 'haier')
             </VCol>
 
             <VCol v-if="selectedLogistic == 'Other'" cols="12">
-              <AppTextField v-model="courierVendorDnNo" class="text-left" label="Vendor ID" placeholder="Enter Vendor ID"
-                            :rules="[ requiredValidator ]" />
+              <v-autocomplete
+              v-model="courierVendorDnNo"
+              label="Select Vendor"
+              :items="vendorsList"
+              :rules="[requiredValidator]"
+              :clearable="disabled"
+              :clear-icon="tabler-x"
+              :class="text-left"
+            ></v-autocomplete>
+            
             </VCol>
 
             <VCol v-if="selectedLogistic == 'TCS' || selectedLogistic == 'LCS'" cols="12">

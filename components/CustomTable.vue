@@ -232,7 +232,7 @@ const filteredOrderHaierStatus = status => {
             clearable
             clear-icon="tabler-x"
             :disabled="item.status == orderStatusCodes.isDeliveryRefused || item.status == orderStatusCodes.isCancelled || item.status == orderStatusCodes.isClosed"
-            @update:model-value="value => handleSelectedOrderStatus(value)"
+            @update:model-value="value => handleSelectedOrderStatus(value,item.city)"
           />
         </template>
 
