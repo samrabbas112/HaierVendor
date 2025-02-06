@@ -665,7 +665,7 @@ if (authUser.user_type === 'haier')
       Deliver Now
       </VBtn>
         <VBtn
-          v-if="(orderData?.status == orderStatusCodes.isRejected || orderData?.status == orderStatusCodes.isDeliveryTimeout || orderData?.status == orderStatusCodes.isHaier) && (orderData?.POD == 'COD')"
+          v-if="(orderData?.status == orderStatusCodes.isRejected || orderData?.status == orderStatusCodes.isDeliveryTimeout || orderData?.status == orderStatusCodes.isHaier) && (orderData?.POD == 'COD') && (orderData?.order_type !== 'B_CLASS') && (orderData?.order_type !== 'Exclusive')"
           variant="tonal" color="error" @click="isTransferDialogVisible = !isTransferDialogVisible">
           Transfer Order
         </VBtn>
