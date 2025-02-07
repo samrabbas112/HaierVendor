@@ -281,9 +281,9 @@ watch([selectedVendor, selectedOrderStatus, selectedPaymentMethod, selectedOrder
                 () => {
                   searchQuery = '';
                   vendorQuery = '';
-                  selectedOrderStatus = null;
-                  selectedPaymentMethod = null;
-                  selectedOrderType = null;
+                  selectedOrderStatus = undefined;
+                  selectedPaymentMethod = undefined;
+                  selectedOrderType = undefined;
                   makeSearch(1);
                 }
               "
