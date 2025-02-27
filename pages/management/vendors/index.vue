@@ -110,7 +110,10 @@ const handleConfirm = async (value) => {
         "DELETE",
       );
 
-      if (response?.success) await fetchVendors();
+      if (response?.success) {
+        snackBarStore.showSnackbar(response?.message, 'success')
+        await fetchVendors();
+      }
       else console.log("noce");
     } catch (error) {
       console.error("Error deleting vendor:", error);
