@@ -89,8 +89,8 @@ const onSubmit = async () => {
           emit('update:isDrawerOpen', false)
           if (props.customer?.id) {
             snackBarStore.showSnackbar(
-              response?.data?.message || 'Customer Updated Successfully.',
-              'success',
+              response?.message || 'Customer Updated Successfully.',
+              response?.message ? 'error' : 'success',
             )
           }
           else {
