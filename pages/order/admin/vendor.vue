@@ -79,7 +79,7 @@ const transformData = apiResponse => {
       method: item.payment_method || 'COD', // Payment method
       date: item.created_at,
       time: item.pick_before,
-      vendor_name: item.vendor_name,
+      vendor_name: (item.pick_status.id == orderStatusCodes.isPicked) ?  item.vendor_name :   ((item.pick_status.id == orderStatusCodes.isPublic) ? '--:--:--' : 'Haier Operations') ,
       vendor_email: item.vendor_email,
       vendor_phone: item.vendor_phone,
       vendor_address: item.vendor_address,
@@ -114,7 +114,7 @@ const makeSearch = async page => {
       'post',
       formData,
     )
-
+   
     if (response && response.success) {
       console.log(response?.data?.orders);
       // Transform and set the data
