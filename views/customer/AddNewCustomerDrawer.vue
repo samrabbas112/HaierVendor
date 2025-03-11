@@ -89,8 +89,8 @@ const onSubmit = async () => {
           emit('update:isDrawerOpen', false)
           if (props.customer?.id) {
             snackBarStore.showSnackbar(
-              'Customer Updated Successfully.',
-              'success',
+              response?.message || 'Customer Updated Successfully.',
+              response?.message ? 'error' : 'success',
             )
           }
           else {
@@ -107,8 +107,7 @@ const onSubmit = async () => {
         }
         else {
           const messages = response?.message;
-          console.log('messages', messages);
-          let allErrors = [];
+          let allErrors = []
 
           // Check if the message array exists
           if (Array.isArray(messages)) {
@@ -119,11 +118,8 @@ const onSubmit = async () => {
             allErrors = [messages]; // Wrap non-array message into an array
           }
 
-          console.log('error', allErrors);
-
           // Join all errors into a single string
           const errorMessage = allErrors.length > 0 ? allErrors.join('\n') : 'Unknown Error';
-          console.log('errorMessage', errorMessage);
 
           // Show snackbar with all errors
           snackBarStore.showSnackbar(allErrors.length > 0 ? 'User already registered.' : errorMessage, 'error');
